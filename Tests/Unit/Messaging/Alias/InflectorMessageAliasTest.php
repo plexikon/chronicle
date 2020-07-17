@@ -8,7 +8,7 @@ use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 
-final class ClassBaseNameInflectorMessageAliasTest extends TestCase
+final class InflectorMessageAliasTest extends TestCase
 {
     /**
      * ô@test

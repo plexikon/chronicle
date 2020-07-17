@@ -29,6 +29,7 @@ final class TrackingQuerySubscriber implements MessageSubscriber
                     $deferred->reject($exception);
                 } finally {
                     $context->withPromise($deferred->promise());
+                    $context->setMessageHandled(true);
                 }
             }
         });

@@ -26,6 +26,8 @@ final class TrackingCommandSubscriber implements MessageSubscriber
             if ($messageHandler = $context->messageHandlers()->current()) {
                 $messageHandler($event);
             }
+
+            $context->setMessageHandled(true);
         });
     }
 

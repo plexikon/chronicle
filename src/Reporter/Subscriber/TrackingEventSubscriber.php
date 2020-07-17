@@ -26,6 +26,8 @@ final class TrackingEventSubscriber implements MessageSubscriber
             foreach ($context->messageHandlers() as $messageHandler) {
                 $messageHandler($event);
             }
+
+            $context->setMessageHandled(true);
         });
     }
 
