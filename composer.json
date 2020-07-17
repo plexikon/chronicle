@@ -1,0 +1,51 @@
+{
+    "name": "plexikon/chronicle",
+    "description": "cqrs es ddd",
+    "keywords": [],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "steph bug",
+            "email": "plexikon@protonmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "beberlei/assert": "^3.2",
+        "marc-mabe/php-enum": "^4.2",
+        "ramsey/uuid": "^3.9",
+        "react/promise": "^2.7",
+        "ext-json": "*",
+        "ext-pcntl": "*"
+    },
+    "require-dev": {
+        "laravel/framework": "^7.2",
+        "nunomaduro/larastan": "^0.5.3",
+        "orchestra/testbench": "^5.1",
+        "phpstan/phpstan": "^0.12",
+        "phpunit/phpunit": "^8.5",
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Plexikon\\Chronicle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Plexikon\\Chronicle\\Tests\\": "Tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "dont-discover": []
+        }
+    }
+}
