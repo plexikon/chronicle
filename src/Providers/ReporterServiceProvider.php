@@ -31,8 +31,6 @@ final class ReporterServiceProvider extends ServiceProvider
 
         $this->registerMessageFactories();
 
-        //$this->registerDefaultTracker();
-
         $this->app->bind(ReporterManager::class);
     }
 
@@ -44,15 +42,6 @@ final class ReporterServiceProvider extends ServiceProvider
         $this->app->bindIf(MessageSerializer::class, $message['serializer']);
         $this->app->bindIf(PayloadSerializer::class, $message['payload_serializer']);
         $this->app->bindIf(MessageAlias::class, $message['alias']);
-    }
-
-    private function registerDefaultTracker(): void
-    {
-        $tracker = config('reporter.tracking.tracker.default');
-
-        if(is_array($tracker)){
-            $this->app->bind($tracker['abstract'], $tracker['concrete']);
-        }
     }
 
     private function getConfigPath(): string

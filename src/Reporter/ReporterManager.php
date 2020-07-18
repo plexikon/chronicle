@@ -148,6 +148,7 @@ class ReporterManager
     protected function resolveReporterRouterSubscriber(string $type, array $config): MessageSubscriber
     {
         $useContainer = $config['use_container'] ?? true;
+
         if (!is_bool($useContainer)) {
             $useContainer = true;
         }
