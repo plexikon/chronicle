@@ -81,16 +81,30 @@ class ReporterManager
 
     protected function createReporterDriver(string $type, array $config): Reporter
     {
-        $reporterInstance = $this->newReporterInstance($config);
+        $reporterInstance = $this->newReporterInstance($type, $config);
 
         $this->subscribeToReporter($reporterInstance, $type, $config);
 
         return $reporterInstance;
     }
 
-    protected function newReporterInstance(array $config): Reporter
+    protected function newReporterInstance(string $type, array $config): Reporter
     {
-        $reporterClassName = $config['concrete'];
+        $reporterClassName = $config['concrete'] ?? null;
+
+        if (null === $reporterClassName) {
+            switch ($type) {
+                case 'command':
+                    $reporterClassName = ReportCommand::class;
+                    break;
+                case 'event':
+                    $reporterClassName = ReportEvent::class;
+                    break;
+                case 'query':
+                    $reporterClassName = ReportQuery::class;
+                    break;
+            }
+        }
 
         if (!class_exists($reporterClassName)) {
             throw new RuntimeException("Reporter class name $reporterClassName does not exists");
@@ -111,7 +125,7 @@ class ReporterManager
             $this->resolveMessageDecoratorSubscriber($config),
             $this->resolveReporterRouterSubscriber($type, $config),
             $this->fromReporter("messaging.subscribers") ?? [],
-            $config['subscribers'] ?? []
+            $config['messaging.subscribers'] ?? []
         ]);
 
         foreach ($subscribers as $subscriber) {
@@ -123,7 +137,7 @@ class ReporterManager
     {
         $messageDecorators = $this->resolveServices(
             $this->fromReporter('messaging.decorators' ?? []),
-            $config['message']['decorators'] ?? []
+            $config['messaging']['decorators'] ?? []
         );
 
         return new ChainMessageDecoratorSubscriber(
@@ -174,7 +188,7 @@ class ReporterManager
             return new SyncMessageProducer();
         }
 
-        if(null === $driver){
+        if (null === $driver) {
             $driver = $this->fromReporter('messaging.producer.default');
         }
 
