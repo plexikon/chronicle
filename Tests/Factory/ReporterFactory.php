@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Tests\Factory;
 
 use Illuminate\Contracts\Container\Container;
 use Plexikon\Chronicle\Messaging\Alias\ClassNameMessageAlias;
+use Plexikon\Chronicle\Messaging\Producer\SyncMessageProducer;
 use Plexikon\Chronicle\Reporter\ReportCommand;
 use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Reporter\ReportQuery;
@@ -48,7 +49,7 @@ final class ReporterFactory
                                       ?Container $container,
                                       ?MessageProducer $messageProducer): self
     {
-        return new self($map, $container, $messageProducer);
+        return new self($map, $container, $messageProducer ?? new SyncMessageProducer());
     }
 
     public function withMessageAlias(MessageAlias $messageAlias): self
