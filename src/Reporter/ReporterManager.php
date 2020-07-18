@@ -125,7 +125,7 @@ class ReporterManager
             $this->resolveMessageDecoratorSubscriber($config),
             $this->resolveReporterRouterSubscriber($type, $config),
             $this->fromReporter("messaging.subscribers") ?? [],
-            $config['messaging.subscribers'] ?? []
+            $config['messaging']['subscribers'] ?? []
         ]);
 
         foreach ($subscribers as $subscriber) {
@@ -184,12 +184,12 @@ class ReporterManager
 
     protected function createMessageProducer(string $type, ?string $driver): MessageProducer
     {
-        if ($type === 'query' || $driver === 'sync') {
-            return new SyncMessageProducer();
-        }
-
         if (null === $driver) {
             $driver = $this->fromReporter('messaging.producer.default');
+        }
+
+        if ($type === 'query' || $driver === 'sync') {
+            return new SyncMessageProducer();
         }
 
         if (!in_array($driver, ['per_message', 'async_all'])) {
