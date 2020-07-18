@@ -110,7 +110,7 @@ class ReporterManager
         $subscribers = $this->resolveServices([
             $this->resolveMessageDecoratorSubscriber($config),
             $this->resolveReporterRouterSubscriber($type, $config),
-            $this->fromReporter("tracking.subscribers") ?? [],
+            $this->fromReporter("messaging.subscribers") ?? [],
             $config['subscribers'] ?? []
         ]);
 

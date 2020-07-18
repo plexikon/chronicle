@@ -4,19 +4,6 @@ return [
 
     'clock' => \Plexikon\Chronicle\Clock\SystemClock::class,
 
-    'tracking' => [
-        'tracker' => [
-            'default' => [
-                'abstract' => 'reporter.tracker.default',
-                'concrete' => \Plexikon\Chronicle\Support\Contract\Reporter\TrackingReporter::class
-            ],
-        ],
-
-        'subscribers' => [
-            \Plexikon\Chronicle\Reporter\Subscriber\MessageFactorySubscriber::class,
-        ],
-    ],
-
     'messaging' => [
 
         'factory' => \Plexikon\Chronicle\Messaging\MessageFactory::class,
@@ -33,6 +20,10 @@ return [
             'extra' => [
 
             ]
+        ],
+
+        'subscribers' => [
+            \Plexikon\Chronicle\Reporter\Subscriber\MessageFactorySubscriber::class,
         ],
 
         'producer' => [
