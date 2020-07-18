@@ -12,7 +12,9 @@ return [
             ],
         ],
 
-        'subscribers' => [],
+        'subscribers' => [
+            \Plexikon\Chronicle\Reporter\Subscriber\MessageFactorySubscriber::class,
+        ],
     ],
 
     'messaging' => [
@@ -72,24 +74,27 @@ return [
 
         'event' => [
             'default' => [
-                'reporter_id' => \Plexikon\Chronicle\Reporter\ReportEvent::class,
+                'name' => \Plexikon\Chronicle\Reporter\ReportEvent::class, // null or your reporter id, default to concrete
+                'concrete' => \Plexikon\Chronicle\Reporter\ReportEvent::class,
                 'route_strategy' => 'sync',
                 'message' => [
                     'decorators' => [
-                        \Plexikon\Chronicle\Reporter\Subscriber\TrackingEventSubscriber::class,
                         \Plexikon\Chronicle\Messaging\Decorator\AsyncMarkerMessageDecorator::class,
                     ]
                 ],
                 'handler_method' => 'onEvent',
                 //'allow_no_message_handler' => true,
-                'subscribers' => [],
+                'subscribers' => [
+                    \Plexikon\Chronicle\Reporter\Subscriber\TrackingEventSubscriber::class,
+                ],
                 'map' => []
             ]
         ],
 
         'query' => [
             'default' => [
-                'reporter_id' => \Plexikon\Chronicle\Reporter\ReportQuery::class,
+                'name' => \Plexikon\Chronicle\Reporter\ReportQuery::class, // null or your reporter id, default to concrete
+                'concrete' => \Plexikon\Chronicle\Reporter\ReportQuery::class,
                 'route_strategy' => 'sync',
                 'message' => [
                     'decorators' => []

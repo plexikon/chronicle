@@ -46,7 +46,7 @@ class ReporterManager
         return $this->create($name ?? 'default', Messaging::QUERY);
     }
 
-    public function eventReporter(?string $name = null): Reporter
+    public function reportEvent(?string $name = null): Reporter
     {
         return $this->create($name ?? 'default', Messaging::EVENT);
     }
@@ -61,7 +61,7 @@ class ReporterManager
             return $customReporter($this->container, $this->config);
         }
 
-        $reporterConfig = $this->fromReporter("reporter.$type.$name");
+        $reporterConfig = $this->fromReporter("reporting.$type.$name");
 
         if (!is_array($reporterConfig) || empty($reporterConfig)) {
             throw new RuntimeException("No reporter configuration found with driver $name and type $type");
@@ -133,10 +133,15 @@ class ReporterManager
 
     protected function resolveReporterRouterSubscriber(string $type, array $config): MessageSubscriber
     {
+        $useContainer = $config['use_container'] ?? true;
+        if (!is_bool($useContainer)) {
+            $useContainer = true;
+        }
+
         $defaultRouter = new ReporterRouter(
             $config['map'],
             $this->container->get(MessageAlias::class),
-            $config['use_container'] ?? true,
+            $useContainer ? $this->container : null,
             $config['handler_method'] ?? null
         );
 
