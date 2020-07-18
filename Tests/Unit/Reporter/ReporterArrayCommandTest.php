@@ -38,7 +38,7 @@ final class ReporterArrayCommandTest extends TestCase
         ReporterFactory::withRouter($map, null, null)
             ->withSubscribers(...$this->messageSubscribers($dispatchCommand, $messageAlias))
             ->reportCommand(null)
-            ->dispatch($dispatchCommand);
+            ->publish($dispatchCommand);
     }
 
     private function arrayCommand(): array

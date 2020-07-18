@@ -19,14 +19,6 @@ use Plexikon\Chronicle\Support\Contract\Tracker\Listener;
 
 class EventChronicler implements EventChroniclerDecorator
 {
-    public const FIRST_COMMIT_EVENT = 'first_commit_stream_event';
-    public const PERSIST_STREAM_EVENT = 'persist_stream_event';
-    public const RETRIEVE_ALL_STREAM_EVENT = 'retrieve_all_stream_event';
-    public const RETRIEVE_ALL_REVERSE_STREAM_EVENT = 'retrieve_all_reverse_stream_event';
-    public const RETRIEVE_ALL_FILTERED_STREAM_EVENT = 'retrieve_all_filtered_stream_event';
-    public const DELETE_STREAM_EVENT = 'delete_stream_event';
-    public const HAS_STREAM_EVENT = 'has_stream_event';
-
     protected Chronicler $chronicler;
     protected EventTracker $tracker;
 

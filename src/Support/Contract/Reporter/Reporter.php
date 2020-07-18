@@ -15,5 +15,5 @@ interface Reporter
      * @param Message|Messaging|object|array $message
      * @return void|PromiseInterface
      */
-    public function dispatch($message);
+    public function publish($message);
 }

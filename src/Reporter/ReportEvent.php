@@ -8,13 +8,13 @@ use Throwable;
 
 class ReportEvent extends ReportMessage
 {
-    public function dispatch($event): void
+    public function publish($event): void
     {
         $context = $this->tracker->newContext(Reporter::DISPATCH_EVENT);
         $context->withMessage($event);
 
         try {
-            $this->dispatchMessage($context);
+            $this->publishMessage($context);
         } catch (Throwable $exception) {
             $context->withRaisedException($exception);
         } finally {

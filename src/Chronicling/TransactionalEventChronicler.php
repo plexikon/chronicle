@@ -13,10 +13,6 @@ use Plexikon\Chronicle\Support\Contract\Tracker\TransactionalEventTracker;
 
 final class TransactionalEventChronicler extends EventChronicler implements TransactionalChronicler
 {
-    public const BEGIN_TRANSACTION_EVENT = 'begin_transaction_event';
-    public const COMMIT_TRANSACTION_EVENT = 'commit_transaction_event';
-    public const ROLLBACK_TRANSACTION_EVENT = 'rollback_transaction_event';
-
     /**
      * @var Chronicler|TransactionalChronicler
      */

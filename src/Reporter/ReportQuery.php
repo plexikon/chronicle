@@ -9,13 +9,13 @@ use Throwable;
 
 class ReportQuery extends ReportMessage
 {
-    public function dispatch($query): PromiseInterface
+    public function publish($query): PromiseInterface
     {
         $context = $this->tracker->newContext(Reporter::DISPATCH_EVENT);
         $context->withMessage($query);
 
         try {
-            $this->dispatchMessage($context);
+            $this->publishMessage($context);
         } catch (Throwable $exception) {
             $context->withRaisedException($exception);
         } finally {

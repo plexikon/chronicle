@@ -35,7 +35,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertMessageHandledSubscriber(),
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
     }
 
     /**
@@ -57,7 +57,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertMessageHandledSubscriber(),
             )
             ->reportCommand(null)
-            ->dispatch($message);
+            ->publish($message);
     }
 
     /**
@@ -74,7 +74,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertMessageHandledSubscriber(),
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
     }
 
     /**
@@ -108,7 +108,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertMessageHandledSubscriber(),
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
 
         $this->assertTrue($commandHandler->isCommandHandled());
     }
@@ -132,7 +132,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertMessageHandledSubscriber(),
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
 
         $this->assertTrue($messageHandler->isCommandHandled());
     }
@@ -151,7 +151,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertExceptionExistsSubscriber()
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
     }
 
     /**
@@ -170,7 +170,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertExceptionExistsSubscriber()
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
     }
 
     /**
@@ -189,7 +189,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertExceptionExistsSubscriber()
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
     }
 
     /**
@@ -211,7 +211,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertExceptionExistsSubscriber()
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
 
         $this->assertTrue($messageHandler->isCommandHandled());
     }
@@ -234,7 +234,7 @@ final class ReportCommandTest extends TestCase
                 $this->assertExceptionExistsSubscriber()
             )
             ->reportCommand(null)
-            ->dispatch($this->defaultMessageCommand());
+            ->publish($this->defaultMessageCommand());
     }
 
     private function defaultMessageCommand(): Message

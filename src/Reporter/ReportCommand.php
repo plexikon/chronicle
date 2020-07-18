@@ -10,7 +10,7 @@ class ReportCommand extends ReportMessage
     private array $queue = [];
     private bool $isDispatching = false;
 
-    public function dispatch($message): void
+    public function publish($message): void
     {
         $this->queue[] = $message;
 
@@ -23,7 +23,7 @@ class ReportCommand extends ReportMessage
                     $context->withMessage($command);
 
                     try {
-                        $this->dispatchMessage($context);
+                        $this->publishMessage($context);
                     } catch (Throwable $exception) {
                         $context->withRaisedException($exception);
                     } finally {

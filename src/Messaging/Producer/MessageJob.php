@@ -31,7 +31,7 @@ final class MessageJob
         /** @var Reporter $serviceBus */
         $serviceBus = $container->get($this->busType);
 
-        $serviceBus->dispatch($this->payload);
+        $serviceBus->publish($this->payload);
     }
 
     /**

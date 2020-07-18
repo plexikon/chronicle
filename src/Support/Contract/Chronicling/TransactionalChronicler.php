@@ -7,6 +7,10 @@ use Plexikon\Chronicle\Exception\TransactionNotStarted;
 
 interface TransactionalChronicler extends Chronicler
 {
+    public const BEGIN_TRANSACTION_EVENT = 'begin_transaction_event';
+    public const COMMIT_TRANSACTION_EVENT = 'commit_transaction_event';
+    public const ROLLBACK_TRANSACTION_EVENT = 'rollback_transaction_event';
+
     /**
      * @throws TransactionAlreadyStarted
      */

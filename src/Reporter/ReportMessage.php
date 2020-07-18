@@ -32,7 +32,7 @@ abstract class ReportMessage implements Reporter, TrackingReporter, NamingReport
         return $this->reporterName ?? $this->reporterName = get_called_class();
     }
 
-    protected function dispatchMessage(MessageContext $messageContext)
+    protected function publishMessage(MessageContext $messageContext)
     {
         $this->tracker->fire($messageContext);
     }

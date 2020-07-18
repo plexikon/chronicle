@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Chronicling\Aggregate;
+namespace Plexikon\Chronicle\Chronicling\Aggregate\Concerns;
 
 use Generator;
 use Plexikon\Chronicle\Exception\StreamNotFound;
@@ -14,7 +14,7 @@ trait HasAggregateRoot
     private array $recordedEvents = [];
     private AggregateId $aggregateId;
 
-    private function __construct(AggregateId $aggregateId)
+    protected function __construct(AggregateId $aggregateId)
     {
         $this->aggregateId = $aggregateId;
     }

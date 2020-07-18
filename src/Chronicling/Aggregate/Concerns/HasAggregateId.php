@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Chronicling\Aggregate;
+namespace Plexikon\Chronicle\Chronicling\Aggregate\Concerns;
 
 use Exception;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
