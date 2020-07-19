@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Tracker;
 
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use Plexikon\Chronicle\Tracker\Concerns\HasTracking;
 
-final class TrackingReport implements Tracker
+final class TrackingReport implements MessageTracker
 {
     use HasTracking;
 

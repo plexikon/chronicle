@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Messaging\Decorator;
 
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
+use Plexikon\Chronicle\Reporter\DomainEvent;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageDecorator;
@@ -21,6 +22,10 @@ final class AggregateIdTypeMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
+        if(!$message->isMessaging()){
+            return $message;
+        }
+
         if (null !== $aggregateIdType = $message->header(MessageHeader::AGGREGATE_ID_TYPE)) {
             return $message;
         }

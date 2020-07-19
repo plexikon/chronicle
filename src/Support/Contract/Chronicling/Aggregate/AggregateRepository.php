@@ -3,6 +3,7 @@
 namespace Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate;
 
 use Plexikon\Chronicle\Reporter\DomainEvent;
+use Plexikon\Chronicle\Support\Contract\Chronicling\ReadOnlyChronicler;
 
 interface AggregateRepository
 {
@@ -23,6 +24,11 @@ interface AggregateRepository
      * @param DomainEvent[] $events
      */
     public function persistEvents(AggregateId $aggregateId, int $aggregateVersion, DomainEvent ...$events): void;
+
+    /**
+     * @return ReadOnlyChronicler
+     */
+    public function chronicler(): ReadOnlyChronicler;
 
     /**
      * Flush aggregate cache

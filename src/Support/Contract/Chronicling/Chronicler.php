@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Exception\StreamNotFound;
 use Plexikon\Chronicle\Stream\Stream;
 use Plexikon\Chronicle\Stream\StreamName;
 
-interface Chronicler extends ReadOnlySubscriber
+interface Chronicler extends ReadOnlyChronicler
 {
     /**
      * @param Stream $stream

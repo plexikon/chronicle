@@ -17,6 +17,10 @@ final class ChainMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
+        if(!$message->isMessaging()){
+            return $message;
+        }
+
         foreach ($this->decorators as $decorator) {
             $message = $decorator->decorate($message);
         }

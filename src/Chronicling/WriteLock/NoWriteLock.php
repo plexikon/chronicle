@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Chronicling\WriteLock;
 
-
 use Plexikon\Chronicle\Support\Contract\Chronicling\WriteLockStrategy;
 
 final class NoWriteLock implements WriteLockStrategy

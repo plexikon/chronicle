@@ -14,6 +14,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateRepository as BaseAggregateRepository;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateRoot;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
+use Plexikon\Chronicle\Support\Contract\Chronicling\ReadOnlyChronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageDecorator;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 
@@ -26,6 +27,19 @@ final class AggregateRepository implements BaseAggregateRepository
     protected AggregateCache $aggregateCache;
     protected MessageDecorator $messageDecorator;
     protected StreamName $streamName;
+
+    public function __construct(string $aggregateRoot,
+                                Chronicler $chronicler,
+                                AggregateCache $aggregateCache,
+                                StreamName $streamName,
+                                MessageDecorator $messageDecorator)
+    {
+        $this->aggregateRoot = $aggregateRoot;
+        $this->chronicler = $chronicler;
+        $this->aggregateCache = $aggregateCache;
+        $this->streamName = $streamName;
+        $this->messageDecorator = $messageDecorator;
+    }
 
     public function retrieve(AggregateId $aggregateId): AggregateRoot
     {
@@ -71,11 +85,14 @@ final class AggregateRepository implements BaseAggregateRepository
                     ));
             }, $events);
 
-        $this->chronicler->persist(
-            new Stream($this->streamName, $messages)
-        );
+        $this->chronicler->persist(new Stream($this->streamName, $messages));
 
         $this->aggregateCache->forget($aggregateId);
+    }
+
+    public function chronicler(): ReadOnlyChronicler
+    {
+        return $this->chronicler;
     }
 
     public function flushCache(): void

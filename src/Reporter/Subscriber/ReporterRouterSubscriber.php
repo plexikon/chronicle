@@ -8,7 +8,7 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 
 final class ReporterRouterSubscriber implements MessageSubscriber
 {
@@ -21,7 +21,7 @@ final class ReporterRouterSubscriber implements MessageSubscriber
         $this->messageProducer = $messageProducer;
     }
 
-    public function attachToTracker(Tracker $tracker): void
+    public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
             $this->messageProducer->mustBeHandledSync($context->getMessage())

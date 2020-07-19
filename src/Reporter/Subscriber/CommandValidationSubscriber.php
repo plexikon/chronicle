@@ -13,7 +13,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\ValidateMessage;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 
 final class CommandValidationSubscriber implements MessageSubscriber
 {
@@ -24,7 +24,7 @@ final class CommandValidationSubscriber implements MessageSubscriber
         $this->validator = $validator;
     }
 
-    public function attachToTracker(Tracker $tracker): void
+    public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
             $message = $context->getMessage();
@@ -44,7 +44,7 @@ final class CommandValidationSubscriber implements MessageSubscriber
                     $this->validateMessage($message);
                 }
             }
-        },80000);
+        }, 80000);
     }
 
     private function validateMessage(Message $message): void

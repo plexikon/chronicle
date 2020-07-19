@@ -6,7 +6,7 @@ use Generator;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 
-interface ReadOnlySubscriber
+interface ReadOnlyChronicler
 {
     /**
      * @param AggregateId $aggregateId

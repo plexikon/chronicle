@@ -19,6 +19,10 @@ final class TimeOfRecordingMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
+        if(!$message->isMessaging()){
+            return $message;
+        }
+
         $recordedAt = $message->header(MessageHeader::TIME_OF_RECORDING);
 
         if (null === $recordedAt) {

@@ -33,7 +33,7 @@ abstract class SingleStreamPersistenceStrategy implements PersistenceStrategy
             'event_type' => $data['headers'][MessageHeader::EVENT_TYPE],
             'payload' => Json::encode($data['payload']),
             'headers' => Json::encode($data['headers']),
-            'created_at' => $data['headers'][MessageHeader::TIME_OF_RECORDING],
+            'created_at' => (string)$data['headers'][MessageHeader::TIME_OF_RECORDING],
         ];
     }
 }

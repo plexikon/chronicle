@@ -6,13 +6,13 @@ namespace Plexikon\Chronicle\Reporter\Subscriber;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use React\Promise\Deferred;
 use Throwable;
 
 final class TrackingQuerySubscriber implements MessageSubscriber
 {
-    public function attachToTracker(Tracker $tracker): void
+    public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
             $message = $context->getMessage();

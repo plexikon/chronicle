@@ -9,7 +9,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageSerializer;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use Psr\Log\LoggerInterface;
 
 final class LoggerCommandSubscriber implements MessageSubscriber
@@ -23,7 +23,7 @@ final class LoggerCommandSubscriber implements MessageSubscriber
         $this->messageSerializer = $messageSerializer;
     }
 
-    public function attachToTracker(Tracker $tracker): void
+    public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
             $message = $context->getMessage();

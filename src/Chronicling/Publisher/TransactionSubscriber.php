@@ -6,10 +6,9 @@ namespace Plexikon\Chronicle\Chronicling\Publisher;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
-use Plexikon\Chronicle\Support\Contract\Tracker\EventTracker;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 
 final class TransactionSubscriber implements MessageSubscriber
 {
@@ -23,9 +22,9 @@ final class TransactionSubscriber implements MessageSubscriber
         $this->chronicler = $chronicler;
     }
 
-    public function attachToTracker(Tracker $tracker): void
+    public function attachToTracker(MessageTracker $tracker): void
     {
-        if (!$this->chronicler instanceof TransactionalChronicler || $tracker instanceof EventTracker) {
+        if (!$this->chronicler instanceof TransactionalChronicler) {
             return;
         }
 
