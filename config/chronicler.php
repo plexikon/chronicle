@@ -20,7 +20,7 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'strategy' => \Plexikon\Chronicle\Chronicling\Persistence\PgsqlSingleStreamStrategy::class,
+            'strategy' => \Plexikon\Chronicle\Chronicling\Strategy\PgsqlSingleStreamStrategy::class,
             'tracker_id' => null,
             'options' => [
                 'disable_transaction' => false,

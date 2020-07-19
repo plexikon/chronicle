@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Chronicling\Persistence;
+namespace Plexikon\Chronicle\Chronicling\Strategy;
 
 use Illuminate\Database\Schema\Blueprint;
 

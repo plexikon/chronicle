@@ -27,7 +27,7 @@ final class TimeOfRecordingMessageDecorator implements MessageDecorator
 
         if (null === $recordedAt) {
             $message = $message->withHeader(
-                MessageHeader::TIME_OF_RECORDING, $this->clock->pointInTime()->toString()
+                MessageHeader::TIME_OF_RECORDING, $this->clock->pointInTime()
             );
         }
 
