@@ -57,10 +57,10 @@ class ChronicleStoreManager
         return $this->resolveChronicleDecorator($chronicler, $config);
     }
 
-    protected function pgsqlChronicleDriver(array $config): Chronicler
+    protected function createPgsqlChronicleDriver(array $config): Chronicler
     {
         return new PgsqlChronicler(
-            $this->container['db']->connection($config['connection']),
+            $this->container['db']->connection($config['driver']),
             $this->container->get(EventStreamProvider::class),
             $this->container->make($config['strategy']),
             new NoWriteLock(),
@@ -68,8 +68,7 @@ class ChronicleStoreManager
             $config['options']['disable_transaction'] ?? false
         );
     }
-
-    protected function inMemoryChronicleDriver(array $config): Chronicler
+    protected function createInMemoryChronicleDriver(array $config): Chronicler
     {
         throw new RuntimeException("todo");
     }
