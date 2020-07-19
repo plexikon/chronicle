@@ -72,7 +72,7 @@ class ChronicleRepositoryManager
 
     protected function createAggregateCacheDriver(int $caching): BaseAggregateCache
     {
-        Assertion::greaterOrEqualThan(0, $caching);
+        Assertion::greaterOrEqualThan($caching, 0);
 
         $store = $caching === 0 ? new NullStore() : new ArrayStore();
 
