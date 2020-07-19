@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Messaging\Serializer;
 
+use DateTimeImmutable;
 use Generator;
+use Plexikon\Chronicle\Clock\PointInTime;
+use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Messaging\EventSerializer as BaseEventSerializer;
@@ -27,7 +30,7 @@ final class EventSerializer implements BaseEventSerializer
 
         $payload = $this->payloadSerializer->serializePayload($event);
 
-        $headers = $this->serializeAggregateId($message->headers());
+        $headers = $this->serializeHeaders($message->headers());
 
         return ['headers' => $headers, 'payload' => $payload];
     }
@@ -40,7 +43,7 @@ final class EventSerializer implements BaseEventSerializer
             $headers[MessageHeader::INTERNAL_POSITION] = $payload['no'];
         }
 
-        $headers = $this->unserializeAggregateId($headers);
+        $headers = $this->unserializeHeaders($headers);
 
         $event = $this->payloadSerializer->unserializePayload(
             $this->messageAlias->typeToClass($headers[MessageHeader::EVENT_TYPE]),
@@ -48,6 +51,24 @@ final class EventSerializer implements BaseEventSerializer
         );
 
         yield new Message($event, $headers);
+    }
+
+    private function serializeHeaders(array $headers): array
+    {
+        $headers = $this->serializeAggregateId($headers);
+
+        $headers = $this->serializeTimeOfRecording($headers);
+
+        return $headers;
+    }
+
+    private function unserializeHeaders(array $headers): array
+    {
+        $headers = $this->unserializeAggregateId($headers);
+
+        $headers = $this->unserializeTimeOfRecording($headers);
+
+        return $headers;
     }
 
     private function serializeAggregateId(array $headers): array
@@ -73,6 +94,36 @@ final class EventSerializer implements BaseEventSerializer
 
             $headers[MessageHeader::AGGREGATE_ID] = $aggregateIdTypeClassName::fromString($aggregateId);
         }
+
+        return $headers;
+    }
+
+    private function serializeTimeOfRecording(array $headers): array
+    {
+        $timeOfRecording = $headers[MessageHeader::TIME_OF_RECORDING];
+
+        if (is_string($timeOfRecording)) {
+            return $headers;
+        }
+
+        if ($timeOfRecording instanceof PointInTime) {
+            $timeOfRecording = $timeOfRecording->toString();
+        } elseif ($timeOfRecording instanceof DateTimeImmutable) {
+            $timeOfRecording = PointInTime::fromDateTime($timeOfRecording)->toString();
+        } else {
+            throw new RuntimeException("Unable to serialize time of recording header");
+        }
+
+        $headers[MessageHeader::TIME_OF_RECORDING] = $timeOfRecording;
+
+        return $headers;
+    }
+
+    private function unserializeTimeOfRecording(array $headers): array
+    {
+        $timeOfRecording = $headers[MessageHeader::TIME_OF_RECORDING];
+
+        $headers[MessageHeader::TIME_OF_RECORDING] = PointInTime::fromString($timeOfRecording);
 
         return $headers;
     }
