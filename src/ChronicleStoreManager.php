@@ -8,13 +8,16 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Plexikon\Chronicle\Chronicling\TransactionalEventChronicler;
+use Plexikon\Chronicle\Chronicling\WriteLock\MysqlWriteLock;
 use Plexikon\Chronicle\Chronicling\WriteLock\NoWriteLock;
+use Plexikon\Chronicle\Chronicling\WriteLock\PgsqlWriteLock;
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Support\Connection\StreamEventLoader;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
+use Plexikon\Chronicle\Support\Contract\Chronicling\WriteLockStrategy;
 use Plexikon\Chronicle\Tracker\TrackingChronicle;
 use Plexikon\Chronicle\Tracker\TransactionalTrackingChronicle;
 
@@ -59,15 +62,18 @@ class ChronicleStoreManager
 
     protected function createPgsqlChronicleDriver(array $config): Chronicler
     {
+        $driver = $config['driver'];
+
         return new PgsqlChronicler(
-            $this->container['db']->connection($config['driver']),
+            $this->container['db']->connection($driver),
             $this->container->get(EventStreamProvider::class),
             $this->container->make($config['strategy']),
-            new NoWriteLock(),
+            $this->createDatabaseWriteLockDriver($driver, $config['use_write_lock'] ?? false),
             $this->container->make(StreamEventLoader::class),
             $config['options']['disable_transaction'] ?? false
         );
     }
+
     protected function createInMemoryChronicleDriver(array $config): Chronicler
     {
         throw new RuntimeException("todo");
@@ -90,6 +96,22 @@ class ChronicleStoreManager
         return $chronicler instanceof TransactionalChronicler
             ? new TransactionalEventChronicler($chronicler, $tracker ?? new TransactionalTrackingChronicle())
             : new Chronicling\EventChronicler($chronicler, $tracker ?? new TrackingChronicle());
+    }
+
+    protected function createDatabaseWriteLockDriver(string $driver, bool $useWriteLock): WriteLockStrategy
+    {
+        if (!$useWriteLock) {
+            return new NoWriteLock();
+        }
+
+        switch ($driver) {
+            case 'pgsql' :
+                return $this->container->make(PgsqlWriteLock::class);
+            case 'mysql':
+                return $this->container->make(MysqlWriteLock::class);
+            default:
+                throw new RuntimeException("Unavailable write lock strategy for driver $driver");
+        }
     }
 
     protected function fromChronicler(string $key, $default = null)
