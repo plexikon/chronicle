@@ -34,7 +34,12 @@ return [
     ],
 
     'repositories' => [
-
+        'stream_name' => [
+            'aggregate_class_name' => 'fqcn',
+            'chronicler_id' => null,
+            'cache' => 10000, // 0 to disable aggregate caching
+            'event_decorators' => [], // merge w/ event decorators
+        ],
     ],
 
     'console' => [

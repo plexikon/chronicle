@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Plexikon\Chronicle\ChronicleRepositoryManager;
 use Plexikon\Chronicle\ChronicleStoreManager;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionProvider;
@@ -39,6 +40,7 @@ final class ChroniclerServiceProvider extends ServiceProvider
         $this->registerEventFactories($config['event']);
 
         $this->app->singleton(ChronicleStoreManager::class);
+        $this->app->singleton(ChronicleRepositoryManager::class);
     }
 
     private function registerModels(array $config): void
