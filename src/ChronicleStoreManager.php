@@ -7,19 +7,18 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Plexikon\Chronicle\Chronicling\EventChronicler;
 use Plexikon\Chronicle\Chronicling\TransactionalEventChronicler;
 use Plexikon\Chronicle\Chronicling\WriteLock\MysqlWriteLock;
 use Plexikon\Chronicle\Chronicling\WriteLock\NoWriteLock;
 use Plexikon\Chronicle\Chronicling\WriteLock\PgsqlWriteLock;
-use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Support\Connection\StreamEventLoader;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
-use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler;
+use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler as BaseEventChronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\WriteLockStrategy;
-use Plexikon\Chronicle\Support\Contract\Tracker\TransactionalEventTracker;
 
 class ChronicleStoreManager
 {
@@ -37,7 +36,7 @@ class ChronicleStoreManager
     {
         if ($customChronicler = $this->customChroniclers[$driver] ?? null) {
             return $customChronicler($this->container, $this->config);
-        };
+        }
 
         $config = $this->fromChronicler("connections.$driver");
 
@@ -47,7 +46,7 @@ class ChronicleStoreManager
 
         $chronicler = $this->resolveChronicleStore($driver, $config);
 
-        if ($chronicler instanceof EventChronicler) {
+        if ($chronicler instanceof BaseEventChronicler) {
             $this->attachSubscribers($chronicler, $config);
         }
 
@@ -106,12 +105,14 @@ class ChronicleStoreManager
         $tracker = $this->container->get($config['tracking']['tracker_id']);
 
         if ($chronicler instanceof TransactionalChronicler) {
-            Assertion::isInstanceOf(TransactionalEventTracker::class, $tracker);
-
             return new TransactionalEventChronicler($chronicler, $tracker);
         }
 
-        return new Chronicling\EventChronicler($chronicler, $tracker);
+        if ($chronicler instanceof BaseEventChronicler) {
+            return new EventChronicler($chronicler, $tracker);
+        }
+
+        throw new RuntimeException("Unable to configure chronicler decorator");
     }
 
     protected function createDatabaseWriteLockDriver(string $driver, bool $useWriteLock): WriteLockStrategy
