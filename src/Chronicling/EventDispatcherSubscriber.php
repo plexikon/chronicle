@@ -74,11 +74,11 @@ final class EventDispatcherSubscriber implements EventSubscriber
     {
         $chronicler->subscribe($chronicler::COMMIT_TRANSACTION_EVENT,
             function () {
-                foreach ($this->recordedStreams as $recordedStream) {
-                    $this->eventDispatcher->dispatch($recordedStream);
-                }
+                $recordedStreams = $this->recordedStreams;
 
                 $this->recordedStreams = [];
+
+                $this->eventDispatcher->dispatch(...$recordedStreams);
             });
 
         $chronicler->subscribe($chronicler::ROLLBACK_TRANSACTION_EVENT,
