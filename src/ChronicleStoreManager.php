@@ -19,6 +19,8 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler as BaseEvent
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\WriteLockStrategy;
+use Plexikon\Chronicle\Support\Contract\Tracker\EventTracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\TransactionalEventTracker;
 
 class ChronicleStoreManager
 {
@@ -104,11 +106,12 @@ class ChronicleStoreManager
 
         $tracker = $this->container->get($config['tracking']['tracker_id']);
 
-        if ($chronicler instanceof TransactionalChronicler) {
+        // checkMe
+        if ($chronicler instanceof TransactionalChronicler && $tracker instanceof TransactionalEventTracker) {
             return new TransactionalEventChronicler($chronicler, $tracker);
         }
 
-        if ($chronicler instanceof BaseEventChronicler) {
+        if ($chronicler instanceof BaseEventChronicler && $tracker instanceof EventTracker) {
             return new EventChronicler($chronicler, $tracker);
         }
 
