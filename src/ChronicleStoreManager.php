@@ -93,7 +93,7 @@ class ChronicleStoreManager
 
     protected function createInMemoryChronicleDriver(array $config): Chronicler
     {
-        throw new RuntimeException("todo");
+        return new InMemoryChronicler();
     }
 
     protected function resolveChronicleDecorator(Chronicler $chronicler, array $config): Chronicler
