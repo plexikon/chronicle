@@ -5,7 +5,7 @@ namespace Plexikon\Chronicle\Tests\Unit\Reporter\Subscriber;
 
 use Plexikon\Chronicle\Messaging\Decorator\ChainMessageDecorator;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Reporter\Subscriber\ChainMessageDecoratorSubscriber;
+use Plexikon\Chronicle\Reporter\Subscribers\ChainMessageDecoratorSubscriber;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageDecorator;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;

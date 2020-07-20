@@ -6,9 +6,11 @@ return [
         //  need another contract
         //'alias' => \Plexikon\Chronicle\Messaging\Alias\InflectorMessageAlias::class,
         'serializer' => \Plexikon\Chronicle\Messaging\Serializer\EventSerializer::class,
+
+        // commons messaging decorators from reporter will be merged
         'decorators' => [
             \Plexikon\Chronicle\Messaging\Decorator\AggregateIdTypeMessageDecorator::class,
-        ]
+        ],
     ],
 
     'models' => [
@@ -21,6 +23,8 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'strategy' => \Plexikon\Chronicle\Chronicling\Strategy\PgsqlSingleStreamStrategy::class,
+
+            // tracker must fit options (could be checked inside manager)
             'tracker_id' => null,
             'options' => [
                 'disable_transaction' => false,
@@ -36,7 +40,7 @@ return [
     'repositories' => [
         'stream_name' => [
             'aggregate_class_name' => 'fqcn',
-            'chronicler_id' => null,
+            'chronicler_id' => 'service_id',
             'cache' => 10000, // 0 to disable aggregate caching
             'event_decorators' => [], // merge w/ event decorators
         ],

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Reporter\Subscriber;
+namespace Plexikon\Chronicle\Reporter\Subscribers;
 
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;

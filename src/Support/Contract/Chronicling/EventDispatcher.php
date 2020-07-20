@@ -4,7 +4,7 @@ namespace Plexikon\Chronicle\Support\Contract\Chronicling;
 
 use Plexikon\Chronicle\Messaging\Message;
 
-interface MessageDispatcher
+interface EventDispatcher
 {
     /**
      * @param Message ...$messages

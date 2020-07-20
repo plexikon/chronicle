@@ -23,7 +23,7 @@ return [
         ],
 
         'subscribers' => [
-            \Plexikon\Chronicle\Reporter\Subscriber\MessageFactorySubscriber::class,
+            \Plexikon\Chronicle\Reporter\Subscribers\MessageFactorySubscriber::class,
         ],
 
         'producer' => [
@@ -66,9 +66,9 @@ return [
                         \Plexikon\Chronicle\Messaging\Decorator\AsyncMarkerMessageDecorator::class,
                     ],
                     'subscribers' => [
-                        \Plexikon\Chronicle\Reporter\Subscriber\TrackingCommandSubscriber::class,
-                        \Plexikon\Chronicle\Reporter\Subscriber\CommandValidationSubscriber::class,
-                        \Plexikon\Chronicle\Reporter\Subscriber\LoggerCommandSubscriber::class,
+                        \Plexikon\Chronicle\Reporter\Subscribers\TrackingCommandSubscriber::class,
+                        \Plexikon\Chronicle\Reporter\Subscribers\CommandValidationSubscriber::class,
+                        \Plexikon\Chronicle\Reporter\Subscribers\LoggerCommandSubscriber::class,
                     ],
                 ],
 
@@ -85,7 +85,7 @@ return [
                         \Plexikon\Chronicle\Messaging\Decorator\AsyncMarkerMessageDecorator::class,
                     ],
                     'subscribers' => [
-                        \Plexikon\Chronicle\Reporter\Subscriber\TrackingEventSubscriber::class,
+                        \Plexikon\Chronicle\Reporter\Subscribers\TrackingEventSubscriber::class,
                     ],
                 ],
                 'map' => []
@@ -98,7 +98,7 @@ return [
                 'handler_method' => 'query',
                 'messaging' => [
                     'subscribers' => [
-                        \Plexikon\Chronicle\Reporter\Subscriber\TrackingQuerySubscriber::class,
+                        \Plexikon\Chronicle\Reporter\Subscribers\TrackingQuerySubscriber::class,
                     ],
                 ],
 

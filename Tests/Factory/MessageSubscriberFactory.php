@@ -9,7 +9,7 @@ use Plexikon\Chronicle\Messaging\Decorator\ChainMessageDecorator;
 use Plexikon\Chronicle\Messaging\Decorator\EventIdMessageDecorator;
 use Plexikon\Chronicle\Messaging\Decorator\EventTypeMessageDecorator;
 use Plexikon\Chronicle\Messaging\Decorator\TimeOfRecordingMessageDecorator;
-use Plexikon\Chronicle\Reporter\Subscriber\ChainMessageDecoratorSubscriber;
+use Plexikon\Chronicle\Reporter\Subscribers\ChainMessageDecoratorSubscriber;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 

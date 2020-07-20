@@ -1,25 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Chronicling\Publisher;
+namespace Plexikon\Chronicle\Chronicling;
 
 use Generator;
 use Illuminate\Support\Arr;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler;
-use Plexikon\Chronicle\Support\Contract\Chronicling\MessageDispatcher as Dispatcher;
+use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher as Dispatcher;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventSubscriber;
 
-final class MessageDispatcherSubscriber implements EventSubscriber
+final class EventDispatcherSubscriber implements EventSubscriber
 {
     private array $recordedStreams = [];
-    private Dispatcher $messageDispatcher;
+    private Dispatcher $eventDispatcher;
 
-    public function __construct(Dispatcher $messageDispatcher)
+    public function __construct(Dispatcher $eventDispatcher)
     {
-        $this->messageDispatcher = $messageDispatcher;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function attachToChronicler(Chronicler $chronicler): void
@@ -41,7 +41,7 @@ final class MessageDispatcherSubscriber implements EventSubscriber
 
                 if (!$this->inTransaction($chronicler)) {
                     if (!$context->hasStreamNotFound() && !$context->hasRaceCondition()) {
-                        $this->messageDispatcher->dispatch(...$recordedEvents);
+                        $this->eventDispatcher->dispatch(...$recordedEvents);
                     }
                 } else {
                     $this->recordEvents($recordedEvents);
@@ -59,7 +59,7 @@ final class MessageDispatcherSubscriber implements EventSubscriber
 
                 if (!$this->inTransaction($chronicler)) {
                     if (!$context->hasStreamAlreadyExits()) {
-                        $this->messageDispatcher->dispatch(...$streamEvents);
+                        $this->eventDispatcher->dispatch(...$streamEvents);
                     }
                 } else {
                     $this->recordEvents($streamEvents);
@@ -75,7 +75,7 @@ final class MessageDispatcherSubscriber implements EventSubscriber
         $chronicler->subscribe($chronicler::COMMIT_TRANSACTION_EVENT,
             function () {
                 foreach ($this->recordedStreams as $recordedStream) {
-                    $this->messageDispatcher->dispatch($recordedStream);
+                    $this->eventDispatcher->dispatch($recordedStream);
                 }
 
                 $this->recordedStreams = [];

@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Chronicling\Publisher;
+namespace Plexikon\Chronicle\Chronicling;
 
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Reporter\ReportEvent;
-use Plexikon\Chronicle\Support\Contract\Chronicling\MessageDispatcher as BaseMessageDispatcher;
+use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher as BaseEventDispatcher;
 
-final class MessageDispatcher implements BaseMessageDispatcher
+final class EventDispatcher implements BaseEventDispatcher
 {
     private ReportEvent $reporter;
 

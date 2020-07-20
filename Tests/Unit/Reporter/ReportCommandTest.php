@@ -9,7 +9,7 @@ use Plexikon\Chronicle\Exception\ReporterFailure;
 use Plexikon\Chronicle\Messaging\Alias\InflectorMessageAlias;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Reporter\Router\SingleHandlerRouter;
-use Plexikon\Chronicle\Reporter\Subscriber\TrackingCommandSubscriber;
+use Plexikon\Chronicle\Reporter\Subscribers\TrackingCommandSubscriber;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Tests\Factory\ReporterFactory;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;

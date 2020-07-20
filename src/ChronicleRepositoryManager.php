@@ -53,17 +53,17 @@ class ChronicleRepositoryManager
             return $customRepository($this->container, $config);
         }
 
-        $abstractChronicler = $config['chronicler_id'] ?? Chronicler::class;
+        $chroniclerId = $config['chronicler_id'] ?? Chronicler::class; // fixMe
 
-        if (!$this->container->bound($abstractChronicler)) {
+        if (!is_string($chroniclerId) || !$this->container->bound($chroniclerId)) {
             throw new RuntimeException(
-                "Chronicler service id $abstractChronicler must be bound in the container"
+                "Chronicler service id $chroniclerId must be bound in the container"
             );
         }
 
         return new AggregateRepository(
             $config['aggregate_class_name'],
-            $this->container->get($abstractChronicler),
+            $this->container->get($chroniclerId),
             $this->createAggregateCacheDriver($config['cache'] ?? 0),
             new StreamName($streamName),
             $this->createChainEventDecorator($streamName),

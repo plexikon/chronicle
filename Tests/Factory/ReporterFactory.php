@@ -12,7 +12,7 @@ use Plexikon\Chronicle\Reporter\ReportQuery;
 use Plexikon\Chronicle\Reporter\Router\MultipleHandlerRouter;
 use Plexikon\Chronicle\Reporter\Router\ReporterRouter;
 use Plexikon\Chronicle\Reporter\Router\SingleHandlerRouter;
-use Plexikon\Chronicle\Reporter\Subscriber\ReporterRouterSubscriber;
+use Plexikon\Chronicle\Reporter\Subscribers\ReporterRouterSubscriber;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Support\Contract\Reporter\Router;

@@ -28,10 +28,10 @@ trait HasReconstituteAggregate
         );
     }
 
-    private function retrieveAllEvents(AggregateId $aggregateId, ?QueryFilter $snapshotQueryFilter): Generator
+    private function retrieveAllEvents(AggregateId $aggregateId, ?QueryFilter $queryFilter): Generator
     {
-        $messages = null !== $snapshotQueryFilter
-            ? $this->chronicler->retrieveWithQueryFilter($this->streamName, $snapshotQueryFilter)
+        $messages = null !== $queryFilter
+            ? $this->chronicler->retrieveWithQueryFilter($this->streamName, $queryFilter)
             : $this->chronicler->retrieveAll($aggregateId, $this->streamName);
 
 

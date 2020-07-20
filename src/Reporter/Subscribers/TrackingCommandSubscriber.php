@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Reporter\Subscriber;
+namespace Plexikon\Chronicle\Reporter\Subscribers;
 
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
 
-final class TrackingEventSubscriber implements MessageSubscriber
+final class TrackingCommandSubscriber implements MessageSubscriber
 {
     public function attachToTracker(MessageTracker $tracker): void
     {
@@ -23,7 +24,7 @@ final class TrackingEventSubscriber implements MessageSubscriber
             $message = $context->getMessage();
             $event = $message->isMessaging() ? $message->eventWithHeaders() : $message->event();
 
-            foreach ($context->messageHandlers() as $messageHandler) {
+            if ($messageHandler = $context->messageHandlers()->current()) {
                 $messageHandler($event);
             }
 
@@ -31,7 +32,7 @@ final class TrackingEventSubscriber implements MessageSubscriber
         });
     }
 
-    private function subscribeToFinalizeEvent(MessageTracker $tracker)
+    private function subscribeToFinalizeEvent(Tracker $tracker)
     {
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
             if ($context->hasException()) {

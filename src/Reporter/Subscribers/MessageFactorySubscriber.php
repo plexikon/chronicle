@@ -1,31 +1,29 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Reporter\Subscriber;
+namespace Plexikon\Chronicle\Reporter\Subscribers;
 
-use Plexikon\Chronicle\Support\Contract\Messaging\MessageDecorator;
+use Plexikon\Chronicle\Support\Contract\Messaging\MessageFactory;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 
-final class ChainMessageDecoratorSubscriber implements MessageSubscriber
+final class MessageFactorySubscriber implements MessageSubscriber
 {
-    private MessageDecorator $messageDecorator;
+    private MessageFactory $messageFactory;
 
-    public function __construct(MessageDecorator $messageDecorator)
+    public function __construct(MessageFactory $messageFactory)
     {
-        $this->messageDecorator = $messageDecorator;
+        $this->messageFactory = $messageFactory;
     }
 
     public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
-            $currentMessage = $context->getMessage();
-
             $context->withMessage(
-                $this->messageDecorator->decorate($currentMessage)
+                $this->messageFactory->createMessageFrom($context->getMessage())
             );
-        }, 90000);
+        }, 100000);
     }
 }

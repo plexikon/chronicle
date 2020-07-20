@@ -24,7 +24,10 @@ final class MessageFactory implements BaseMessageFactory
 
         Assertion::isObject($message, 'Message can be an array, an object and an instance of ' . Message::class);
 
-        return $message instanceof Message
-            ? $message : new Message($message);
+        if ($message instanceof Message) {
+            return $message;
+        }
+
+        return new Message($message);
     }
 }

@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator;
 use Plexikon\Chronicle\Exception\MessageValidationFailed;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Reporter\Subscriber\CommandValidationSubscriber;
+use Plexikon\Chronicle\Reporter\Subscribers\CommandValidationSubscriber;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Messaging\ValidateMessage;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;

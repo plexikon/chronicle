@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Chronicling\Publisher;
+namespace Plexikon\Chronicle\Chronicling;
 
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
@@ -38,7 +38,8 @@ final class TransactionSubscriber implements MessageSubscriber
             }
 
             $context->hasException()
-                ? $this->chronicler->rollbackTransaction() : $this->chronicler->commitTransaction();
+                ? $this->chronicler->rollbackTransaction()
+                : $this->chronicler->commitTransaction();
         }, 100);
     }
 }

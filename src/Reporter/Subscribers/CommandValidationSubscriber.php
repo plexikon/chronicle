@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Reporter\Subscriber;
+namespace Plexikon\Chronicle\Reporter\Subscribers;
 
 use Illuminate\Contracts\Validation\Factory;
 use Plexikon\Chronicle\Exception\Assertion;
