@@ -25,12 +25,14 @@ return [
             'strategy' => \Plexikon\Chronicle\Chronicling\Strategy\PgsqlSingleStreamStrategy::class,
 
             // tracker must fit options (could be checked inside manager)
-            'tracker_id' => null,
+            'tracking' => [
+                'tracker_id' => 'service_id',
+                'subscribers' => []
+            ],
             'options' => [
                 'disable_transaction' => false,
                 'use_write_lock' => true,
-                'use_event_decorator' => true,
-                'use_event_transaction' => true,
+                'use_event_decorator' => true
             ],
         ],
 
