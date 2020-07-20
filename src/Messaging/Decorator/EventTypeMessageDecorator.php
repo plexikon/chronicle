@@ -19,10 +19,6 @@ final class EventTypeMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
-        if(!$message->isMessaging()){
-            return $message;
-        }
-
         $eventType = $message->header(MessageHeader::EVENT_TYPE);
 
         if (null === $eventType) {

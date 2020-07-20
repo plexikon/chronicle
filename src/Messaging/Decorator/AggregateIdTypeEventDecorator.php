@@ -5,13 +5,13 @@ namespace Plexikon\Chronicle\Messaging\Decorator;
 
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Reporter\DomainEvent;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageDecorator;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
+use Plexikon\Chronicle\Support\Contract\Messaging\Messaging;
 
-final class AggregateIdTypeMessageDecorator implements MessageDecorator
+final class AggregateIdTypeEventDecorator implements MessageDecorator
 {
     private MessageAlias $messageAlias;
 
@@ -22,11 +22,7 @@ final class AggregateIdTypeMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
-        if(!$message->isMessaging()){
-            return $message;
-        }
-
-        if (null !== $aggregateIdType = $message->header(MessageHeader::AGGREGATE_ID_TYPE)) {
+        if (!$this->isMessageCanBeDecorated($message)) {
             return $message;
         }
 
@@ -39,5 +35,14 @@ final class AggregateIdTypeMessageDecorator implements MessageDecorator
         return $message->withHeader(
             MessageHeader::AGGREGATE_ID_TYPE, $this->messageAlias->instanceToType($aggregateId)
         );
+    }
+
+    private function isMessageCanBeDecorated(Message $message): bool
+    {
+        if (!$message->isMessaging() || $message->event()->messageType() !== Messaging::EVENT) {
+            return false;
+        }
+
+        return null === $aggregateIdType = $message->header(MessageHeader::AGGREGATE_ID_TYPE);
     }
 }

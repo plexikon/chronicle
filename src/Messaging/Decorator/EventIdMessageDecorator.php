@@ -12,10 +12,6 @@ final class EventIdMessageDecorator implements MessageDecorator
 {
     public function decorate(Message $message): Message
     {
-        if(!$message->isMessaging()){
-            return $message;
-        }
-
         $eventId = $message->header(MessageHeader::EVENT_ID);
 
         if (null === $eventId) {

@@ -9,7 +9,7 @@ return [
 
         // commons messaging decorators from reporter will be merged
         'decorators' => [
-            \Plexikon\Chronicle\Messaging\Decorator\AggregateIdTypeMessageDecorator::class,
+            \Plexikon\Chronicle\Messaging\Decorator\AggregateIdTypeEventDecorator::class,
         ],
     ],
 
