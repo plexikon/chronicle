@@ -282,17 +282,17 @@ final class InMemoryChroniclerTest extends TestCase
         return $chronicler;
     }
 
-    private function buildMessagesWithHeaders(AggregateId $aggregateId, int $count): array
+    private function buildMessagesWithHeaders(AggregateId $aggregateId, int $num): array
     {
         $messages = [];
 
-        while ($count !== 0) {
+        while ($num !== 0) {
             $messages [] = new Message(
                 SomeEvent::fromPayload([]),
                 [MessageHeader::AGGREGATE_ID => $aggregateId]
             );
 
-            --$count;
+            --$num;
         }
 
         return $messages;

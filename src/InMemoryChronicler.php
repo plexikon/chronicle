@@ -175,7 +175,7 @@ final class InMemoryChronicler implements TransactionalChronicler
             krsort($messages);
         }
 
-        if (empty($messages = array_filter($messages))) {
+        if (empty($messages)) {
             throw StreamNotFound::withStreamName($streamName);
         }
 
