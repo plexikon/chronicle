@@ -56,7 +56,7 @@ final class TrackingQuerySubscriberTest extends TestCase
     /**
      * @test
      */
-    public function it_track_query_on_finalize_and_hold_exception_if_raised_on_promise(): void
+    public function it_track_query_on_finalize_and_hold_raised_exception_on_promise(): void
     {
         $messageHandler = function (SomeQuery $query, Deferred $promise): void {
             throw new RuntimeException('foo');
