@@ -30,7 +30,7 @@ final class TransactionSubscriber implements MessageSubscriber
 
         $tracker->listen(Reporter::DISPATCH_EVENT, function (): void {
             $this->chronicler->beginTransaction();
-        }, 10000);
+        }, 1000);
 
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
             if (!$this->chronicler->inTransaction()) {
@@ -40,6 +40,6 @@ final class TransactionSubscriber implements MessageSubscriber
             $context->hasException()
                 ? $this->chronicler->rollbackTransaction()
                 : $this->chronicler->commitTransaction();
-        }, 100);
+        }, 1000);
     }
 }

@@ -199,7 +199,7 @@ final class InMemoryChroniclerTest extends TestCase
      */
     public function it_delete_stream(): void
     {
-        $chronicler = $this->setUpChronicler([SomeEvent::fromPayload([])], true);
+        $chronicler = $this->setUpChronicler([SomeEvent::fromPayload([])], false);
 
         $streamName = new StreamName('foo');
         $this->assertTrue($chronicler->hasStream($streamName));
@@ -241,7 +241,7 @@ final class InMemoryChroniclerTest extends TestCase
         $this->assertContainsEquals($fooStreamName, $streamNames);
         $this->assertContainsEquals($barStreamName, $streamNames);
 
-        $invalidStream = new StreamName('foo_bar');
+        $invalidStream = new StreamName('invalid');
         $streamNames = $chronicler->fetchStreamNames($barStreamName, $fooStreamName, $invalidStream);
 
         $this->assertContainsEquals($fooStreamName, $streamNames);

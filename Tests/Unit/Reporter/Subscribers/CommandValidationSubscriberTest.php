@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Tests\Unit\Reporter\Subscriber;
+namespace Plexikon\Chronicle\Tests\Unit\Reporter\Subscribers;
 
 use Assert\AssertionFailedException;
 use Generator;

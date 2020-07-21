@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Chronicling\Strategy;
 
-use DateTimeImmutable;
-use Plexikon\Chronicle\Clock\PointInTime;
-use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\PersistenceStrategy;
