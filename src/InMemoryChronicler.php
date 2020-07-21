@@ -118,7 +118,7 @@ final class InMemoryChronicler implements TransactionalChronicler
         $this->cachedStreams->each(function (string $streamName, array $streamEvents): void {
             $events = $this->streams->get($streamName, []);
 
-            $this->streams->put($streamName, array_merge($events, $streamEvents));
+            $this->streams->put($streamName, $events + $streamEvents);
         });
 
         $this->cachedStreams = new Collection();
@@ -151,7 +151,7 @@ final class InMemoryChronicler implements TransactionalChronicler
     {
         $streamName = $stream->streamName()->toString();
 
-        $events = array_merge($events, $stream->events());
+        $events = array_merge($events, iterator_to_array($stream->events()));
 
         $this->inTransaction
             ? $this->cachedStreams->put($streamName, $events)
