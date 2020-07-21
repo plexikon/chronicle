@@ -115,7 +115,7 @@ final class InMemoryChronicler implements TransactionalChronicler
             throw new TransactionNotStarted();
         }
 
-        $this->cachedStreams->each(function (string $streamName, array $streamEvents): void {
+        $this->cachedStreams->each(function (array $streamEvents, string $streamName): void {
             $events = $this->streams->get($streamName, []);
 
             $this->streams->put($streamName, $events + $streamEvents);
@@ -142,9 +142,14 @@ final class InMemoryChronicler implements TransactionalChronicler
         return $this->inTransaction;
     }
 
-    public function getStreamEvents(): array
+    public function getPersistedEvents(): array
     {
-        return $this->streams->toArray();
+        return $this->streams->flatten()->toArray();
+    }
+
+    public function getCachedEvents(): array
+    {
+        return $this->cachedStreams->flatten()->toArray();
     }
 
     private function storeStream(Stream $stream, array $events = []): void
