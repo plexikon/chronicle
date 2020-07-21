@@ -43,7 +43,7 @@ interface EventContext extends Context
     /**
      * @param MessageDecorator $messageDecorator
      */
-    public function decorateMessage(MessageDecorator $messageDecorator): void;
+    public function decorateStreamEvents(MessageDecorator $messageDecorator): void;
 
     /**
      * @return bool

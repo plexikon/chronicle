@@ -60,7 +60,7 @@ class DefaultEventContext implements EventContext
         $this->direction = $direction;
     }
 
-    public function decorateMessage(MessageDecorator $messageDecorator): void
+    public function decorateStreamEvents(MessageDecorator $messageDecorator): void
     {
         if (!$this->stream) {
             return;

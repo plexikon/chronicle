@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher as BaseEventDispatcher;
 
-final class EventDispatcher implements BaseEventDispatcher
+final class DefaultEventDispatcher implements BaseEventDispatcher
 {
     private ReportEvent $reporter;
 

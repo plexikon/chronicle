@@ -42,10 +42,12 @@ final class CorrelationCommandSubscriber implements MessageSubscriber
             }, 1000);
 
         $this->messageListeners[] = $tracker->listen(Reporter::FINALIZE_EVENT,
-            function () use ($tracker) {
-                $this->chronicler->unsubscribe(...$this->eventListeners);
-                $this->eventListeners = [];
-                $this->messageListeners = []; // checkMe
+            function (MessageContext $context) use ($tracker) {
+                if ($this->supportCorrelation($context->getMessage())) {
+                    $this->chronicler->unsubscribe(...$this->eventListeners);
+                    $this->eventListeners = [];
+                    $this->messageListeners = []; // checkMe
+                }
             }, 1000);
     }
 
@@ -55,12 +57,12 @@ final class CorrelationCommandSubscriber implements MessageSubscriber
 
         $this->eventListeners[] = $this->chronicler->subscribe(EventChronicler::FIRST_COMMIT_EVENT,
             function (EventContext $context) use ($messageDecorator): void {
-                $context->decorateMessage($messageDecorator);
+                $context->decorateStreamEvents($messageDecorator);
             }, 1000);
 
         $this->eventListeners[] = $this->chronicler->subscribe(EventChronicler::PERSIST_STREAM_EVENT,
             function (EventContext $context) use ($messageDecorator): void {
-                $context->decorateMessage($messageDecorator);
+                $context->decorateStreamEvents($messageDecorator);
             }, 1000);
     }
 

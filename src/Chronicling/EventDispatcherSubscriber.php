@@ -7,7 +7,7 @@ use Generator;
 use Illuminate\Support\Arr;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler;
-use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher as Dispatcher;
+use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventSubscriber;
@@ -15,9 +15,9 @@ use Plexikon\Chronicle\Support\Contract\Tracker\EventSubscriber;
 final class EventDispatcherSubscriber implements EventSubscriber
 {
     private array $recordedStreams = [];
-    private Dispatcher $eventDispatcher;
+    private EventDispatcher $eventDispatcher;
 
-    public function __construct(Dispatcher $eventDispatcher)
+    public function __construct(EventDispatcher $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
