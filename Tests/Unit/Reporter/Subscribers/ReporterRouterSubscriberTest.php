@@ -11,7 +11,7 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Double\SomeEvent;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 final class ReporterRouterSubscriberTest extends TestCase
 {
@@ -30,7 +30,7 @@ final class ReporterRouterSubscriberTest extends TestCase
 
         $subscriber = new ReporterRouterSubscriber($router->reveal(), $producer->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::DISPATCH_EVENT);
@@ -57,7 +57,7 @@ final class ReporterRouterSubscriberTest extends TestCase
 
         $subscriber = new ReporterRouterSubscriber($router->reveal(), $producer->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::DISPATCH_EVENT);

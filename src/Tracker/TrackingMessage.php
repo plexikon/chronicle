@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use Plexikon\Chronicle\Tracker\Concerns\HasTracking;
 
-final class TrackingReport implements MessageTracker
+final class TrackingMessage implements MessageTracker
 {
     use HasTracking;
 

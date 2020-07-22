@@ -9,7 +9,7 @@ use Plexikon\Chronicle\Support\Contract\Reporter\TrackingReporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 abstract class ReportMessage implements Reporter, TrackingReporter, NamingReporter
 {
@@ -19,7 +19,7 @@ abstract class ReportMessage implements Reporter, TrackingReporter, NamingReport
     public function __construct(?string $reporterName, ?Tracker $tracker = null)
     {
         $this->reporterName = $reporterName;
-        $this->tracker = $tracker ?? new TrackingReport();
+        $this->tracker = $tracker ?? new TrackingMessage();
     }
 
     public function subscribe(MessageSubscriber $messageSubscriber): void

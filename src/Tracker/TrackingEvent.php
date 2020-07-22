@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Support\Contract\Tracker\EventContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventTracker;
 use Plexikon\Chronicle\Tracker\Concerns\HasTracking;
 
-class TrackingChronicle implements EventTracker
+class TrackingEvent implements EventTracker
 {
     use HasTracking;
 

@@ -52,7 +52,8 @@ class EventChronicler implements EventChroniclerDecorator
             try {
                 $streamEvents = $this->chronicler->retrieveAll(
                     $context->aggregateId(),
-                    $context->streamName()
+                    $context->streamName(),
+                    $context->direction()
                 );
 
                 $newStream = new Stream($context->streamName(), $streamEvents);
@@ -67,7 +68,8 @@ class EventChronicler implements EventChroniclerDecorator
             try {
                 $streamEvents = $this->chronicler->retrieveAll(
                     $context->aggregateId(),
-                    $context->streamName()
+                    $context->streamName(),
+                    $context->direction()
                 );
 
                 $newStream = new Stream($context->streamName(), $streamEvents);

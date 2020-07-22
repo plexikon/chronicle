@@ -9,7 +9,7 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\HasPromiseHandler;
 use Plexikon\Chronicle\Tests\Double\SomeQuery;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use RuntimeException;
@@ -32,7 +32,7 @@ final class TrackingQuerySubscriberTest extends TestCase
         ]);
 
         $subscriber = new TrackingQuerySubscriber();
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
 
         $subscriber->attachToTracker($tracker);
 
@@ -67,7 +67,7 @@ final class TrackingQuerySubscriberTest extends TestCase
         ]);
 
         $subscriber = new TrackingQuerySubscriber();
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
 
         $subscriber->attachToTracker($tracker);
 

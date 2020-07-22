@@ -6,7 +6,7 @@ namespace Plexikon\Chronicle\Tracker;
 use Plexikon\Chronicle\Support\Contract\Tracker\TransactionalEventContext as BaseTransactionalEventContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\TransactionalEventTracker;
 
-final class TransactionalTrackingChronicle extends TrackingChronicle implements TransactionalEventTracker
+final class TransactionalTrackingEvent extends TrackingEvent implements TransactionalEventTracker
 {
     public function newContext(string $eventName): BaseTransactionalEventContext
     {

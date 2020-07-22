@@ -12,7 +12,7 @@ use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tracker\DefaultMessageContext;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 final class ChainMessageDecoratorSubscriberTest extends TestCase
 {
@@ -28,7 +28,7 @@ final class ChainMessageDecoratorSubscriberTest extends TestCase
         $context = new DefaultMessageContext(Reporter::DISPATCH_EVENT);
         $context->withMessage($message);
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
             $this->assertEquals(['baz' => 'foo_bar', 'foo_bar' => 'bar'], $context->getMessage()->headers());
         }, 80000);

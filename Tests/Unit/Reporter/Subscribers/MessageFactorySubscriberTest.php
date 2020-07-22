@@ -10,7 +10,7 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Double\SomeEvent;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 final class MessageFactorySubscriberTest extends TestCase
 {
@@ -27,7 +27,7 @@ final class MessageFactorySubscriberTest extends TestCase
 
         $subscriber = new MessageFactorySubscriber($factory->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::DISPATCH_EVENT);

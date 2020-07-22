@@ -18,7 +18,7 @@ use Plexikon\Chronicle\Tests\Double\SomeCommandToPreValidate;
 use Plexikon\Chronicle\Tests\Double\SomeCommandToValidate;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tracker\DefaultMessageContext;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 final class CommandValidationSubscriberTest extends TestCase
 {
@@ -143,7 +143,7 @@ final class CommandValidationSubscriberTest extends TestCase
         $context = new DefaultMessageContext(Reporter::DISPATCH_EVENT);
         $context->withMessage($message);
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $tracker->fire($context);

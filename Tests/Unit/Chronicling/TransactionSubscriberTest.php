@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Chronicling\TransactionSubscriber;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 use RuntimeException;
 
 final class TransactionSubscriberTest extends TestCase
@@ -24,7 +24,7 @@ final class TransactionSubscriberTest extends TestCase
 
         $subscriber = new TransactionSubscriber($chronicler->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::DISPATCH_EVENT);
@@ -46,7 +46,7 @@ final class TransactionSubscriberTest extends TestCase
 
         $subscriber = new TransactionSubscriber($chronicler->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::DISPATCH_EVENT);
@@ -69,7 +69,7 @@ final class TransactionSubscriberTest extends TestCase
 
         $subscriber = new TransactionSubscriber($chronicler->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::FINALIZE_EVENT);
@@ -89,7 +89,7 @@ final class TransactionSubscriberTest extends TestCase
 
         $subscriber = new TransactionSubscriber($chronicler->reveal());
 
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
         $subscriber->attachToTracker($tracker);
 
         $context = $tracker->newContext(Reporter::FINALIZE_EVENT);

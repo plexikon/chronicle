@@ -18,7 +18,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 final class ReporterFactory
 {
@@ -75,7 +75,7 @@ final class ReporterFactory
 
     public function reportCommand(?Tracker $tracker): ReportCommand
     {
-        $this->tracker = $tracker ?? new TrackingReport();
+        $this->tracker = $tracker ?? new TrackingMessage();
 
         $commandRouterSubscriber = new ReporterRouterSubscriber(
             new SingleHandlerRouter($this->defaultRouterInstance()),
@@ -91,7 +91,7 @@ final class ReporterFactory
 
     public function reportEvent(?Tracker $tracker): ReportEvent
     {
-        $this->tracker = $tracker ?? new TrackingReport();
+        $this->tracker = $tracker ?? new TrackingMessage();
 
         $eventRouterSubscriber = new ReporterRouterSubscriber(
             new MultipleHandlerRouter($this->defaultRouterInstance(), true),
@@ -107,7 +107,7 @@ final class ReporterFactory
 
     public function reportQuery(?Tracker $tracker): ReportQuery
     {
-        $this->tracker = $tracker ?? new TrackingReport();
+        $this->tracker = $tracker ?? new TrackingMessage();
 
         $queryRouterSubscriber = new ReporterRouterSubscriber(
             new SingleHandlerRouter($this->defaultRouterInstance()),

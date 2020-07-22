@@ -8,7 +8,7 @@ use Plexikon\Chronicle\Reporter\Subscribers\TrackingCommandSubscriber;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
-use Plexikon\Chronicle\Tracker\TrackingReport;
+use Plexikon\Chronicle\Tracker\TrackingMessage;
 use RuntimeException;
 
 final class TrackingCommandSubscriberTest extends TestCase
@@ -27,7 +27,7 @@ final class TrackingCommandSubscriberTest extends TestCase
         ]);
 
         $subscriber = new TrackingCommandSubscriber();
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
 
         $subscriber->attachToTracker($tracker);
 
@@ -53,7 +53,7 @@ final class TrackingCommandSubscriberTest extends TestCase
         $this->expectExceptionMessage('foo');
 
         $subscriber = new TrackingCommandSubscriber();
-        $tracker = new TrackingReport();
+        $tracker = new TrackingMessage();
 
         $subscriber->attachToTracker($tracker);
 
