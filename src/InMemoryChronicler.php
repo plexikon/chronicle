@@ -33,7 +33,7 @@ final class InMemoryChronicler implements TransactionalChronicler
     {
         $streamName = $stream->streamName();
 
-        if ($this->hasStream($streamName)) {
+        if ($this->hasStreamWithCache($streamName)) {
             throw StreamAlreadyExists::withStreamName($streamName);
         }
 
@@ -44,13 +44,11 @@ final class InMemoryChronicler implements TransactionalChronicler
     {
         $streamName = $stream->streamName();
 
-        if (!$this->hasStream($streamName)) {
+        if (!$this->hasStreamWithCache($streamName)) {
             throw StreamNotFound::withStreamName($streamName);
         }
 
-        $events = $this->streams->get($streamName->toString());
-
-        $this->storeStream($stream, $events);
+        $this->storeStream($stream);
     }
 
     public function delete(StreamName $streamName): void
@@ -100,6 +98,11 @@ final class InMemoryChronicler implements TransactionalChronicler
         return $this->streams->has($streamName->toString());
     }
 
+    public function hasStreamWithCache(StreamName $streamName): bool
+    {
+        return $this->streams->has($streamName->toString()) || $this->cachedStreams->has($streamName->toString());
+    }
+
     public function beginTransaction(): void
     {
         if ($this->inTransaction) {
@@ -118,7 +121,7 @@ final class InMemoryChronicler implements TransactionalChronicler
         $this->cachedStreams->each(function (array $streamEvents, string $streamName): void {
             $events = $this->streams->get($streamName, []);
 
-            $this->streams->put($streamName, $events + $streamEvents);
+            $this->streams->put($streamName, array_merge($events, $streamEvents));
         });
 
         $this->cachedStreams = new Collection();
@@ -142,25 +145,36 @@ final class InMemoryChronicler implements TransactionalChronicler
         return $this->inTransaction;
     }
 
+    /**
+     * @return Message[]
+     */
     public function getPersistedEvents(): array
     {
         return $this->streams->flatten()->toArray();
     }
 
+    /**
+     * @return Message[]
+     */
     public function getCachedEvents(): array
     {
         return $this->cachedStreams->flatten()->toArray();
     }
 
-    private function storeStream(Stream $stream, array $events = []): void
+    private function storeStream(Stream $stream): void
     {
         $streamName = $stream->streamName()->toString();
 
-        $events = array_merge($events, iterator_to_array($stream->events()));
+        $events = iterator_to_array($stream->events());
 
-        $this->inTransaction
-            ? $this->cachedStreams->put($streamName, $events)
-            : $this->streams->put($streamName, $events);
+        if ($this->inTransaction) {
+            $this->cachedStreams->put($streamName, $events);
+        } else {
+            $this->streams->put(
+                $streamName,
+                array_merge($this->streams->get($streamName, []), $events)
+            );
+        }
     }
 
     private function filterMessages(callable $filter, StreamName $streamName, string $direction = 'asc'): Generator

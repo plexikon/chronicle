@@ -254,7 +254,7 @@ final class InMemoryChroniclerTest extends TestCase
         $chronicler = new InMemoryChronicler();
 
         $streamName = new StreamName('foo');
-        $this->assertFalse($chronicler->hasStream($streamName));
+        $this->assertFalse($chronicler->hasStreamWithCache($streamName));
 
         if ($inTransaction) {
             $chronicler->beginTransaction();
@@ -276,6 +276,7 @@ final class InMemoryChroniclerTest extends TestCase
         }
 
         $this->assertTrue($chronicler->hasStream($streamName));
+        $this->assertNull($chronicler->getCachedEvents()[$streamName->toString()] ?? null);
 
         $this->assertEquals($events, $chronicler->getPersistedEvents());
 

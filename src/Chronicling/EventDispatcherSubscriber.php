@@ -95,7 +95,7 @@ final class EventDispatcherSubscriber implements EventSubscriber
 
         $events = Arr::flatten($events);
 
-        $this->recordedStreams += $events;
+        $this->recordedStreams += $events;//fixMe
     }
 
     private function inTransaction(Chronicler $chronicle): bool
