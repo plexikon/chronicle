@@ -22,7 +22,7 @@ final class InMemoryEventDispatcherSubscriber implements MessageSubscriber
      */
     private Chronicler $chronicler;
 
-    public function __construct(Chronicler $chronicler, DefaultEventDispatcher $eventDispatcher)
+    public function __construct(Chronicler $chronicler, EventDispatcher $eventDispatcher)
     {
         $this->chronicler = $chronicler;
         $this->eventDispatcher = $eventDispatcher;
