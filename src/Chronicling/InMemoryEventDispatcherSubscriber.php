@@ -34,26 +34,32 @@ final class InMemoryEventDispatcherSubscriber implements MessageSubscriber
             return;
         }
 
-        $this->eventListeners[] = $tracker->listen(Reporter::DISPATCH_EVENT, function (): void {
-            $this->chronicler->beginTransaction();
-        }, 1000);
+        $this->eventListeners[] = $tracker->listen(Reporter::DISPATCH_EVENT,
+            function (): void {
+                $this->chronicler->beginTransaction();
+            }, 1000);
 
 
-        $this->eventListeners [] = $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
-            if ($this->chronicler->inTransaction()) {
-                $this->cachedEvents = $this->chronicler->getCachedEvents();
+        $this->eventListeners [] = $tracker->listen(Reporter::DISPATCH_EVENT,
+            function (): void {
+                if ($this->chronicler->inTransaction()) {
+                    $this->cachedEvents = $this->chronicler->getCachedEvents();
 
-                $this->chronicler->commitTransaction();
+                    if (!empty($this->cachedEvents)) {
+                        $this->chronicler->commitTransaction();
 
-                $this->eventDispatcher->dispatch(...$this->cachedEvents);
+                        $this->eventDispatcher->dispatch(...$this->cachedEvents);
 
-                $this->cachedEvents = [];
-            }
+                        $this->cachedEvents = [];
+                    }
+                }
+            }, 500);
 
-            if ($context->hasException()) {
-                $this->chronicler->rollbackTransaction();
-            }
-
-        }, 900);
+        $this->eventListeners [] = $tracker->listen(Reporter::FINALIZE_EVENT,
+            function (MessageContext $context): void {
+                if ($context->hasException()) {
+                    $this->chronicler->rollbackTransaction();
+                }
+            }, 1);
     }
 }
