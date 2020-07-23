@@ -57,7 +57,7 @@ class ChronicleRepositoryManager
 
         if (!is_string($chroniclerId) || !$this->container->bound($chroniclerId)) {
             throw new RuntimeException(
-                "Chronicler service id $chroniclerId must be bound in the container"
+                "Chronicler service id $chroniclerId must be a string bound in the container"
             );
         }
 

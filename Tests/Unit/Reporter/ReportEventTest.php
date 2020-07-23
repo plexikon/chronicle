@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Tests\Unit\Reporter;
 
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Reporter\ReportCommand;
 use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
@@ -13,7 +12,7 @@ use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tracker\TrackingMessage;
 use RuntimeException;
 
-final class ReportCommandTest extends TestCase
+final class ReportEventTest extends TestCase
 {
     /**
      * @test
@@ -23,7 +22,7 @@ final class ReportCommandTest extends TestCase
         $message = new Message(SomeEvent::fromPayload(['foo' => 'bar']));
 
         $tracker = new TrackingMessage();
-        $reporter = new ReportCommand(null, $tracker);
+        $reporter = new ReportEvent(null, $tracker);
 
         $tracker->listen($reporter::DISPATCH_EVENT, function (MessageContext $context) use ($message): void {
             $this->assertEquals(Reporter::DISPATCH_EVENT, $context->getCurrentEvent());
@@ -47,7 +46,7 @@ final class ReportCommandTest extends TestCase
         $message = new Message(SomeEvent::fromPayload(['foo' => 'bar']));
 
         $tracker = new TrackingMessage();
-        $reporter = new ReportCommand(null, $tracker);
+        $reporter = new ReportEvent(null, $tracker);
 
         $tracker->listen($reporter::DISPATCH_EVENT, function (MessageContext $context) use ($message): void {
             throw new RuntimeException('foo');

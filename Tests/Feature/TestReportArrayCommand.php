@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Tests\Unit\Reporter;
+namespace Plexikon\Chronicle\Tests\Feature;
 
 use Plexikon\Chronicle\Clock\SystemClock;
 use Plexikon\Chronicle\Messaging\Alias\ClassNameMessageAlias;
@@ -14,15 +14,15 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
+use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Factory\MessageSubscriberFactory;
 use Plexikon\Chronicle\Tests\Factory\MessageSubscriberTestFactory;
 use Plexikon\Chronicle\Tests\Factory\ReporterFactory;
-use Plexikon\Chronicle\Tests\Double\SomeCommand;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tests\Util\HasMessageSubscribersAssertion;
 use Ramsey\Uuid\Uuid;
 
-final class ReporterArrayCommandTest extends TestCase
+final class TestReportArrayCommand
 {
     use HasMessageSubscribersAssertion;
 
@@ -31,7 +31,8 @@ final class ReporterArrayCommandTest extends TestCase
      */
     public function it_dispatch_array_command(): void
     {
-        $map = [SomeCommand::class => function (SomeCommand $command): void {}];
+        $map = [SomeCommand::class => function (SomeCommand $command): void {
+        }];
         $dispatchCommand = $this->arrayCommand();
         $messageAlias = new ClassNameMessageAlias();
 
@@ -92,4 +93,5 @@ final class ReporterArrayCommandTest extends TestCase
                 new MessageSerializer($messageAlias, new PayloadSerializer()),
             ));
     }
+
 }

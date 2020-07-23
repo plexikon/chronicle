@@ -14,7 +14,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\EventSerializer;
 use Plexikon\Chronicle\Support\Json;
 use stdClass;
 
-final class StreamEventLoader
+class StreamEventLoader
 {
     private EventSerializer $eventSerializer;
 
@@ -25,14 +25,16 @@ final class StreamEventLoader
 
     public function query(Builder $builder, StreamName $streamName): Generator
     {
-        try {
-            $cursor = $this->fromCursor($builder, $streamName);
+        //fixMe code exception are incorrect
 
-            foreach ($cursor as $event) {
+        try {
+            $events = $this->fromCursor($builder, $streamName);
+
+            foreach ($events as $event) {
                 yield from $this->unserializeEvent($event);
             }
 
-            return $cursor->count();
+            return $events->count();
         } catch (QueryException $queryException) {
             if ($queryException->getCode() === '42S22') {
                 throw QueryFailure::fromQueryException($queryException);
