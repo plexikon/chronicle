@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Chronicling\Aggregate;
 
+use Countable;
 use Illuminate\Contracts\Cache\Store;
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateCache as BaseAggregateCache;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateRoot;
 
-final class AggregateCache implements BaseAggregateCache
+final class AggregateCache implements BaseAggregateCache, Countable
 {
     private int $count = 0;
     private int $beforeFlushing;
@@ -62,7 +63,7 @@ final class AggregateCache implements BaseAggregateCache
         return null !== $this->store->get($aggregateId->toString());
     }
 
-    public function count()
+    public function count(): int
     {
         return $this->count;
     }
