@@ -13,6 +13,6 @@ final class SomePDOException extends PDOException
         parent::__construct($message,0, $previous);
 
         $this->code = $code;
-        $this->errorInfo = ['foo','bar','foo_bar'];
+        $this->errorInfo = ['foo','bar','foo_bar'];// fixMe
     }
 }
