@@ -8,15 +8,15 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Reporter\TrackingReporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
-use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use Plexikon\Chronicle\Tracker\TrackingMessage;
 
 abstract class ReportMessage implements Reporter, TrackingReporter, NamingReporter
 {
     private ?string $reporterName;
-    protected Tracker $tracker;
+    protected MessageTracker $tracker;
 
-    public function __construct(?string $reporterName, ?Tracker $tracker = null)
+    public function __construct(?string $reporterName, ?MessageTracker $tracker = null)
     {
         $this->reporterName = $reporterName;
         $this->tracker = $tracker ?? new TrackingMessage();

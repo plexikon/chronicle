@@ -21,9 +21,9 @@ final class MessageEventIterator implements Iterator, Countable
     }
 
     /**
-     * @return AggregateChanged|object
+     * @return object|AggregateChanged
      */
-    public function current(): AggregateChanged
+    public function current(): object
     {
         return $this->currentMessage->event();
     }

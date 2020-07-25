@@ -22,6 +22,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageSerializer;
 use Plexikon\Chronicle\Support\Contract\Messaging\Messaging;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
+use Plexikon\Chronicle\Support\Contract\Reporter\TrackingReporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 
 class ReporterManager
@@ -83,7 +84,9 @@ class ReporterManager
     {
         $reporterInstance = $this->newReporterInstance($type, $config);
 
-        $this->subscribeToReporter($reporterInstance, $type, $config);
+        if ($reporterInstance instanceof TrackingReporter) {
+            $this->subscribeToReporter($reporterInstance, $type, $config);
+        }
 
         return $reporterInstance;
     }
@@ -119,7 +122,7 @@ class ReporterManager
         return new $reporterClassName($config['name'] ?? $reporterClassName, $tracker);
     }
 
-    protected function subscribeToReporter(Reporter $reporter, string $type, array $config): void
+    protected function subscribeToReporter(TrackingReporter $reporter, string $type, array $config): void
     {
         $subscribers = $this->resolveServices([
             $this->resolveMessageDecoratorSubscriber($config),

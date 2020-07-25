@@ -21,7 +21,7 @@ interface AggregateRepository
     /**
      * @param AggregateId $aggregateId
      * @param int $aggregateVersion
-     * @param DomainEvent[] $events
+     * @param DomainEvent ...$events
      */
     public function persistEvents(AggregateId $aggregateId, int $aggregateVersion, DomainEvent ...$events): void;
 

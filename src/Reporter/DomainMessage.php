@@ -11,7 +11,7 @@ abstract class DomainMessage implements Messaging
     protected array $headers = [];
     protected array $payload;
 
-    protected function __construct(array $payload)
+    final protected function __construct(array $payload)
     {
         $this->payload = $payload;
     }

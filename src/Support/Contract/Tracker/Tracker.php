@@ -6,12 +6,6 @@ interface Tracker
 {
     /**
      * @param string $eventName
-     * @return Context|MessageContext|EventContext|TransactionalEventContext
-     */
-    public function newContext(string $eventName): Context;
-
-    /**
-     * @param string $eventName
      * @param callable $eventContext
      * @param int $priority
      * @return Listener

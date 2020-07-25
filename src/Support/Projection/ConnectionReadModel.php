@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Support\Projection;
 
+use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionInterface;
 use Plexikon\Chronicle\Support\Connection\HasConnectionTransaction;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
@@ -12,6 +13,9 @@ abstract class ConnectionReadModel implements ReadModel
 {
     use HasConnectionTransaction, HasReadModelOperation;
 
+    /**
+     * @var ConnectionInterface|Connection
+     */
     protected ConnectionInterface $connection;
     private bool $isTransactionDisabled;
 

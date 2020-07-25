@@ -47,7 +47,7 @@ final class PointInTime
 
         Assertion::isInstanceOf($dateTime, DateTimeImmutable::class, 'Invalid date time');
 
-        return new PointInTime($dateTime);
+        return new static($dateTime);
     }
 
     public static function fromDateTime(DateTimeImmutable $dateTime): PointInTime
