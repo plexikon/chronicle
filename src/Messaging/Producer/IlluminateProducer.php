@@ -5,8 +5,8 @@ namespace Plexikon\Chronicle\Messaging\Producer;
 
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Messaging\Serializer\MessageSerializer;
 use Plexikon\Chronicle\Reporter\DetectReporterType;
+use Plexikon\Chronicle\Support\Contract\Messaging\MessageSerializer;
 
 class IlluminateProducer
 {

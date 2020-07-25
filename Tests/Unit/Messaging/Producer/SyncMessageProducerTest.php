@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Tests\Unit\Messaging\Producer;
 
+use Generator;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Messaging\Producer\SyncMessageProducer;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
@@ -47,7 +48,7 @@ final class SyncMessageProducerTest extends TestCase
         $this->assertEquals($message, $producer->produce($message));
     }
 
-    public function provideMessages(): \Generator
+    public function provideMessages(): Generator
     {
         yield[$message = new Message(SomeCommand::withData([]))];
 

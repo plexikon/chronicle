@@ -11,9 +11,9 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 final class MessageJob
 {
     public ?string $connection;
-    private ?string $queue;
-    private array $payload;
-    private string $busType;
+    public ?string $queue;
+    public array $payload;
+    public string $busType;
 
     public function __construct(array $payload, string $busType, ?string $connection, ?string $queue)
     {
