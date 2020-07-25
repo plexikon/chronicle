@@ -42,7 +42,7 @@ final class CorrelationCommandSubscriber implements MessageSubscriber
             }, 1000);
 
         $this->messageListeners[] = $tracker->listen(Reporter::FINALIZE_EVENT,
-            function (MessageContext $context) use ($tracker) {
+            function (MessageContext $context) {
                 if ($this->supportCorrelation($context->getMessage())) {
                     $this->chronicler->unsubscribe(...$this->eventListeners);
                     $this->eventListeners = [];

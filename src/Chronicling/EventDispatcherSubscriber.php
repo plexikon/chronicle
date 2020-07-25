@@ -98,8 +98,8 @@ final class EventDispatcherSubscriber implements EventSubscriber
         $this->recordedStreams += $events;//fixMe
     }
 
-    private function inTransaction(Chronicler $chronicle): bool
+    private function inTransaction(Chronicler $chronicler): bool
     {
-        return $chronicle instanceof TransactionalChronicler && $chronicle->inTransaction();
+        return $chronicler instanceof TransactionalChronicler && $chronicler->inTransaction();
     }
 }
