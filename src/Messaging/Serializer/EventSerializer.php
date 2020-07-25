@@ -6,19 +6,21 @@ namespace Plexikon\Chronicle\Messaging\Serializer;
 use DateTimeImmutable;
 use Generator;
 use Plexikon\Chronicle\Clock\PointInTime;
+use Plexikon\Chronicle\Exception\InvalidArgumentException;
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Messaging\EventSerializer as BaseEventSerializer;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
+use Plexikon\Chronicle\Support\Contract\Messaging\PayloadSerializer as BasePayloadSerializer;
 
 final class EventSerializer implements BaseEventSerializer
 {
     private MessageAlias $messageAlias;
-    private PayloadSerializer $payloadSerializer;
+    private BasePayloadSerializer $payloadSerializer;
 
-    public function __construct(MessageAlias $messageAlias, PayloadSerializer $payloadSerializer)
+    public function __construct(MessageAlias $messageAlias, BasePayloadSerializer $payloadSerializer)
     {
         $this->messageAlias = $messageAlias;
         $this->payloadSerializer = $payloadSerializer;
@@ -28,9 +30,9 @@ final class EventSerializer implements BaseEventSerializer
     {
         $event = $message->event();
 
-        $payload = $this->payloadSerializer->serializePayload($event);
-
         $headers = $this->serializeHeaders($message->headers());
+
+        $payload = $this->payloadSerializer->serializePayload($event);
 
         return ['headers' => $headers, 'payload' => $payload];
     }
@@ -102,8 +104,14 @@ final class EventSerializer implements BaseEventSerializer
     {
         $timeOfRecording = $headers[MessageHeader::TIME_OF_RECORDING];
 
-        if (is_string($timeOfRecording)) {
-            return $headers;
+        $invalidTimeException = null;
+
+        try {
+            if (is_string($timeOfRecording)) {
+                $timeOfRecording = PointInTime::fromString($timeOfRecording);
+            }
+        } catch (InvalidArgumentException $exception) {
+            $invalidTimeException = $exception;
         }
 
         if ($timeOfRecording instanceof PointInTime) {
@@ -111,7 +119,9 @@ final class EventSerializer implements BaseEventSerializer
         } elseif ($timeOfRecording instanceof DateTimeImmutable) {
             $timeOfRecording = PointInTime::fromDateTime($timeOfRecording)->toString();
         } else {
-            throw new RuntimeException("Unable to serialize time of recording header");
+            throw new RuntimeException(
+                "Unable to serialize time of recording header", 0, $invalidTimeException
+            );
         }
 
         $headers[MessageHeader::TIME_OF_RECORDING] = $timeOfRecording;
