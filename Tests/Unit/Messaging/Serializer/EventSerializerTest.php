@@ -48,11 +48,11 @@ final class EventSerializerTest extends TestCase
             case is_string($dateTime):
                 $expectedTime = $dateTime;
                 break;
-            case $dateTime instanceof PointInTime:
-                $expectedTime = $dateTime->toString();
+            case $dateTime instanceof DateTimeImmutable:
+                $expectedTime = $dateTime->format(PointInTime::DATE_TIME_FORMAT);
                 break;
             default:
-                $expectedTime = $dateTime->format(PointInTime::DATE_TIME_FORMAT);
+                $expectedTime = $dateTime->toString();
         }
 
         $expectedPayload = [
@@ -104,33 +104,6 @@ final class EventSerializerTest extends TestCase
 
             throw $exception;
         }
-    }
-
-    /**
-     * @dataProvider provideInvalidStringTimeOfRecording
-     * @param string $invalidDateTime
-     */
-    public function it_raise_exception_if_string_time_of_recording_header_is_invalid(string $invalidDateTime): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid date time');
-
-        $eventPayload = ['foo' => 'bar'];
-        $eventHeaders = [
-            MessageHeader::AGGREGATE_ID => $this->aggregateId,
-            MessageHeader::TIME_OF_RECORDING => $invalidDateTime
-        ];
-
-        $event = SomeEvent::fromPayload($eventPayload);
-        $message = new Message($event, $eventHeaders);
-
-        $alias = $this->prophesize(MessageAlias::class);
-        $payloadSerializer = $this->prophesize(PayloadSerializer::class);
-        $payloadSerializer->serializePayload()->shouldNotBeCalled();
-
-        $serializer = new EventSerializer($alias->reveal(), $payloadSerializer->reveal());
-
-        $serializer->serializeMessage($message);
     }
 
     public function provideValidTimeOfRecording(): Generator
