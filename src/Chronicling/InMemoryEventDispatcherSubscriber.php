@@ -53,13 +53,13 @@ final class InMemoryEventDispatcherSubscriber implements MessageSubscriber
                         $this->cachedEvents = [];
                     }
                 }
-            }, 500);
+            });
 
         $this->eventListeners [] = $tracker->listen(Reporter::FINALIZE_EVENT,
             function (MessageContext $context): void {
                 if ($context->hasException()) {
                     $this->chronicler->rollbackTransaction();
                 }
-            }, 1);
+            });
     }
 }
