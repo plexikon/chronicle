@@ -41,6 +41,33 @@ final class AggregateRepositoryTest extends TestCase
     /**
      * @test
      */
+    public function it_does_not_retrieve_events_and_return_naked_aggregate_root_and_does_not_cache_aggregate(): void
+    {
+        $this->cache->has($this->aggregateId)->willReturn(false);
+
+        $events = [];
+
+        $this->chronicler
+            ->retrieveAll($this->aggregateId, $this->streamName)
+            ->will(function () use ($events) {
+                yield from $events;
+
+                return 0;
+            });
+
+        $repository = $this->repositoryInstance();
+        $root = $repository->retrieve($this->aggregateId);
+
+        $this->cache->put()->shouldNotBeCalled();
+
+        $this->assertInstanceOf(SomeAggregateRoot::class, $root);
+        $this->assertFalse($root->exists());
+        $this->assertEquals(0, $root->version());
+    }
+
+    /**
+     * @test
+     */
     public function it_reconstitute_aggregate_from_events_and_store_aggregate_in_cache(): void
     {
         $this->cache->has($this->aggregateId)->willReturn(false);
