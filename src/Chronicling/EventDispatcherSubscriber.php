@@ -25,15 +25,15 @@ final class EventDispatcherSubscriber implements EventSubscriber
     public function attachToChronicler(Chronicler $chronicler): void
     {
         if ($chronicler instanceof EventChronicler) {
-            $this->subscribeToEventChronicle($chronicler);
+            $this->subscribeToEventChronicler($chronicler);
         }
 
         if ($chronicler instanceof TransactionalChronicler) {
-            $this->subscribeToTransactionalChronicle($chronicler);
+            $this->subscribeToTransactionalChronicler($chronicler);
         }
     }
 
-    private function subscribeToEventChronicle(EventChronicler $chronicler): void
+    private function subscribeToEventChronicler(EventChronicler $chronicler): void
     {
         $chronicler->subscribe($chronicler::PERSIST_STREAM_EVENT,
             function (EventContext $context) use ($chronicler): void {
@@ -70,7 +70,7 @@ final class EventDispatcherSubscriber implements EventSubscriber
     /**
      * @param TransactionalChronicler|EventChronicler $chronicler
      */
-    private function subscribeToTransactionalChronicle(TransactionalChronicler $chronicler): void
+    private function subscribeToTransactionalChronicler(TransactionalChronicler $chronicler): void
     {
         $chronicler->subscribe($chronicler::COMMIT_TRANSACTION_EVENT,
             function () {
