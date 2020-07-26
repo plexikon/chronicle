@@ -94,10 +94,10 @@ final class AggregateRepositoryTest extends TestCase
             Argument::that(function (Stream $stream) use ($event, $expectedHeaders) {
                 $this->assertEquals($this->streamName, $stream->streamName());
 
-                $streamEvent = iterator_to_array($stream->events());
+                $streamEvent = $stream->events()->current();
 
-                $this->assertEquals($event, $streamEvent[0]->event());
-                $this->assertEquals($expectedHeaders, $streamEvent[0]->headers());
+                $this->assertEquals($event, $streamEvent->event());
+                $this->assertEquals($expectedHeaders, $streamEvent->headers());
 
                 return $stream;
             }));
@@ -151,13 +151,13 @@ final class AggregateRepositoryTest extends TestCase
         );
     }
 
-    private string $rootClass = SomeAggregateRoot::class;
     private ObjectProphecy $aggregateRoot;
     private ObjectProphecy $chronicler;
     private ObjectProphecy $cache;
-    private StreamName $streamName;
     private ObjectProphecy $messageDecorator;
+    private StreamName $streamName;
     private AggregateId $aggregateId;
+    private string $rootClass = SomeAggregateRoot::class;
 
     protected function setUp(): void
     {
