@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Messaging\Alias;
 
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
+use function get_class;
 
 final class ClassNameMessageAlias implements MessageAlias
 {

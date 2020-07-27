@@ -140,7 +140,7 @@ final class PgsqlChronicler implements TransactionalChronicler
 
     public function hasStream(StreamName $streamName): bool
     {
-        return $this->eventStreamProvider->hasRealStreamName($streamName);g
+        return $this->eventStreamProvider->hasRealStreamName($streamName);
     }
 
     protected function isTransactionDisabled(): bool

@@ -14,6 +14,7 @@ use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Messaging\Serializer\EventSerializer;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
+use Plexikon\Chronicle\Support\Contract\Clock;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Messaging\PayloadSerializer;
@@ -64,7 +65,6 @@ final class EventSerializerTest extends TestCase
         ];
 
         $serializer = new EventSerializer($alias->reveal(), $payloadSerializer->reveal());
-
         $serializedMessage = $serializer->serializeMessage($message);
 
         $this->assertEquals($expectedPayload, $serializedMessage);
@@ -75,7 +75,7 @@ final class EventSerializerTest extends TestCase
      * @dataProvider provideInvalidTimeOfRecording
      * @param mixed $invalidDateTime
      */
-    public function it_raise_exception_if_time_of_recording_header_is_invalid($invalidDateTime): void
+    public function it_raise_exception_if_time_of_recording_header_is_invalid_while_serializing($invalidDateTime): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to serialize time of recording header');
@@ -106,10 +106,65 @@ final class EventSerializerTest extends TestCase
         }
     }
 
+    /**
+     * @test
+     */
+    public function it_unserialize_payload(): void
+    {
+        $time = (new SystemClock())->pointInTime();
+
+        $payload = [
+            'payload' => ['foo' => 'bar'],
+            'headers' => [
+                MessageHeader::EVENT_TYPE => 'event_type',
+                MessageHeader::AGGREGATE_ID => $this->aggregateId->toString(),
+                MessageHeader::AGGREGATE_ID_TYPE => 'some.aggregate_id',
+                MessageHeader::TIME_OF_RECORDING => $time->toString(),
+            ],
+            'no' => 25
+        ];
+
+        $messageAlias = $this->prophesize(MessageAlias::class);
+        $messageAlias
+            ->typeToClass('some.aggregate_id')
+            ->willReturn(SomeAggregateId::class)
+            ->shouldBeCalled();
+
+        $messageAlias
+            ->typeToClass('event_type')
+            ->willReturn(SomeEvent::class)
+            ->shouldBeCalled();
+
+        $unserializedHeaders = [
+            MessageHeader::EVENT_TYPE => 'event_type',
+            MessageHeader::AGGREGATE_ID => $this->aggregateId,
+            MessageHeader::AGGREGATE_ID_TYPE => 'some.aggregate_id',
+            MessageHeader::TIME_OF_RECORDING => $time,
+            MessageHeader::INTERNAL_POSITION => 25,
+        ];
+
+        $payloadSerializer = $this->prophesize(PayloadSerializer::class);
+        $payloadSerializer
+            ->unserializePayload(
+                SomeEvent::class,
+                ['headers' => $unserializedHeaders, 'payload' => $payload['payload']]
+            )
+            ->willReturn(SomeEvent::fromPayload($payload['payload']))
+            ->shouldBeCalled();
+
+        $serializer = new EventSerializer($messageAlias->reveal(), $payloadSerializer->reveal());
+
+        $message = $serializer->unserializePayload($payload)->current();
+
+        $this->assertInstanceOf(Message::class, $message);
+        $this->assertInstanceOf(SomeEvent::class, $message->event());
+        $this->assertEquals($unserializedHeaders, $message->headers());
+        $this->assertEquals($payload['payload'], $message->event()->toPayload());
+    }
+
     public function provideValidTimeOfRecording(): Generator
     {
         $clock = new SystemClock();
-
         yield [$clock->pointInTime()];
         yield [$clock->pointInTime()->toString()];
         yield [$clock->dateTime()];
@@ -125,7 +180,6 @@ final class EventSerializerTest extends TestCase
     }
 
     private AggregateId $aggregateId;
-
     protected function setUp(): void
     {
         $this->aggregateId = SomeAggregateId::create();
