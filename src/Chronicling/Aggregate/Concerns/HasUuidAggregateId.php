@@ -8,7 +8,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-trait HasAggregateId
+trait HasUuidAggregateId
 {
     private UuidInterface $identifier;
 
@@ -22,12 +22,6 @@ trait HasAggregateId
         return $this->identifier->toString();
     }
 
-    /**
-     * Should be overridden in class
-     *
-     * @param AggregateId $rootId
-     * @return bool
-     */
     public function equalsTo(AggregateId $rootId): bool
     {
         return static::class === get_class($rootId)
