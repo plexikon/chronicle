@@ -3,12 +3,10 @@
 return [
 
     'event' => [
-        //  need another contract
-        //'alias' => \Plexikon\Chronicle\Messaging\Alias\InflectorMessageAlias::class,
         'serializer' => \Plexikon\Chronicle\Messaging\Serializer\EventSerializer::class,
-
-        // commons messaging decorators from reporter will be merged
         'decorators' => [
+            \Plexikon\Chronicle\Messaging\Decorator\EventIdMessageDecorator::class,
+            \Plexikon\Chronicle\Messaging\Decorator\DefaultHeadersDecorator::class,
             \Plexikon\Chronicle\Messaging\Decorator\AggregateIdTypeEventDecorator::class,
         ],
     ],

@@ -11,14 +11,8 @@ return [
         'payload_serializer' => \Plexikon\Chronicle\Messaging\Serializer\PayloadSerializer::class,
         'alias' => \Plexikon\Chronicle\Messaging\Alias\InflectorMessageAlias::class,
         'decorators' => [
-            'commons' => [
-                \Plexikon\Chronicle\Messaging\Decorator\EventIdMessageDecorator::class,
-                \Plexikon\Chronicle\Messaging\Decorator\DefaultHeadersDecorator::class,
-            ],
-
-            'extra' => [
-
-            ]
+            \Plexikon\Chronicle\Messaging\Decorator\EventIdMessageDecorator::class,
+            \Plexikon\Chronicle\Messaging\Decorator\DefaultHeadersDecorator::class,
         ],
 
         'subscribers' => [

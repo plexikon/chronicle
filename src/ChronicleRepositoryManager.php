@@ -81,12 +81,9 @@ class ChronicleRepositoryManager
 
     protected function createChainEventDecorator(string $streamName): MessageDecorator
     {
-        $commons = $this->container->get(Repository::class)->get('reporter.messaging.decorators.commons') ?? [];
-
         $eventDecorators = array_map(
             fn(string $decorator) => $this->container->make($decorator),
             array_merge(
-                $commons,
                 $this->fromChronicler("event.decorators") ?? [],
                 $this->fromChronicler("repositories.$streamName.event_decorators") ?? []
             )
