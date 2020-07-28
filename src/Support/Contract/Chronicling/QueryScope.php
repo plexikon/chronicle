@@ -8,23 +8,23 @@ interface QueryScope
      * @param string $aggregateId
      * @param string $aggregateType
      * @param int $aggregateVersion
-     * @return callable
+     * @return QueryFilter
      */
     public function matchAggregateIdAndTypeGreaterThanVersion(string $aggregateId,
                                                               string $aggregateType,
-                                                              int $aggregateVersion): callable;
+                                                              int $aggregateVersion): QueryFilter;
 
     /**
      * @param int $from
      * @param int $to
      * @param string|null $direction
-     * @return callable
+     * @return QueryFilter
      */
-    public function fromToPosition(int $from, int $to, ?string $direction): callable;
+    public function fromToPosition(int $from, int $to, ?string $direction): QueryFilter;
 
     /**
      * @param int $position
-     * @return callable
+     * @return QueryFilter
      */
-    public function fromIncludedPosition(int $position): callable;
+    public function fromIncludedPosition(int $position): QueryFilter;
 }

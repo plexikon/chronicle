@@ -34,9 +34,12 @@ return [
                 'use_write_lock' => true,
                 'use_event_decorator' => true
             ],
+            'scope' => \Plexikon\Chronicle\Support\QueryScope\PgsqlQueryScope::class
         ],
 
-        'in_memory' => []
+        'in_memory' => [
+            'scope' => \Plexikon\Chronicle\Support\QueryScope\InMemoryQueryScope::class,
+        ]
     ],
 
     'repositories' => [

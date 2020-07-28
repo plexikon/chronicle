@@ -13,8 +13,7 @@ return [
         'decorators' => [
             'commons' => [
                 \Plexikon\Chronicle\Messaging\Decorator\EventIdMessageDecorator::class,
-                \Plexikon\Chronicle\Messaging\Decorator\EventTypeMessageDecorator::class,
-                \Plexikon\Chronicle\Messaging\Decorator\TimeOfRecordingMessageDecorator::class,
+                \Plexikon\Chronicle\Messaging\Decorator\DefaultHeadersDecorator::class,
             ],
 
             'extra' => [
