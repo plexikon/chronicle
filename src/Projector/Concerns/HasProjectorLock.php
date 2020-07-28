@@ -7,7 +7,6 @@ use DateTimeImmutable;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 
-
 trait HasProjectorLock
 {
     protected ProjectorLock $projectorLock;

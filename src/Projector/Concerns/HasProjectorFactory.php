@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector\Concerns;
 
 use Plexikon\Chronicle\Projector\ProjectorContext;
-use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
+use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 
 trait HasProjectorFactory
@@ -23,12 +23,12 @@ trait HasProjectorFactory
     }
 
     /**
-     * @param QueryFilter $queryFilter
+     * @param QueryScope $queryScope
      * @return ProjectorFactory&static
      */
-    public function withQueryFilter(QueryFilter $queryFilter): ProjectorFactory
+    public function withQueryScope(QueryScope $queryScope): ProjectorFactory
     {
-        $this->projectorContext->withQueryFilter($queryFilter);
+        $this->projectorContext->withQueryScope($queryScope);
 
         return $this;
     }

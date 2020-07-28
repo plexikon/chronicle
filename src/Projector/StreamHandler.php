@@ -46,13 +46,11 @@ final class StreamHandler
     private function retrieveStreams(array $streamPositions): array
     {
         $eventStreams = [];
-        $queryFilter = $this->projectorContext->queryFilter();
+        $queryScope = $this->projectorContext->queryScope();
 
         foreach ($streamPositions as $streamName => $position) {
-            $queryFilter->setCurrentPosition($position + 1);
-
-            $events = $this->chronicler->retrieveWithQueryFilter(
-                new StreamName($streamName), $queryFilter
+              $events = $this->chronicler->retrieveWithQueryFilter(
+                new StreamName($streamName), $queryScope->fromIncludedPosition($position + 1)
             );
 
             $eventStreams[$streamName] = new StreamEventIterator($events);

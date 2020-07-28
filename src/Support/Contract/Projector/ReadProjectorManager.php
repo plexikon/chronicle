@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Support\Contract\Projector;
 
-use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
+use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 
 interface ReadProjectorManager
 {
@@ -38,7 +38,7 @@ interface ReadProjectorManager
     public function projectionExists(string $name): bool;
 
     /**
-     * @return QueryFilter
+     * @return QueryScope
      */
-    public function projectionQueryFilter(): QueryFilter;
+    public function projectionQueryScope(): QueryScope;
 }

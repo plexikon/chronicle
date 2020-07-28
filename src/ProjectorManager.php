@@ -18,7 +18,7 @@ use Plexikon\Chronicle\Projector\ReadModel\ReadModelProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionProvider;
-use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
+use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorManager as BaseProjectorManager;
@@ -34,21 +34,21 @@ final class ProjectorManager implements BaseProjectorManager
     private EventStreamProvider $eventStreamProvider;
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
-    private QueryFilter $projectionQueryFilter;
+    private QueryScope $queryScope;
     private array $options;
 
     public function __construct(Chronicler $chronicler,
                                 EventStreamProvider $eventStreamProvider,
                                 ProjectionProvider $projectionProvider,
                                 MessageAlias $messageAlias,
-                                QueryFilter $projectionQueryFilter,
+                                QueryScope $queryScope,
                                 array $options = [])
     {
         $this->chronicler = $chronicler;
         $this->eventStreamProvider = $eventStreamProvider;
         $this->projectionProvider = $projectionProvider;
         $this->messageAlias = $messageAlias;
-        $this->projectionQueryFilter = $projectionQueryFilter;
+        $this->queryScope = $queryScope;
         $this->options = $options;
     }
 
@@ -110,9 +110,9 @@ final class ProjectorManager implements BaseProjectorManager
         $this->updateProjectionStatus($deleteProjectionStatus, $name);
     }
 
-    public function projectionQueryFilter(): QueryFilter
+    public function projectionQueryScope(): QueryScope
     {
-        return $this->projectionQueryFilter;
+        return $this->queryScope;
     }
 
     private function updateProjectionStatus(ProjectionStatus $projectionStatus, string $name): void
