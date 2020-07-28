@@ -17,8 +17,6 @@ final class DefaultListener implements Listener
 
     public function __construct(string $eventName, callable $context, int $priority)
     {
-        Assertion::greaterOrEqualThan($priority, 0, 'listener priority must be equal or greater than 0');
-
         $this->eventName = $eventName;
         $this->context = $context;
         $this->priority = $priority;
