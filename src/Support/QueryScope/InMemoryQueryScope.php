@@ -24,17 +24,11 @@ class InMemoryQueryScope implements QueryScope
                 return null;
             }
 
-            $type = (string)$message->header(MessageHeader::AGGREGATE_TYPE);
-
-            if ($type !== $aggregateType) {
+            if ((string)$message->header(MessageHeader::AGGREGATE_TYPE) !== $aggregateType) {
                 return null;
             }
 
-            if (($key + 1) > $aggregateVersion) {
-                return $message;
-            }
-
-            return null;
+            return (($key + 1) > $aggregateVersion) ? $message : null;
         };
 
         return $this->wrap($callback);
@@ -45,14 +39,7 @@ class InMemoryQueryScope implements QueryScope
         Assertion::greaterOrEqualThan($from, 0, 'From position must be greater or equal than 0');
         Assertion::greaterThan($to, $from, 'To position must be greater than from position');
 
-        $callback = function (Message $message, int $key) use ($from, $to): ?Message {
-
-            if (($key + 1) >= $from && ($key + 1) <= $to) {
-                return $message;
-            }
-
-            return null;
-        };
+        $callback = fn(Message $message, int $key): ?Message => (($key + 1) >= $from && ($key + 1) <= $to) ? $message : null;
 
         return $this->wrap($callback);
     }
@@ -61,14 +48,7 @@ class InMemoryQueryScope implements QueryScope
     {
         Assertion::greaterThan($position, 0, 'Position must be greater than 0');
 
-        $callback = function (Message $message, int $key) use ($position): ?Message {
-
-            if (($key + 1) >= $position) {
-                return $message;
-            }
-
-            return null;
-        };
+        $callback = fn(Message $message, int $key): ?Message => (($key + 1) >= $position) ? $message : null;
 
         return $this->wrap($callback);
     }
