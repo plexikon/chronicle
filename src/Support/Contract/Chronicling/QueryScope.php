@@ -2,6 +2,8 @@
 
 namespace Plexikon\Chronicle\Support\Contract\Chronicling;
 
+use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
+
 interface QueryScope
 {
     /**
@@ -23,8 +25,7 @@ interface QueryScope
     public function fromToPosition(int $from, int $to, ?string $direction): QueryFilter;
 
     /**
-     * @param int $position
-     * @return QueryFilter
+     * @return ProjectionQueryFilter
      */
-    public function fromIncludedPosition(int $position): QueryFilter;
+    public function fromIncludedPosition(): ProjectionQueryFilter;
 }

@@ -2,7 +2,9 @@
 
 namespace Plexikon\Chronicle\Support\Contract\Projector;
 
+use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
+use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
 
 interface ProjectorFactory extends Projector
 {
@@ -36,8 +38,8 @@ interface ProjectorFactory extends Projector
     public function whenAny(callable $eventHandler): ProjectorFactory;
 
     /**
-     * @param QueryScope $queryScope
+     * @param QueryFilter|ProjectionQueryFilter $queryFilter
      * @return ProjectorFactory
      */
-    public function withQueryScope(QueryScope $queryScope): ProjectorFactory;
+    public function withQueryFilter(QueryFilter $queryFilter): ProjectorFactory;
 }

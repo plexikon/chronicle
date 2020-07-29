@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector\Concerns;
 
 use Plexikon\Chronicle\Exception\Assertion;
-use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
+use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
+use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
 
 trait HasContextFactory
 {
@@ -19,10 +20,10 @@ trait HasContextFactory
     protected array $streamNames = [];
 
     /**
-     * @var null|callable|array
+     * @var callable|array
      */
     protected $eventHandlers = null;
-    protected ?QueryScope $queryScope = null;
+    protected ?QueryFilter $queryFilter = null;
 
     public function withCallback(callable $initCallback): void
     {
@@ -31,11 +32,14 @@ trait HasContextFactory
         $this->initCallback = $initCallback;
     }
 
-    public function withQueryScope(QueryScope $queryScope): void
+    /**
+     * @param QueryFilter|ProjectionQueryFilter $queryFilter
+     */
+    public function withQueryFilter(QueryFilter $queryFilter): void
     {
-        Assertion::null($this->queryScope, 'Query scope has already been set');
+        Assertion::null($this->queryFilter, 'Query filter has already been set');
 
-        $this->queryScope = $queryScope;
+        $this->queryFilter = $queryFilter;
     }
 
     public function withStreams(string ...$streamNames): void
@@ -78,9 +82,12 @@ trait HasContextFactory
         return $this->initCallback;
     }
 
-    public function queryScope(): QueryScope
+    /**
+     * @return QueryFilter|ProjectionQueryFilter
+     */
+    public function queryFilter(): QueryFilter
     {
-        return $this->queryScope;
+        return $this->queryFilter;
     }
 
     /**
@@ -93,7 +100,7 @@ trait HasContextFactory
 
     public function validateFactory(): void
     {
-        Assertion::notNull($this->queryScope, 'Query scope not set');
+        Assertion::notNull($this->queryFilter, 'Query filter not set');
 
         Assertion::notEmpty($this->streamNames, 'Stream names not set');
 

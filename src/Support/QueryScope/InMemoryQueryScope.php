@@ -8,6 +8,7 @@ use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
+use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
 
 class InMemoryQueryScope implements QueryScope
 {
@@ -44,13 +45,23 @@ class InMemoryQueryScope implements QueryScope
         return $this->wrap($callback);
     }
 
-    public function fromIncludedPosition(int $position): QueryFilter
+    public function fromIncludedPosition(): ProjectionQueryFilter
     {
-        Assertion::greaterThan($position, 0, 'Position must be greater than 0');
+        return new class() implements ProjectionQueryFilter{
+            private int $currentPosition = 0;
 
-        $callback = fn(Message $message, int $key): ?Message => (($key + 1) >= $position) ? $message : null;
+            public function setCurrentPosition(int $position): void
+            {
+                $this->currentPosition = $position;
+            }
 
-        return $this->wrap($callback);
+            public function filterQuery(): callable
+            {
+                Assertion::greaterThan($this->currentPosition, 0, 'Position must be greater than 0');
+
+                return fn(Message $message, int $key): ?Message => (($key + 1) >= $this->currentPosition) ? $message : null;
+            }
+        };
     }
 
     public function wrap(callable $query): QueryFilter

@@ -7,20 +7,33 @@ use Illuminate\Database\Query\Builder;
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
+use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
 
 abstract class ConnectionQueryScope implements QueryScope
 {
-    public function fromIncludedPosition(int $position): QueryFilter
+    public function fromIncludedPosition(): ProjectionQueryFilter
     {
-        Assertion::greaterThan($position, 0, 'Position must be greater than 0');
+        return new class() implements ProjectionQueryFilter{
+            private int $currentPosition = 0;
 
-        $callback = function (Builder $query) use ($position): void {
-            $query
-                ->where('no', '>=', $position)
-                ->orderBy('no');
+            public function setCurrentPosition(int $position): void
+            {
+                $this->currentPosition = $position;
+            }
+
+            public function filterQuery(): callable
+            {
+                $position = $this->currentPosition;
+
+                Assertion::greaterThan($position, 0, 'Position must be greater than 0');
+
+                return function (Builder $query) use ($position): void {
+                    $query
+                        ->where('no', '>=', $position)
+                        ->orderBy('no');
+                };
+            }
         };
-
-        return $this->wrap($callback);
     }
 
     public function fromToPosition(int $from, int $to, ?string $direction): QueryFilter
