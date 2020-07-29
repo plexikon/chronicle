@@ -8,7 +8,7 @@ use Generator;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Schema\Builder as SchemaBuilder;
-use Plexikon\Chronicle\Support\Projection\ConnectionReadModel;
+use Plexikon\Chronicle\Support\Projection\ReadModelConnection;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -173,10 +173,10 @@ final class ConnectionReadModelTest extends TestCase
         yield [false];
     }
 
-    public function connectionReadModelInstance(bool $isTransactionDisabled): ConnectionReadModel
+    public function connectionReadModelInstance(bool $isTransactionDisabled): ReadModelConnection
     {
         $connection = $this->connection->reveal();
-        return new class($connection, $isTransactionDisabled) extends ConnectionReadModel {
+        return new class($connection, $isTransactionDisabled) extends ReadModelConnection {
 
             protected function up(): callable
             {

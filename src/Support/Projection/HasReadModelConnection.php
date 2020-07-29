@@ -5,25 +5,15 @@ namespace Plexikon\Chronicle\Support\Projection;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionInterface;
-use Plexikon\Chronicle\Support\Connection\HasConnectionTransaction;
-use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Throwable;
 
-abstract class ConnectionReadModel implements ReadModel
+trait HasReadModelConnection
 {
-    use HasConnectionTransaction, HasReadModelOperation;
-
     /**
      * @var ConnectionInterface|Connection
      */
     protected ConnectionInterface $connection;
-    private bool $isTransactionDisabled;
-
-    public function __construct(ConnectionInterface $connection, bool $isTransactionDisabled = false)
-    {
-        $this->connection = $connection;
-        $this->isTransactionDisabled = $isTransactionDisabled;
-    }
+    protected bool $isTransactionDisabled;
 
     public function initialize(): void
     {
@@ -37,45 +27,53 @@ abstract class ConnectionReadModel implements ReadModel
 
     public function reset(): void
     {
-        $schema = $this->connection->getSchemaBuilder();
+        $resetReadModel = function (): void {
+            $schema = $this->connection->getSchemaBuilder();
 
-        $this->beginTransaction();
-
-        try {
             $schema->disableForeignKeyConstraints();
 
             $this->connection->table($this->tableName())->truncate();
 
             $schema->enableForeignKeyConstraints();
+        };
 
-        } catch (Throwable $exception) {
-            $this->rollbackTransaction();
-
-            throw $exception;
-        }
-
-        $this->commitTransaction();
+        $this->transactional($resetReadModel);
     }
 
     public function down(): void
     {
-        $schema = $this->connection->getSchemaBuilder();
+        $dropReadModel = function (): void {
+            $schema = $this->connection->getSchemaBuilder();
 
-        $this->beginTransaction();
-
-        try {
             $schema->disableForeignKeyConstraints();
 
             $schema->drop($this->tableName());
 
             $schema->enableForeignKeyConstraints();
+        };
+
+        $this->transactional($dropReadModel);
+    }
+
+    protected function transactional(callable $process): void
+    {
+        if (!$this->isTransactionDisabled()) {
+            $this->connection->beginTransaction();
+        }
+
+        try {
+            $process($this);
         } catch (Throwable $exception) {
-            $this->rollbackTransaction();
+            if (!$this->isTransactionDisabled()) {
+                $this->connection->rollBack();
+            }
 
             throw $exception;
         }
 
-        $this->commitTransaction();
+        if (!$this->isTransactionDisabled()) {
+            $this->connection->commit();
+        }
     }
 
     protected function isTransactionDisabled(): bool
