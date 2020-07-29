@@ -40,7 +40,7 @@ class QueryScopeFactory
         $method = 'create' . Str::studly($driver . 'QueryScope');
 
         if (method_exists($this, $method)) {
-            return $this->$method($queryScopeClass);
+            return $this->$method();
         }
 
         throw new RuntimeException("Invalid query scope driver $driver");
