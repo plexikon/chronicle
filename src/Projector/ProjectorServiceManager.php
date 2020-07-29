@@ -29,7 +29,7 @@ class ProjectorServiceManager
         $this->config = $container->get(Repository::class)->get('chronicler', []);
     }
 
-    public function createProjectorManager(string $driver = 'default'): BaseProjectorManager
+    public function create(string $driver = 'default'): BaseProjectorManager
     {
         if ($projector = $this->projectors[$driver] ?? null) {
             return $projector;
