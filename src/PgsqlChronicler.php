@@ -100,10 +100,17 @@ final class PgsqlChronicler implements ConnectionChronicler, TransactionalChroni
 
     public function delete(StreamName $streamName): void
     {
-        $result = $this->eventStreamProvider->deleteStream($streamName);
+        // todo tests
+        try {
+            $result = $this->eventStreamProvider->deleteStream($streamName);
 
-        if (!$result) {
-            throw StreamNotFound::withStreamName($streamName);
+            if (!$result) {
+                throw StreamNotFound::withStreamName($streamName);
+            }
+        }catch (QueryException $exception){
+            if ($exception->getCode() !== '00000') {
+                throw QueryFailure::fromQueryException($exception);
+            }
         }
 
         $tableName = $this->persistenceStrategy->tableName($streamName);
@@ -111,7 +118,10 @@ final class PgsqlChronicler implements ConnectionChronicler, TransactionalChroni
         try {
             $this->connection->getSchemaBuilder()->drop($tableName);
         } catch (QueryException $exception) {
-            throw QueryFailure::fromQueryException($exception);
+            // todo tests
+            if ($exception->getCode() !== '00000') {
+                throw QueryFailure::fromQueryException($exception);
+            }
         }
     }
 
