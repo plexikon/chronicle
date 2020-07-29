@@ -24,9 +24,9 @@ final class AggregateRepository implements BaseAggregateRepository
 
     protected string $aggregateRoot;
     protected Chronicler $chronicler;
+    protected StreamName $streamName;
     protected AggregateCache $aggregateCache;
     protected MessageDecorator $messageDecorator;
-    protected StreamName $streamName;
 
     public function __construct(string $aggregateRoot,
                                 Chronicler $chronicler,
