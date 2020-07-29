@@ -56,6 +56,22 @@ trait HasConnectionTransaction
         return !$this->isTransactionDisabled() && $this->connection->transactionLevel() > 0;
     }
 
+    public function transactional(callable $callable)
+    {
+        $this->beginTransaction();
+
+        try {
+            $result = $callable($this);
+            $this->commitTransaction();
+        } catch (Throwable $exception) {
+            $this->rollbackTransaction();
+
+            throw $exception;
+        }
+
+        return $result ?: true;
+    }
+
     /**
      * @return bool
      */

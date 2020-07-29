@@ -4,6 +4,7 @@ namespace Plexikon\Chronicle\Support\Contract\Chronicling;
 
 use Plexikon\Chronicle\Exception\TransactionAlreadyStarted;
 use Plexikon\Chronicle\Exception\TransactionNotStarted;
+use Throwable;
 
 interface TransactionalChronicler extends Chronicler
 {
@@ -30,4 +31,11 @@ interface TransactionalChronicler extends Chronicler
      * @return bool
      */
     public function inTransaction(): bool;
+
+    /**
+     * @param callable $callable
+     * @return mixed
+     * @throws Throwable
+     */
+    public function transactional(callable $callable);
 }

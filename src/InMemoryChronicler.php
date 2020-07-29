@@ -16,6 +16,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
+use Throwable;
 
 final class InMemoryChronicler implements TransactionalChronicler
 {
@@ -196,5 +197,21 @@ final class InMemoryChronicler implements TransactionalChronicler
         yield from $messages;
 
         return count($messages);
+    }
+
+    public function transactional(callable $callable)
+    {
+        $this->beginTransaction();
+
+        try {
+            $result = $callable($this);
+            $this->commitTransaction();
+        } catch (Throwable $exception) {
+            $this->rollbackTransaction();
+
+            throw $exception;
+        }
+
+        return $result ?: true;
     }
 }

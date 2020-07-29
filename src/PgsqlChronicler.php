@@ -16,13 +16,14 @@ use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Connection\HasConnectionTransaction;
 use Plexikon\Chronicle\Support\Connection\StreamEventLoader;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
+use Plexikon\Chronicle\Support\Contract\Chronicling\ConnectionChronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\PersistenceStrategy;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\WriteLockStrategy;
 
-final class PgsqlChronicler implements TransactionalChronicler
+final class PgsqlChronicler implements ConnectionChronicler, TransactionalChronicler
 {
     use HasConnectionTransaction;
 

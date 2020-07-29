@@ -95,4 +95,9 @@ final class TransactionalEventChronicler extends EventChronicler implements Tran
     {
         return $this->chronicler->inTransaction();
     }
+
+    public function transactional(callable $callable)
+    {
+        return $this->chronicler->transactional($callable);
+    }
 }
