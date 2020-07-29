@@ -1,5 +1,7 @@
 <?php
 
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorOption;
+
 return [
 
     'event' => [
@@ -41,12 +43,35 @@ return [
     ],
 
     'repositories' => [
+
         'stream_name' => [
             'aggregate_class_name' => 'fqcn',
             'chronicler_id' => 'service_id',
             'cache' => 10000, // 0 to disable aggregate caching
             'event_decorators' => [], // merge w/ event decorators
         ],
+    ],
+
+    'projectors' => [
+
+        'use' => 'default',
+        'projector' => [
+            'default' => [
+                'connection' => 'pgsql',
+                'chronicler_id' => \Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler::class,
+                'options' => 'lazy',
+            ]
+        ],
+
+        'options' =>[
+            'lazy' => [
+                ProjectorOption::OPTION_PCNTL_DISPATCH => true,
+                ProjectorOption::OPTION_LOCK_TIMEOUT_MS => 20000,
+                ProjectorOption::OPTION_SLEEP => 10000,
+                ProjectorOption::OPTION_UPDATE_LOCK_THRESHOLD => 15000,
+                ProjectorOption::OPTION_PERSIST_BLOCK_SIZE => 1000,
+            ],
+        ]
     ],
 
     'console' => [
