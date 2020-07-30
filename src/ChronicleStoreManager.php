@@ -62,7 +62,9 @@ class ChronicleStoreManager
 
     protected function resolveChronicleStore(string $driver, array $config): Chronicler
     {
-        $method = 'create' . Str::studly($driver . 'ChronicleDriver');
+        $connection = $config['driver'];
+
+        $method = 'create' . Str::studly($connection . 'ChronicleDriver');
 
         if (!method_exists($this, $method)) {
             throw new RuntimeException("Unable to resolve chronicle store with driver $driver");
