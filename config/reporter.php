@@ -38,12 +38,16 @@ return [
     /**
      * Reporter
      *
-     * name: optional - service used to bind reporter in container (default to concrete class)
+     * name: optional - service id use to bind reporter in container (default to concrete class)
+     *                  if you extend/encapsulate a reporter, a service id is required to produce
+     *                  a message async to the right bus
      * concrete: optional - fqcn class
      * route_strategy: sync, per_message, async_all
      *                 specify to override message.producer.default
      *                 query reporter is always sync
-     * handler_method: optional - __invoke or specify a method name
+     * handler_method: optional - default to __invoke or specify a method name
+     *                 system does not check if you dispatch a message to the right bus,
+     *                 naming your handler method prevent wrong configuration
      * messaging decorators: merged with messaging.decorators
      * messaging subscribers: merged with messaging.subscribers
      * tracker_id: ( not set ) specify a tracker service id i/o the default provided
@@ -54,6 +58,7 @@ return [
         'command' => [
 
             'default' => [
+                'name' => null,
                 'handler_method' => 'command',
                 'messaging' => [
                     'decorators' => [
@@ -73,6 +78,7 @@ return [
         'event' => [
 
             'default' => [
+                'name' => null,
                 'handler_method' => 'onEvent',
                 'messaging' => [
                     'decorators' => [
@@ -89,6 +95,7 @@ return [
         'query' => [
 
             'default' => [
+                'name' => null,
                 'handler_method' => 'query',
                 'messaging' => [
                     'subscribers' => [

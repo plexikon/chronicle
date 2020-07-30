@@ -21,6 +21,7 @@ use Plexikon\Chronicle\Tracker\TransactionalTrackingEvent;
 use ReflectionClass;
 use Throwable;
 
+// todo replace deleted event dispatcher to event reporter
 final class EventDispatcherSubscriberTest extends TestCase
 {
     /**

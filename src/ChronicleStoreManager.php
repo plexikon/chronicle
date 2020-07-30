@@ -89,7 +89,7 @@ class ChronicleStoreManager
             $connection,
             $this->container->get(EventStreamProvider::class),
             $this->container->make($config['strategy']),
-            $this->createDatabaseWriteLockDriver($driver, $config['use_write_lock'] ?? false),
+            $this->createDatabaseWriteLockDriver($connection, $config['use_write_lock'] ?? false),
             $this->container->make(StreamEventLoader::class),
             $config['options']['disable_transaction'] ?? false
         );
