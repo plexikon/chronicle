@@ -64,7 +64,7 @@ return [
             ]
         ],
 
-        'options' =>[
+        'options' => [
             'lazy' => [
                 ProjectorOption::OPTION_PCNTL_DISPATCH => true,
                 ProjectorOption::OPTION_LOCK_TIMEOUT_MS => 20000,
@@ -80,6 +80,8 @@ return [
         'load_commands' => true,
         'commands' => [
             \Plexikon\Chronicle\Support\Console\CreateEventStreamCommand::class,
+            \Plexikon\Chronicle\Support\Console\PersistentProjectionOperatorCommand::class,
+            \Plexikon\Chronicle\Support\Console\ReadProjectionOperatorCommand::class,
         ]
     ]
 ];
