@@ -35,7 +35,7 @@ class ChronicleStoreManager
         $this->config = $container->get(Repository::class)->get('chronicler');
     }
 
-    public function create(string $driver): Chronicler
+    public function create(string $driver, bool $wireSubscribers = true): Chronicler
     {
         if ($customChronicler = $this->customChroniclers[$driver] ?? null) {
             return $customChronicler($this->container, $this->config);
@@ -49,7 +49,7 @@ class ChronicleStoreManager
 
         $chronicler = $this->resolveChronicleStore($driver, $config);
 
-        if ($chronicler instanceof BaseEventChronicler) {
+        if ($wireSubscribers && $chronicler instanceof BaseEventChronicler) {
             $this->attachSubscribers($chronicler, $config);
         }
 
