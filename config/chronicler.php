@@ -55,6 +55,7 @@ return [
     'projectors' => [
 
         'use' => 'default',
+
         'projector' => [
             'default' => [
                 'connection' => 'pgsql',

@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Plexikon\Chronicle\Chronicling\EventChronicler;
@@ -82,9 +83,10 @@ class ChronicleStoreManager
     protected function createPgsqlChronicleDriver(array $config): Chronicler
     {
         $driver = $config['driver'];
+        $connection = $this->container['db']->connection($driver);
 
         return new PgsqlChronicler(
-            $this->container['db']->connection($driver),
+            $connection,
             $this->container->get(EventStreamProvider::class),
             $this->container->make($config['strategy']),
             $this->createDatabaseWriteLockDriver($driver, $config['use_write_lock'] ?? false),
@@ -106,7 +108,8 @@ class ChronicleStoreManager
             return $chronicler;
         }
 
-        $tracker = $this->container->get($config['tracking']['tracker_id']);
+        // tracker does not have to be bound but should not be shared
+        $tracker = $this->container->make($config['tracking']['tracker_id']);
 
         // checkMe
         if ($chronicler instanceof TransactionalChronicler && $tracker instanceof TransactionalEventTracker) {
@@ -120,17 +123,19 @@ class ChronicleStoreManager
         throw new RuntimeException("Unable to configure chronicler decorator");
     }
 
-    protected function createDatabaseWriteLockDriver(string $driver, bool $useWriteLock): WriteLockStrategy
+    protected function createDatabaseWriteLockDriver(ConnectionInterface $connection, bool $useWriteLock): WriteLockStrategy
     {
         if (!$useWriteLock) {
             return new NoWriteLock();
         }
 
+        $driver = $connection->getDriverName();
+
         switch ($driver) {
             case 'pgsql' :
-                return $this->container->make(PgsqlWriteLock::class);
+                return new PgsqlWriteLock($connection);
             case 'mysql':
-                return $this->container->make(MysqlWriteLock::class);
+                return new MysqlWriteLock($connection);
             default:
                 throw new RuntimeException("Unavailable write lock strategy for driver $driver");
         }
