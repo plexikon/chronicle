@@ -5,9 +5,9 @@ namespace Plexikon\Chronicle\Chronicling;
 
 use Generator;
 use Illuminate\Support\Arr;
+use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler;
-use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventSubscriber;
@@ -15,11 +15,11 @@ use Plexikon\Chronicle\Support\Contract\Tracker\EventSubscriber;
 final class EventDispatcherSubscriber implements EventSubscriber
 {
     private array $recordedStreams = [];
-    private EventDispatcher $eventDispatcher;
+    private ReportEvent $reporter;
 
-    public function __construct(EventDispatcher $eventDispatcher)
+    public function __construct(ReportEvent $reporter)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->reporter = $reporter;
     }
 
     public function attachToChronicler(Chronicler $chronicler): void
@@ -37,14 +37,16 @@ final class EventDispatcherSubscriber implements EventSubscriber
     {
         $chronicler->subscribe($chronicler::PERSIST_STREAM_EVENT,
             function (EventContext $context) use ($chronicler): void {
-                $recordedEvents = $context->stream()->events();
+                $streamEvents = $context->stream()->events();
 
                 if (!$this->inTransaction($chronicler)) {
                     if (!$context->hasStreamNotFound() && !$context->hasRaceCondition()) {
-                        $this->eventDispatcher->dispatch(...$recordedEvents);
+                        foreach ($streamEvents as $streamEvent) {
+                            $this->reporter->publish($streamEvent);
+                        }
                     }
                 } else {
-                    $this->recordEvents($recordedEvents);
+                    $this->recordEvents($streamEvents);
                 }
             });
 
@@ -59,7 +61,9 @@ final class EventDispatcherSubscriber implements EventSubscriber
 
                 if (!$this->inTransaction($chronicler)) {
                     if (!$context->hasStreamAlreadyExits()) {
-                        $this->eventDispatcher->dispatch(...$streamEvents);
+                        foreach ($streamEvents as $streamEvent) {
+                            $this->reporter->publish($streamEvent);
+                        }
                     }
                 } else {
                     $this->recordEvents($streamEvents);
@@ -78,7 +82,9 @@ final class EventDispatcherSubscriber implements EventSubscriber
 
                 $this->recordedStreams = [];
 
-                $this->eventDispatcher->dispatch(...$recordedStreams);
+                foreach ($recordedStreams as $recordedStream) {
+                    $this->reporter->publish($recordedStream);
+                }
             });
 
         $chronicler->subscribe($chronicler::ROLLBACK_TRANSACTION_EVENT,
