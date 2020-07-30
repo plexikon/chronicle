@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorManager;
 
-final class ReadProjectionOperatorCommand extends Command
+class ReadProjectionOperatorCommand extends Command
 {
     protected $signature = 'chronicle:find
                                 {stream : stream name}

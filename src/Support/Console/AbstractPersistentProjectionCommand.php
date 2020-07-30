@@ -16,7 +16,7 @@ use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
  * @method ProjectionProjector emit(DomainEvent $event)
  * @method ProjectionProjector linkTo(string $streamName, DomainEvent $event)
  */
-final class AbstractPersistentProjectionCommand extends Command
+class AbstractPersistentProjectionCommand extends Command
 {
     protected bool $usePcntlSignal = true;
     protected string $projectorManagerId = ProjectorManager::class;

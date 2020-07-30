@@ -10,7 +10,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 
 final class CreateEventStreamCommand extends Command
 {
-    protected $signature = 'chronicler:create-stream
+    protected $signature = 'chronicle:create-stream
                                 {stream : stream name}';
 
     protected $description = 'first commit for one event stream';
