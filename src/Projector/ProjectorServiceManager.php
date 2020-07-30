@@ -55,7 +55,9 @@ class ProjectorServiceManager
             return $customProjector($this->container, $config);
         }
 
-        $method = 'create' . Str::studly($driver . 'ProjectorManager') . 'Driver';
+        $connection = $config['connection'];
+
+        $method = 'create' . Str::studly($connection . 'ProjectorManager') . 'Driver';
 
         if (method_exists($this, $method)) {
             return $this->$method($config);
@@ -64,7 +66,7 @@ class ProjectorServiceManager
         throw new RuntimeException("Unable to resolve projector manager with driver $driver");
     }
 
-    protected function createDefaultProjectorManagerDriver(array $config): BaseProjectorManager
+    protected function createPgsqlProjectorManagerDriver(array $config): BaseProjectorManager
     {
         $queryScope = $this->determineScopeConnection($config['connection']);
         $options = $this->determineProjectorOptions($config['options']);
