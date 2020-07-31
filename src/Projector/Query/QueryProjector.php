@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Query;
+
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Projector\StreamHandler;
@@ -15,6 +16,7 @@ final class QueryProjector implements BaseQueryProjector
     private ProjectorContext $projectorContext;
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
+
 
     public function __construct(ProjectorContext $projectorContext,
                                 Chronicler $chronicler,

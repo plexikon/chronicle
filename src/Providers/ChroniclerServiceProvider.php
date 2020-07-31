@@ -42,7 +42,10 @@ final class ChroniclerServiceProvider extends ServiceProvider
 
         $this->app->singleton(ChronicleStoreManager::class);
         $this->app->singleton(ChronicleRepositoryManager::class);
-        $this->app->singleton(ProjectorServiceManager::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->app->singleton(ProjectorServiceManager::class);
+        }
     }
 
     private function registerModels(array $config): void
