@@ -22,13 +22,11 @@ class PersistentProjectionOperatorCommand extends Command
 
     public function handle(): void
     {
-        $this->projector = $this->getLaravel()->get(ProjectorManager::class);
-
         [$streamName, $operation] = $this->determineArguments();
 
         $this->assertProjectionOperationExists($operation);
 
-        if(!$this->isOperationOnStreamConfirmed($streamName, $operation)){
+        if (!$this->isOperationOnStreamConfirmed($streamName, $operation)) {
             return;
         }
 
@@ -41,16 +39,16 @@ class PersistentProjectionOperatorCommand extends Command
     {
         switch ($operation) {
             case 'stop':
-                $this->projector->stopProjection($streamName);
+                $this->projector()->stopProjection($streamName);
                 break;
             case 'reset':
-                $this->projector->resetProjection($streamName);
+                $this->projector()->resetProjection($streamName);
                 break;
             case 'delete':
-                $this->projector->deleteProjection($streamName, false);
+                $this->projector()->deleteProjection($streamName, false);
                 break;
             case 'deleteIncl':
-                $this->projector->deleteProjection($streamName, true);
+                $this->projector()->deleteProjection($streamName, true);
                 break;
         }
     }
@@ -58,7 +56,7 @@ class PersistentProjectionOperatorCommand extends Command
     protected function isOperationOnStreamConfirmed(string $streamName, string $operation): bool
     {
         try {
-            $projectionStatus = $this->projector->statusOf($streamName);
+            $projectionStatus = $this->projector()->statusOf($streamName);
         } catch (ProjectionNotFound $projectionNotFound) {
             $this->error("Projection no found with stream name $streamName ... operation aborted");
             return false;
@@ -76,10 +74,7 @@ class PersistentProjectionOperatorCommand extends Command
 
     protected function determineArguments(): array
     {
-        return [
-            $this->argument('stream'),
-            $this->argument('op')
-        ];
+        return [$this->argument('stream'), $this->argument('op')];
     }
 
     protected function assertProjectionOperationExists(string $operation): void
@@ -87,5 +82,10 @@ class PersistentProjectionOperatorCommand extends Command
         if (!in_array($operation, self::OPERATIONS_AVAILABLE)) {
             throw new RuntimeException("Invalid operation $operation");
         }
+    }
+
+    protected function projector(): ProjectorManager
+    {
+        return $this->projector ?? $this->projector = $this->getLaravel()->get(ProjectorManager::class);
     }
 }
