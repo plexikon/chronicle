@@ -11,7 +11,7 @@ class ReadProjectionOperatorCommand extends Command
 {
     protected $signature = 'chronicle:find
                                 {stream : stream name}
-                                {field : available field (status position state)}';
+                                {field : available field (state position status)}';
 
     protected $description = 'Find status, stream position or state by projection stream name';
 
