@@ -25,8 +25,6 @@ class StreamEventLoader
 
     public function query(Builder $builder, StreamName $streamName): Generator
     {
-        //fixMe code exception are incorrect
-
         try {
             $events = $this->fromCursor($builder, $streamName);
 

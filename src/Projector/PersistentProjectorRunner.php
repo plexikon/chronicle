@@ -12,25 +12,25 @@ final class PersistentProjectorRunner implements ProjectorRunner
     private ?ReadModel $readModel;
     private ProjectorContext $projectorContext;
     private BaseProjectorLock $projectorLock;
-    private ProjectionStatusLoader $projectionStatusHandler;
+    private ProjectionStatusLoader $projectionStatusLoader;
     private StreamHandler $streamHandler;
 
     public function __construct(ProjectorContext $projectorContext,
                                 BaseProjectorLock $projectorLock,
-                                ProjectionStatusLoader $projectionStatusHandler,
+                                ProjectionStatusLoader $projectionStatusLoader,
                                 StreamHandler $streamHandler,
                                 ?ReadModel $readModel)
     {
         $this->projectorContext = $projectorContext;
         $this->projectorLock = $projectorLock;
-        $this->projectionStatusHandler = $projectionStatusHandler;
+        $this->projectionStatusLoader = $projectionStatusLoader;
         $this->streamHandler = $streamHandler;
         $this->readModel = $readModel;
     }
 
     public function runProjection(bool $keepRunning): void
     {
-        if ($this->projectionStatusHandler->fetchRemoteProjectionStatus(true, $keepRunning)) {
+        if ($this->projectionStatusLoader->fromRemote(true, $keepRunning)) {
             return;
         }
 
@@ -44,7 +44,7 @@ final class PersistentProjectorRunner implements ProjectorRunner
 
                 $this->projectorContext->dispatchPCNTLSignal();
 
-                $this->projectionStatusHandler->fetchRemoteProjectionStatus(false, $keepRunning);
+                $this->projectionStatusLoader->fromRemote(false, $keepRunning);
 
                 $this->projectorContext->setupStreamPosition();
             } while ($keepRunning && !$this->projectorContext->isProjectionStopped);

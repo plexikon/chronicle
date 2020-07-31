@@ -13,7 +13,7 @@ final class ProjectionStatusLoader
         $this->projectorLock = $projectorLock;
     }
 
-    public function fetchRemoteProjectionStatus(bool $shouldStop, bool $keepRunning): bool
+    public function fromRemote(bool $shouldStop, bool $keepRunning): bool
     {
         switch ($this->projectorLock->fetchProjectionStatus()) {
             case ProjectionStatus::STOPPING():
