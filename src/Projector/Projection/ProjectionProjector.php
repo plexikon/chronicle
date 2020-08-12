@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Projector\Projection;
 
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Projector\Concerns\HasPersistentProjector;
+use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Reporter\DomainEvent;
 use Plexikon\Chronicle\Stream\Stream;
@@ -13,16 +14,18 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectionProjector as BaseProjectionProjector;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 use Plexikon\Chronicle\Support\Projector\StreamCached;
 
-final class ProjectionProjector implements BaseProjectionProjector
+final class ProjectionProjector implements BaseProjectionProjector, ProjectorFactory
 {
-    use HasPersistentProjector;
+    use HasPersistentProjector, HasProjectorFactory;
 
     protected ?string $streamName;
     protected ProjectorContext $projectorContext;
     protected Chronicler $chronicler;
+    protected ProjectorLock $lock;
     private StreamCached $streamCached;
 
     public function __construct(ProjectorContext $projectorContext,
@@ -32,11 +35,11 @@ final class ProjectionProjector implements BaseProjectionProjector
                                 string $streamName)
     {
         $this->projectorContext = $projectorContext;
-        $this->projectorLock = $projectorLock;
+        $this->lock = $projectorLock;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
         $this->streamName = $streamName;
-        $this->streamCached = new StreamCached($projectorContext->options->persistBlockSize());
+        $this->streamCached = new StreamCached($projectorContext->option->persistBlockSize());
     }
 
     public function emit(DomainEvent $event): void
@@ -73,10 +76,10 @@ final class ProjectionProjector implements BaseProjectionProjector
     protected function createEventHandlerContext(PersistentProjector $projector, ?string $streamName): object
     {
         return new class($projector, $streamName) {
-            private ProjectionProjector $projector;
+            private BaseProjectionProjector $projector;
             private ?string $streamName;
 
-            public function __construct(ProjectionProjector $projector, ?string &$streamName)
+            public function __construct(BaseProjectionProjector $projector, ?string &$streamName)
             {
                 $this->projector = $projector;
                 $this->streamName = &$streamName;

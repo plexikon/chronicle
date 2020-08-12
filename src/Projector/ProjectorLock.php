@@ -46,7 +46,7 @@ final class ProjectorLock implements BaseProjectorLock
             throw new ProjectionNotFound($exceptionMessage);
         }
 
-        $this->projectorContext->streamPosition->mergeStreamsFromRemote(
+        $this->projectorContext->position->mergeStreamsFromRemote(
             Json::decode($result->position())
         );
 
@@ -59,7 +59,7 @@ final class ProjectorLock implements BaseProjectorLock
     {
         $this->persistProjection();
 
-        $this->projectorContext->isProjectionStopped = true;
+        $this->projectorContext->isStopped = true;
         $idleProjection = ProjectionStatus::IDLE();
 
         $this->projectionProvider->updateStatus($this->streamName, [
@@ -71,7 +71,7 @@ final class ProjectorLock implements BaseProjectorLock
 
     public function startProjectionAgain(): void
     {
-        $this->projectorContext->isProjectionStopped = false;
+        $this->projectorContext->isStopped = false;
         $runningStatus = ProjectionStatus::RUNNING();
         $now = LockWaitTime::fromNow();
 
@@ -87,7 +87,7 @@ final class ProjectorLock implements BaseProjectorLock
     public function persistProjection(): void
     {
         $this->projectionProvider->updateStatus($this->streamName, [
-            'position' => Json::encode($this->projectorContext->streamPosition->all()),
+            'position' => Json::encode($this->projectorContext->position->all()),
             'state' => Json::encode($this->projectorContext->state->getState()),
             'locked_until' => $this->createLockUntilString(LockWaitTime::fromNow())
         ]);
@@ -95,7 +95,7 @@ final class ProjectorLock implements BaseProjectorLock
 
     public function resetProjection(): void
     {
-        $this->projectorContext->streamPosition->reset();
+        $this->projectorContext->position->reset();
 
         $callback = $this->projectorContext->initCallback();
 
@@ -106,7 +106,7 @@ final class ProjectorLock implements BaseProjectorLock
         }
 
         $this->projectionProvider->updateStatus($this->streamName, [
-            'position' => Json::encode($this->projectorContext->streamPosition->all()),
+            'position' => Json::encode($this->projectorContext->position->all()),
             'state' => Json::encode($this->projectorContext->state->getState()),
             'status' => $this->projectorContext->status->getValue()
         ]);
@@ -116,14 +116,14 @@ final class ProjectorLock implements BaseProjectorLock
     {
         $this->projectionProvider->deleteByName($this->streamName);
 
-        $this->projectorContext->isProjectionStopped = true;
+        $this->projectorContext->isStopped = true;
         $this->projectorContext->state->resetState();
 
         if (is_callable($callback = $this->projectorContext->initCallback())) {
             $this->projectorContext->state->setState($callback());
         }
 
-        $this->projectorContext->streamPosition->reset();
+        $this->projectorContext->position->reset();
     }
 
     public function fetchProjectionStatus(): ProjectionStatus
@@ -169,7 +169,7 @@ final class ProjectorLock implements BaseProjectorLock
 
             $this->projectionProvider->updateStatus($this->streamName, [
                 'locked_until' => $lockedUntil,
-                'position' => Json::encode($this->projectorContext->streamPosition->all())
+                'position' => Json::encode($this->projectorContext->position->all())
             ]);
 
             $this->lastLockUpdate = $now->toDateTime();
@@ -190,7 +190,7 @@ final class ProjectorLock implements BaseProjectorLock
 
     public function shouldUpdateLock(DateTimeImmutable $dateTime): bool
     {
-        $threshold = $this->projectorContext->options->updateLockThreshold();
+        $threshold = $this->projectorContext->option->updateLockThreshold();
 
         if (null === $this->lastLockUpdate || 0 === $threshold) {
             return true;
@@ -212,6 +212,6 @@ final class ProjectorLock implements BaseProjectorLock
 
     private function createLockUntilString(LockWaitTime $dateTime): string
     {
-        return $dateTime->createLockUntil($this->projectorContext->options->lockTimoutMs());
+        return $dateTime->createLockUntil($this->projectorContext->option->lockTimoutMs());
     }
 }

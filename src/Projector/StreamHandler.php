@@ -68,15 +68,15 @@ final class StreamHandler
     private function projectStreamEventsWithHandlers(StreamEventIterator $streamEvents, $eventHandlers): void
     {
         foreach ($streamEvents as $key => $streamEvent) {
-            $this->projectorContext->dispatchPCNTLSignal();
+            $this->projectorContext->dispatchSignal();
 
-            $this->projectorContext->streamPosition->setStreamNameAt(
+            $this->projectorContext->position->setStreamNameAt(
                 $this->projectorContext->currentStreamName,
                 $key
             );
 
             if ($this->isProjectorPersistent) {
-                $this->projectorContext->eventCounter->increment();
+                $this->projectorContext->counter->increment();
             }
 
             $messageHandler = $eventHandlers;
@@ -87,7 +87,7 @@ final class StreamHandler
                         $this->updatePersistentProjection();
                     }
 
-                    if ($this->projectorContext->isProjectionStopped) {
+                    if ($this->projectorContext->isStopped) {
                         break;
                     }
 
@@ -105,7 +105,7 @@ final class StreamHandler
                 $this->updatePersistentProjection();
             }
 
-            if ($this->projectorContext->isProjectionStopped) {
+            if ($this->projectorContext->isStopped) {
                 break;
             }
         }
@@ -115,19 +115,19 @@ final class StreamHandler
     {
         Assertion::true($this->isProjectorPersistent);
 
-        $persistBlockSize = $this->projectorContext->options->persistBlockSize();
+        $persistBlockSize = $this->projectorContext->option->persistBlockSize();
 
-        if ($this->projectorContext->eventCounter->equals($persistBlockSize)) {
+        if ($this->projectorContext->counter->equals($persistBlockSize)) {
             $this->projectorLock->persistProjection();
 
-            $this->projectorContext->eventCounter->reset();
+            $this->projectorContext->counter->reset();
 
             $this->projectorContext->status = $this->projectorLock->fetchProjectionStatus();
 
             $keepProjectionRunning = [ProjectionStatus::RUNNING(), ProjectionStatus::IDLE()];
 
             if (!in_array($this->projectorContext->status, $keepProjectionRunning)) {
-                $this->projectorContext->isProjectionStopped = true;
+                $this->projectorContext->isStopped = true;
             }
         }
     }

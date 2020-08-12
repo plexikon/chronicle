@@ -3,70 +3,96 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
-use Closure;
-use Plexikon\Chronicle\Projector\Concerns\HasContextFactory;
+use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionState;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorOption as BaseProjectorOption;
+use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
+use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorOption;
 use Plexikon\Chronicle\Support\Projector\EventCounter;
-use Plexikon\Chronicle\Support\Projector\InMemoryProjectionState;
 use Plexikon\Chronicle\Support\Projector\StreamPosition;
 
 class ProjectorContext
 {
-    use HasContextFactory;
-
-    public BaseProjectorOption $options;
+    public ?string $currentStreamName = null;
+    public bool $isStopped = false;
+    public bool $isStreamCreated = false;
+    public ProjectorContextFactory $factory;
+    public ProjectorOption $option;
+    public StreamPosition $position;
     public ProjectionState $state;
     public ProjectionStatus $status;
-    public EventCounter $eventCounter;
-    public ?StreamPosition $streamPosition;
-    public ?string $currentStreamName = null;
-    public bool $isProjectionStopped = false;
-    public bool $isStreamCreated = false;
+    public EventCounter $counter;
 
-    public function __construct(BaseProjectorOption $projectorOption,
-                                StreamPosition $streamPosition,
-                                ProjectionState $projectionState = null)
+    public function __construct(ProjectorOption $option, StreamPosition $position, ProjectionState $state)
     {
-        $this->streamPosition = $streamPosition;
-        $this->options = $projectorOption;
-        $this->state = $projectionState ?? new InMemoryProjectionState();
+        $this->option = $option;
+        $this->position = $position;
+        $this->state = $state;
+        $this->counter = new EventCounter();
         $this->status = ProjectionStatus::IDLE();
-        $this->eventCounter = new EventCounter();
-    }
-
-    public function setupStreamPosition(): void
-    {
-        $this->streamPosition->make($this->streamNames);
+        $this->factory = new ProjectorContextFactory();
     }
 
     public function setUpProjection(object $eventHandlerContext): void
     {
         $this->validateFactory();
 
-        if ($this->hasSingleHandler()) {
-            $this->eventHandlers = Closure::bind($this->eventHandlers, $eventHandlerContext);
-        } else {
-            foreach ($this->eventHandlers as $eventName => $eventHandler) {
-                $this->eventHandlers[$eventName] = Closure::bind($eventHandler, $eventHandlerContext);
-            }
-        }
+        $this->factory->bindHandlers($eventHandlerContext);
 
-        if (is_callable($this->initCallback)) {
-            $callback  = Closure::bind($this->initCallback, $eventHandlerContext);
+        $this->state->setState(
+            $this->factory->bindInit($eventHandlerContext)
+        );
+    }
 
-            $result = $callback();
+    public function hasSingleHandler(): bool
+    {
+        return !is_array($this->factory->get('event_handlers'));
+    }
 
-            $this->state->setState($result);
+    public function initCallback(): ?callable
+    {
+        return $this->factory->getInit();
+    }
 
-            $this->initCallback = $callback;
+    /**
+     * @return QueryFilter|ProjectionQueryFilter
+     */
+    public function queryFilter(): QueryFilter
+    {
+        return $this->factory->getQueryFilter();
+    }
+
+    /**
+     * @return array|callable
+     */
+    public function eventHandlers()
+    {
+        return $this->factory->getEventHandlers();
+    }
+
+    public function streamNames(): array
+    {
+        return $this->factory->getStreamNames();
+    }
+
+    public function keepRunning(): bool
+    {
+        return $this->factory->getKeepRunning();
+    }
+
+    public function dispatchSignal(): void
+    {
+        if ($this->option->dispatchSignal()) {
+            pcntl_signal_dispatch();
         }
     }
 
-    public function dispatchPCNTLSignal(): void
+    public function validateFactory(): void
     {
-        if ($this->options->dispatchSignal()) {
-            pcntl_signal_dispatch();
-        }
+        Assertion::notNull($this->queryFilter(), 'Query filter not set');
+
+        Assertion::notEmpty($this->streamNames(), 'Stream names not set');
+
+        Assertion::notNull($this->eventHandlers(), 'Event handlers not set');
     }
 }

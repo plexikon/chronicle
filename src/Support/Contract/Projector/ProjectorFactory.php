@@ -3,7 +3,6 @@
 namespace Plexikon\Chronicle\Support\Contract\Projector;
 
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
-use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
 
 interface ProjectorFactory extends Projector
