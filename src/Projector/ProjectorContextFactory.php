@@ -21,11 +21,16 @@ final class ProjectorContextFactory
     public function bindHandlers(object $eventContext): void
     {
         if ($this->getEventHandlers() instanceof Closure) {
-            $this->factory['event_handlers'] = Closure::bind($this->factory['event_handlers'], $eventContext);
+            $this->factory->put('event_handlers',
+                Closure::bind($this->getEventHandlers(), $eventContext)
+            );
         } else {
-            foreach ($this->factory['event_handlers'] as $eventName => $eventHandler) {
-                $this->factory['event_handlers'][$eventName] = Closure::bind($eventHandler, $eventContext);
+            $bindings = [];
+            foreach ($this->factory->get('event_handlers') as $eventName => $eventHandler) {
+                $bindings[$eventName] = Closure::bind($eventHandler, $eventContext);
             }
+
+            $this->factory->put('event_handlers', $bindings);
         }
     }
 
@@ -36,9 +41,11 @@ final class ProjectorContextFactory
 
             $result = $callback();
 
-            $this->factory['init'] = $callback;
+            if (is_array($result)) {
+                $this->factory->put('init', $callback);
 
-            return $result;
+                return $result;
+            }
         }
 
         return [];
@@ -109,7 +116,7 @@ final class ProjectorContextFactory
     }
 
     /**
-     * @return array|callable
+     * @return null|array|callable
      */
     public function getEventHandlers()
     {
@@ -126,7 +133,7 @@ final class ProjectorContextFactory
         return $this->factory->get('keep_running');
     }
 
-    public function getQueryFilter(): QueryFilter
+    public function getQueryFilter(): ?QueryFilter
     {
         return $this->factory->get('query_filter');
     }
@@ -136,7 +143,7 @@ final class ProjectorContextFactory
         return new Collection([
             'init' => null,
             'stream_names' => [],
-            'event_handlers' => [],
+            'event_handlers' => null,
             'query_filter' => null,
             'keep_running' => false
         ]);
