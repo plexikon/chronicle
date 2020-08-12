@@ -1,28 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector;
+namespace Plexikon\Chronicle\Support\Projector;
 
 use Closure;
+use Plexikon\Chronicle\Projector\ProjectorContext;
+use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Throwable;
 
 final class Pipeline
 {
     /**
-     * The object being passed through the pipeline.
-     *
-     * @var mixed
-     */
-    protected $passable;
-
-    /**
-     * The array of class pipes.
-     *
      * @var Pipe[]
      */
-    protected $pipes = [];
+    protected array $pipes = [];
 
-    public function send($passable): self
+    protected ProjectorContext $passable;
+
+    public function send(ProjectorContext $passable): self
     {
         $this->passable = $passable;
 
@@ -43,11 +38,6 @@ final class Pipeline
         );
 
         return $pipeline($this->passable);
-    }
-
-    public function thenReturn()
-    {
-        return $this->then(fn($passable) => $passable);
     }
 
     protected function prepareDestination(Closure $destination)

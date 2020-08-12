@@ -6,19 +6,19 @@ namespace Plexikon\Chronicle\Projector\Query;
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
 use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
-use Plexikon\Chronicle\Projector\Pipeline;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\Projector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\QueryProjector as BaseQueryProjector;
+use Plexikon\Chronicle\Support\Projector\Pipeline;
 
 final class QueryProjector implements BaseQueryProjector, ProjectorFactory
 {
     use HasProjectorFactory;
 
-    private ProjectorContext $context;
+    protected ProjectorContext $context;
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
 
@@ -44,27 +44,16 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
 
         $this->context->position->make($this->context->streamNames());
 
-        $this->newPipeline()
-            ->send($this->context)
-            ->then(function (ProjectorContext $context): bool {
-                return $context->isStopped;
-            });
+        $this->sendThroughPipes();
     }
 
-    private function newPipeline(): Pipeline
+    private function sendThroughPipes(): void
     {
-        $pipeline = new Pipeline();
-
-        $pipeline->through($this->getPipes());
-
-        return $pipeline;
-    }
-
-    private function getPipes(): array
-    {
-        return [
-            new StreamHandler($this->chronicler, $this->messageAlias, null),
-        ];
+        (new Pipeline())
+            ->through([
+                new StreamHandler($this->chronicler, $this->messageAlias, null),
+            ])
+            ->send($this->context);
     }
 
     public function stop(): void

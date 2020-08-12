@@ -32,7 +32,7 @@ final class PersistentRunner implements PipeOnce
                 return true;
             }
 
-            $this->preparePersistentRunner($context);
+            $this->prepareProjection($context);
 
             $this->hasBeenPrepared = true;
         }
@@ -40,7 +40,7 @@ final class PersistentRunner implements PipeOnce
         return $next($context);
     }
 
-    private function preparePersistentRunner(ProjectorContext $context): void
+    private function prepareProjection(ProjectorContext $context): void
     {
         $context->isStopped = false;
 

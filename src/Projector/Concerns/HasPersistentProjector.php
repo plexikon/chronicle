@@ -8,7 +8,6 @@ use Plexikon\Chronicle\Projector\Pipe\ProjectionReset;
 use Plexikon\Chronicle\Projector\Pipe\ProjectionUpdater;
 use Plexikon\Chronicle\Projector\Pipe\SignalDispatcher;
 use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
-use Plexikon\Chronicle\Projector\Pipeline;
 use Plexikon\Chronicle\Projector\ProjectionStatusLoader;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
@@ -17,12 +16,13 @@ use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
+use Plexikon\Chronicle\Support\Projector\Pipeline;
 
 trait HasPersistentProjector
 {
     protected ?ReadModel $readModel;
     protected ProjectorLock $lock;
-    protected ProjectionStatusLoader $loader;
+    protected ProjectionStatusLoader $statusLoader;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
 
@@ -36,10 +36,11 @@ trait HasPersistentProjector
         );
 
         try {
-            $pipeline = $this->newPipeline();
+            $pipeline = new Pipeline();
 
             do {
                 $isStopped = $pipeline
+                    ->through($this->getPipes())
                     ->send($this->context)
                     ->then(function (ProjectorContext $context): bool {
                         return $context->isStopped;
@@ -48,15 +49,6 @@ trait HasPersistentProjector
         } finally {
             $this->lock->releaseLock();
         }
-    }
-
-    protected function newPipeline(): Pipeline
-    {
-        $pipeline = new Pipeline();
-
-        $pipeline->through($this->getPipes());
-
-        return $pipeline;
     }
 
     public function stop(): void
@@ -90,11 +82,11 @@ trait HasPersistentProjector
     protected function getPipes(): array
     {
         return [
-            new PersistentRunner($this->loader, $this->lock, $this->readModel),
+            new PersistentRunner($this->statusLoader, $this->lock, $this->readModel),
             new StreamHandler($this->chronicler, $this->messageAlias, $this->lock),
             new ProjectionUpdater($this->lock),
             new SignalDispatcher(),
-            new ProjectionReset($this->loader)
+            new ProjectionReset($this->statusLoader)
         ];
     }
 
