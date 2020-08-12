@@ -5,7 +5,6 @@ namespace Plexikon\Chronicle\Projector\ReadModel;
 
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorLock;
-use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLockDecorator;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
@@ -15,7 +14,6 @@ final class ReadModelLock implements ProjectorLockDecorator
     use HasProjectorLock;
 
     protected ProjectorLock $projectorLock;
-    private Chronicler $chronicler;
     private ReadModel $readModel;
 
     public function __construct(ProjectorLock $projectorLock, ReadModel $readModel)
