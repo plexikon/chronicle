@@ -37,7 +37,7 @@ final class ProjectorContextFactory
     public function bindInit(object $eventContext): array
     {
         if (is_callable($this->getInit())) {
-            $callback = Closure::bind($this->factory['init'], $eventContext);
+            $callback = Closure::bind($this->factory->get('init'), $eventContext);
 
             $result = $callback();
 
