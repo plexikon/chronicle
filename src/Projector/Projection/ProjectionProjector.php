@@ -6,6 +6,7 @@ namespace Plexikon\Chronicle\Projector\Projection;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Projector\Concerns\HasPersistentProjector;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
+use Plexikon\Chronicle\Projector\ProjectionStatusLoader;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Reporter\DomainEvent;
 use Plexikon\Chronicle\Stream\Stream;
@@ -23,6 +24,7 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
     use HasPersistentProjector, HasProjectorFactory;
 
     protected ?string $streamName;
+    protected ProjectionStatusLoader $statusLoader;
     protected ProjectorContext $projectorContext;
     protected Chronicler $chronicler;
     protected ProjectorLock $lock;
@@ -40,6 +42,7 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
         $this->messageAlias = $messageAlias;
         $this->streamName = $streamName;
         $this->streamCached = new StreamCached($projectorContext->option->persistBlockSize());
+        $this->statusLoader = new ProjectionStatusLoader($this->lock);
     }
 
     public function emit(DomainEvent $event): void

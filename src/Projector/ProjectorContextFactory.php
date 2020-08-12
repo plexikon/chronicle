@@ -26,7 +26,7 @@ final class ProjectorContextFactory
             );
         } else {
             $bindings = [];
-            foreach ($this->factory->get('event_handlers') as $eventName => $eventHandler) {
+            foreach ($this->getEventHandlers() as $eventName => $eventHandler) {
                 $bindings[$eventName] = Closure::bind($eventHandler, $eventContext);
             }
 
@@ -37,7 +37,7 @@ final class ProjectorContextFactory
     public function bindInit(object $eventContext): array
     {
         if (is_callable($this->getInit())) {
-            $callback = Closure::bind($this->factory->get('init'), $eventContext);
+            $callback = Closure::bind($this->getInit(), $eventContext);
 
             $result = $callback();
 
