@@ -7,22 +7,17 @@ use Plexikon\Chronicle\Projector\ProjectionStatusRepository;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\PipeOnce;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
-use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
 final class PersistentRunner implements PipeOnce
 {
     private bool $hasBeenPrepared = false;
     private ProjectionStatusRepository $statusRepository;
     private ProjectorLock $lock;
-    private ?ReadModel $readModel;
 
-    public function __construct(ProjectionStatusRepository $statusLoader,
-                                ProjectorLock $lock,
-                                ?ReadModel $readModel)
+    public function __construct(ProjectionStatusRepository $statusLoader, ProjectorLock $lock)
     {
         $this->statusRepository = $statusLoader;
         $this->lock = $lock;
-        $this->readModel = $readModel;
     }
 
     public function __invoke(ProjectorContext $context, callable $next)
@@ -34,29 +29,10 @@ final class PersistentRunner implements PipeOnce
                 return true;
             }
 
-            $this->prepareProjection($context);
+            $this->lock->prepareProjection($context);
         }
 
         return $next($context);
-    }
-
-    private function prepareProjection(ProjectorContext $context): void
-    {
-        $context->isStopped = false;
-
-        if (!$this->lock->isProjectionExists()) {
-            $this->lock->createProjection();
-        }
-
-        $this->lock->acquireLock();
-
-        if ($this->readModel && !$this->readModel->isInitialized()) {
-            $this->readModel->initialize();
-        }
-
-        $context->position->make($context->streamNames());
-
-        $this->lock->loadProjectionState();
     }
 
     public function isAlreadyPiped(): bool

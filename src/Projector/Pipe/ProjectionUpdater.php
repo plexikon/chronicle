@@ -18,16 +18,19 @@ final class ProjectionUpdater implements Pipe
 
     public function __invoke(ProjectorContext $context, callable $next)
     {
-        if ($context->counter->isReset()) {
-            usleep($context->option->sleep());
-
-            $this->lock->updateLock();
-        } else {
-            $this->lock->persistProjection();
-        }
+        $context->counter->isReset()
+            ? $this->sleepBeforeUpdateLock($context->option->sleep())
+            : $this->lock->persistProjection();
 
         $context->counter->reset();
 
         return $next($context);
+    }
+
+    private function sleepBeforeUpdateLock(int $sleep): void
+    {
+        usleep($sleep);
+
+        $this->lock->updateLock();
     }
 }

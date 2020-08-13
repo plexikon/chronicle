@@ -24,6 +24,11 @@ final class ReadModelLock implements ProjectorLockDecorator
         $this->readModel = $readModel;
     }
 
+    public function prepareProjection(ProjectorContext $context, ?ReadModel $readModel = null): void
+    {
+        $this->projectorLock->prepareProjection($context, $this->readModel);
+    }
+
     public function persistProjection(): void
     {
         $this->readModel->persist();

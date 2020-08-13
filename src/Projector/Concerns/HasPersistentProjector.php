@@ -15,12 +15,11 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
-use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Plexikon\Chronicle\Support\Projector\Pipeline;
 
 trait HasPersistentProjector
 {
-    protected ?ReadModel $readModel = null;
+    protected ProjectorContext $context;
     protected ProjectorLock $lock;
     protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
@@ -80,7 +79,7 @@ trait HasPersistentProjector
     protected function getPipes(): array
     {
         return [
-            new PersistentRunner($this->statusRepository, $this->lock, $this->readModel),
+            new PersistentRunner($this->statusRepository, $this->lock),
             new StreamHandler($this->chronicler, $this->messageAlias, $this->lock),
             new ProjectionUpdater($this->lock),
             new SignalDispatcher(),

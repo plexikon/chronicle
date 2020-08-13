@@ -17,12 +17,12 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
 {
     use HasPersistentProjector, HasProjectorFactory;
 
-    protected ?ReadModel $readModel = null;
     protected ProjectorContext $context;
     protected ProjectorLock $lock;
     protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
+    private ReadModel $readModel;
     private string $streamName;
 
     public function __construct(ProjectorContext $context,

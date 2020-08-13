@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Plexikon\Chronicle\Exception\ProjectionNotFound;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionProvider;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock as BaseProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Plexikon\Chronicle\Support\Json;
 use Plexikon\Chronicle\Support\Projector\LockWaitTime;
 
@@ -27,32 +28,31 @@ final class ProjectorLock implements BaseProjectorLock
         $this->streamName = $streamName;
     }
 
+    public function prepareProjection(ProjectorContext $context, ?ReadModel $readModel = null): void
+    {
+        $context->isStopped = false;
+
+        if (!$this->isProjectionExists()) {
+            $this->createProjection();
+        }
+
+        $this->acquireLock();
+
+        if ($readModel && !$readModel->isInitialized()) {
+            $readModel->initialize();
+        }
+
+        $context->position->make($context->streamNames());
+
+        $this->loadProjectionState();
+    }
+
     public function createProjection(): void
     {
         $this->provider->newProjection(
             $this->streamName,
             $this->context->status->getValue()
         );
-    }
-
-    public function loadProjectionState(): void
-    {
-        $result = $this->provider->findByName($this->streamName);
-
-        if (!$result) {
-            $exceptionMessage = "Projection not found with stream name {$this->streamName}\n";
-            $exceptionMessage .= 'Did you call prepareExecution first on Projector lock instance?';
-
-            throw new ProjectionNotFound($exceptionMessage);
-        }
-
-        $this->context->position->mergeStreamsFromRemote(
-            Json::decode($result->position())
-        );
-
-        if (!empty($state = Json::decode($result->state()))) {
-            $this->context->state->setState($state);
-        }
     }
 
     public function stopProjection(): void
@@ -124,6 +124,26 @@ final class ProjectorLock implements BaseProjectorLock
         }
 
         $this->context->position->reset();
+    }
+
+    public function loadProjectionState(): void
+    {
+        $result = $this->provider->findByName($this->streamName);
+
+        if (!$result) {
+            $exceptionMessage = "Projection not found with stream name {$this->streamName}\n";
+            $exceptionMessage .= 'Did you call prepareExecution first on Projector lock instance?';
+
+            throw new ProjectionNotFound($exceptionMessage);
+        }
+
+        $this->context->position->mergeStreamsFromRemote(
+            Json::decode($result->position())
+        );
+
+        if (!empty($state = Json::decode($result->state()))) {
+            $this->context->state->setState($state);
+        }
     }
 
     public function fetchProjectionStatus(): ProjectionStatus

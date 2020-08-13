@@ -21,11 +21,11 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
 {
     use HasPersistentProjector, HasProjectorFactory;
 
-    protected ?string $streamName;
     protected ProjectionStatusRepository $statusRepository;
     protected ProjectorContext $context;
     protected Chronicler $chronicler;
     protected ProjectorLock $lock;
+    private string $streamName;
     private StreamCached $streamCached;
 
     public function __construct(ProjectorContext $context,

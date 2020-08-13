@@ -10,6 +10,7 @@ use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLockDecorator;
+use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
 final class ProjectionLock implements ProjectorLockDecorator
 {
@@ -24,6 +25,11 @@ final class ProjectionLock implements ProjectorLockDecorator
 
         $this->projectorLock = $projectorLock;
         $this->chronicler = $chronicler;
+    }
+
+    public function prepareProjection(ProjectorContext $context, ?ReadModel $readModel = null): void
+    {
+        $this->projectorLock->prepareProjection($context);
     }
 
     public function persistProjection(): void
