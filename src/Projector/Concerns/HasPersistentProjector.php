@@ -37,10 +37,10 @@ trait HasPersistentProjector
 
         try {
             $pipeline = new Pipeline();
+            $pipeline->through($this->getPipes());
 
             do {
                 $isStopped = $pipeline
-                    ->through($this->getPipes())
                     ->send($this->context)
                     ->then(fn(ProjectorContext $context): bool => $context->isStopped);
             } while ($this->context->keepRunning() && !$isStopped);
