@@ -62,7 +62,7 @@ final class ProjectorRepository implements BaseProjectorRepository
         $this->projectorContext->isStopped = true;
         $idleProjection = ProjectionStatus::IDLE();
 
-        $this->projectionProvider->updateStatus($this->streamName, [
+        $this->projectionProvider->updateProjection($this->streamName, [
             'status' => $idleProjection->getValue()
         ]);
 
@@ -75,7 +75,7 @@ final class ProjectorRepository implements BaseProjectorRepository
         $runningStatus = ProjectionStatus::RUNNING();
         $now = LockWaitTime::fromNow();
 
-        $this->projectionProvider->updateStatus($this->streamName, [
+        $this->projectionProvider->updateProjection($this->streamName, [
             'status' => $runningStatus->getValue(),
             'locked_until' => $this->createLockUntilString($now)
         ]);
@@ -86,7 +86,7 @@ final class ProjectorRepository implements BaseProjectorRepository
 
     public function persist(): void
     {
-        $this->projectionProvider->updateStatus($this->streamName, [
+        $this->projectionProvider->updateProjection($this->streamName, [
             'position' => Json::encode($this->projectorContext->position->all()),
             'state' => Json::encode($this->projectorContext->state->getState()),
             'locked_until' => $this->createLockUntilString(LockWaitTime::fromNow())
@@ -105,7 +105,7 @@ final class ProjectorRepository implements BaseProjectorRepository
             $this->projectorContext->state->setState($callback());
         }
 
-        $this->projectionProvider->updateStatus($this->streamName, [
+        $this->projectionProvider->updateProjection($this->streamName, [
             'position' => Json::encode($this->projectorContext->position->all()),
             'state' => Json::encode($this->projectorContext->state->getState()),
             'status' => $this->projectorContext->status->getValue()
@@ -238,7 +238,7 @@ final class ProjectorRepository implements BaseProjectorRepository
         if ($this->shouldUpdateLock($now->toDateTime())) {
             $lockedUntil = $this->createLockUntilString($now);
 
-            $this->projectionProvider->updateStatus($this->streamName, [
+            $this->projectionProvider->updateProjection($this->streamName, [
                 'locked_until' => $lockedUntil,
                 'position' => Json::encode($this->projectorContext->position->all())
             ]);
@@ -251,7 +251,7 @@ final class ProjectorRepository implements BaseProjectorRepository
     {
         $idleProjection = ProjectionStatus::IDLE();
 
-        $this->projectionProvider->updateStatus($this->streamName, [
+        $this->projectionProvider->updateProjection($this->streamName, [
             'status' => $idleProjection->getValue(),
             'locked_until' => null
         ]);

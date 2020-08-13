@@ -60,7 +60,7 @@ class Projection extends Model implements ProjectionModel, ProjectionProvider
             ]);
     }
 
-    public function updateStatus(string $name, array $data): int
+    public function updateProjection(string $name, array $data): int
     {
         return $this->newInstance()->newQuery()
             ->where('name', $name)

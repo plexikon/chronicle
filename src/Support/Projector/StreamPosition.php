@@ -54,7 +54,7 @@ final class StreamPosition
     private function gatherStreamNames(array $streamNames): array
     {
         return 'all' === $streamNames[0]
-            ? $this->eventStreamProvider->allStreamNamesWithoutInternal()
+            ? $this->eventStreamProvider->allStreamWithoutInternal()
             : $streamNames;
     }
 }

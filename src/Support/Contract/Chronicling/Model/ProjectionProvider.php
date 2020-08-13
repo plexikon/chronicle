@@ -43,7 +43,7 @@ interface ProjectionProvider
      * @param array $data
      * @return int
      */
-    public function updateStatus(string $name, array $data): int;
+    public function updateProjection(string $name, array $data): int;
 
     /**
      * @param string $name

@@ -19,7 +19,6 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
 
     protected ProjectorContext $projectorContext;
     protected ProjectorRepository $projectorRepository;
-    protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
     private ReadModel $readModel;
@@ -38,7 +37,6 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
         $this->messageAlias = $messageAlias;
         $this->readModel = $readModel;
         $this->streamName = $streamName;
-        $this->statusRepository = new ProjectionStatusRepository($this->projectorRepository);
     }
 
     public function readModel(): ReadModel

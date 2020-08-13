@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
-use Assert\AssertionFailedException;
 use Closure;
 use Illuminate\Support\Collection;
 use Plexikon\Chronicle\Exception\Assertion;
@@ -25,9 +24,6 @@ class ProjectorContextFactory
         $this->factory = $this->prepareCollection();
     }
 
-    /**
-     * @param object $eventHandlerContext
-     */
     public function bindHandlers(object $eventHandlerContext): void
     {
         if ($this->getEventHandlers() instanceof Closure) {
@@ -44,10 +40,6 @@ class ProjectorContextFactory
         }
     }
 
-    /**
-     * @param object $eventHandlerContext
-     * @return array
-     */
     public function bindInit(object $eventHandlerContext): array
     {
         if (is_callable($this->getInit())) {
@@ -63,10 +55,6 @@ class ProjectorContextFactory
         return [];
     }
 
-    /**
-     * @param callable $initCallback
-     * @throws AssertionFailedException checkMe
-     */
     public function withCallback(callable $initCallback): void
     {
         Assertion::null($this->getInit(), 'Callback already initialized');
@@ -74,10 +62,6 @@ class ProjectorContextFactory
         $this->factory->put(self::INIT_KEY, $initCallback);
     }
 
-    /**
-     * @param QueryFilter|ProjectionQueryFilter $queryFilter
-     * @throws AssertionFailedException checkMe
-     */
     public function withQueryFilter(QueryFilter $queryFilter): void
     {
         Assertion::null($this->getQueryFilter(), 'Query filter has already been set');
@@ -85,10 +69,6 @@ class ProjectorContextFactory
         $this->factory->put(self::QUERY_FILTER_KEY, $queryFilter);
     }
 
-    /**
-     * @param string ...$streamNames
-     * @throws AssertionFailedException
-     */
     public function withStreams(string ...$streamNames): void
     {
         Assertion::notEmpty($streamNames, 'Stream names can not be empty');
@@ -98,9 +78,6 @@ class ProjectorContextFactory
         $this->factory->put(self::STREAM_NAMES_KEY, $streamNames);
     }
 
-    /**
-     * @throws AssertionFailedException
-     */
     public function withAllStreams(): void
     {
         Assertion::count($this->getStreamNames(), 0, 'With stream names already called');
@@ -108,18 +85,11 @@ class ProjectorContextFactory
         $this->factory->put(self::STREAM_NAMES_KEY, ['all']);
     }
 
-    /**
-     * @param bool $keepRunning
-     */
     public function withKeepRunning(bool $keepRunning): void
     {
         $this->factory->put(self::KEEP_RUNNING_KEY, $keepRunning);
     }
 
-    /**
-     * @param array $eventHandlers
-     * @throws AssertionFailedException checkMe
-     */
     public function when(array $eventHandlers): void
     {
         Assertion::null($this->getEventHandlers(), 'Event handlers already set');
@@ -127,10 +97,6 @@ class ProjectorContextFactory
         $this->factory->put(self::EVENT_HANDLERS_KEY, $eventHandlers);
     }
 
-    /**
-     * @param callable $eventHandler
-     * @throws AssertionFailedException checkMe
-     */
     public function whenAny(callable $eventHandler): void
     {
         Assertion::null($this->getEventHandlers(), 'Event handlers already set');
@@ -164,6 +130,9 @@ class ProjectorContextFactory
         return $this->factory->get(self::KEEP_RUNNING_KEY);
     }
 
+    /**
+     * @return QueryFilter|ProjectionQueryFilter|null
+     */
     public function getQueryFilter(): ?QueryFilter
     {
         return $this->factory->get(self::QUERY_FILTER_KEY);

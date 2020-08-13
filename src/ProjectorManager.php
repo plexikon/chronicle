@@ -118,7 +118,7 @@ final class ProjectorManager implements BaseProjectorManager
     private function updateProjectionStatus(ProjectionStatus $projectionStatus, string $name): void
     {
         try {
-            $result = $this->projectionProvider->updateStatus(
+            $result = $this->projectionProvider->updateProjection(
                 $name,
                 ['status' => $projectionStatus->getValue()]
             );

@@ -146,7 +146,7 @@ final class PgsqlChronicler implements ConnectionChronicler, TransactionalChroni
 
     public function fetchStreamNames(StreamName ...$streamNames): array
     {
-        return $this->eventStreamProvider->filterByStreamNames($streamNames);
+        return $this->eventStreamProvider->filterByStream($streamNames);
     }
 
     public function hasStream(StreamName $streamName): bool
