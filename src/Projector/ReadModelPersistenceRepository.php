@@ -3,23 +3,16 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
-use Plexikon\Chronicle\Exception\Assertion;
-use Plexikon\Chronicle\Projector\Concerns\HasProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepositoryDecorator;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ReadModelPersistence implements ProjectorRepositoryDecorator
+final class ReadModelPersistenceRepository extends PersistenceRepository
 {
-    use HasProjectorRepository;
-
     protected ProjectorRepository $projectorRepository;
     private ReadModel $readModel;
 
     public function __construct(ProjectorRepository $projectorRepository, ReadModel $readModel)
     {
-        Assertion::notIsInstanceOf($projectorRepository, ProjectorRepositoryDecorator::class);
-
         $this->projectorRepository = $projectorRepository;
         $this->readModel = $readModel;
     }

@@ -3,26 +3,19 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
-use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Exception\StreamNotFound;
-use Plexikon\Chronicle\Projector\Concerns\HasProjectorRepository;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepositoryDecorator;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ProjectionPersistence implements ProjectorRepositoryDecorator
+final class ProjectionPersistenceRepository extends PersistenceRepository
 {
-    use HasProjectorRepository;
-
     protected ProjectorRepository $projectorRepository;
     private Chronicler $chronicler;
 
     public function __construct(ProjectorRepository $projectorRepository, Chronicler $chronicler)
     {
-        Assertion::notIsInstanceOf($projectorRepository, ProjectorRepositoryDecorator::class);
-
         $this->projectorRepository = $projectorRepository;
         $this->chronicler = $chronicler;
     }

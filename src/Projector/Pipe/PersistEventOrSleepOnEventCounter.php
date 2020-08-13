@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
-final class PersistenceAware implements Pipe
+final class PersistEventOrSleepOnEventCounter implements Pipe
 {
     private ProjectorRepository $projectorRepository;
 

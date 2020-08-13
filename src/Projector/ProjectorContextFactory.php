@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
+use Assert\AssertionFailedException;
 use Closure;
 use Illuminate\Support\Collection;
 use Plexikon\Chronicle\Exception\Assertion;
@@ -136,6 +137,19 @@ class ProjectorContextFactory
     public function getQueryFilter(): ?QueryFilter
     {
         return $this->factory->get(self::QUERY_FILTER_KEY);
+    }
+
+
+    /**
+     * @throws AssertionFailedException
+     */
+    public function validate(): void
+    {
+        Assertion::notNull($this->getQueryFilter(), 'Query filter not set');
+
+        Assertion::notEmpty($this->getStreamNames(), 'Stream names not set');
+
+        Assertion::notNull($this->getEventHandlers(), 'Event handlers not set');
     }
 
     private function prepareCollection(): Collection
