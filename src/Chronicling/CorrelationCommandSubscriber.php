@@ -11,24 +11,16 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Messaging\Messaging;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\EventContext;
+use Plexikon\Chronicle\Support\Contract\Tracker\EventSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 
-final class CorrelationCommandSubscriber implements MessageSubscriber
+final class CorrelationCommandSubscriber implements MessageSubscriber, EventSubscriber
 {
+    private ?Message $command = null;
     private array $eventListeners = [];
     private array $messageListeners = [];
-
-    /**
-     * @var Chronicler|EventChronicler
-     */
-    private Chronicler $chronicler;
-
-    public function __construct(Chronicler $chronicler)
-    {
-        $this->chronicler = $chronicler;
-    }
 
     public function attachToTracker(MessageTracker $tracker): void
     {
@@ -37,32 +29,38 @@ final class CorrelationCommandSubscriber implements MessageSubscriber
                 $message = $context->getMessage();
 
                 if ($this->supportCorrelation($message)) {
-                    $this->subscribeToChronicler($message);
+                    $this->command = $message;
                 }
             }, 1000);
 
         $this->messageListeners[] = $tracker->listen(Reporter::FINALIZE_EVENT,
-            function (MessageContext $context) {
-                if ($this->supportCorrelation($context->getMessage())) {
-                    $this->chronicler->unsubscribe(...$this->eventListeners);
-                    $this->eventListeners = [];
-                    $this->messageListeners = []; // checkMe
-                }
+            function () {
+                $this->command = null;
             }, 1000);
     }
 
-    private function subscribeToChronicler(Message $message): void
+    public function attachToChronicler(Chronicler $chronicler): void
     {
-        $messageDecorator = $this->correlationMessageDecorator($message);
+        if (!$chronicler instanceof EventChronicler) {
+            return;
+        }
 
-        $this->eventListeners[] = $this->chronicler->subscribe(EventChronicler::FIRST_COMMIT_EVENT,
-            function (EventContext $context) use ($messageDecorator): void {
-                $context->decorateStreamEvents($messageDecorator);
+        $this->eventListeners[] = $chronicler->subscribe(EventChronicler::FIRST_COMMIT_EVENT,
+            function (EventContext $context): void {
+                if ($this->command) {
+                    $messageDecorator = $this->correlationMessageDecorator($this->command);
+
+                    $context->decorateStreamEvents($messageDecorator);
+                }
             }, 1000);
 
-        $this->eventListeners[] = $this->chronicler->subscribe(EventChronicler::PERSIST_STREAM_EVENT,
-            function (EventContext $context) use ($messageDecorator): void {
-                $context->decorateStreamEvents($messageDecorator);
+        $this->eventListeners[] = $chronicler->subscribe(EventChronicler::PERSIST_STREAM_EVENT,
+            function (EventContext $context): void {
+                if ($this->command) {
+                    $messageDecorator = $this->correlationMessageDecorator($this->command);
+
+                    $context->decorateStreamEvents($messageDecorator);
+                }
             }, 1000);
     }
 
@@ -98,10 +96,6 @@ final class CorrelationCommandSubscriber implements MessageSubscriber
 
     private function supportCorrelation(Message $message): bool
     {
-        if (!$message->isMessaging() || $message->event()->messageType() !== Messaging::COMMAND) {
-            return false;
-        }
-
-        return $this->chronicler instanceof EventChronicler;
+        return ($message->isMessaging() && $message->event()->messageType() === Messaging::COMMAND);
     }
 }
