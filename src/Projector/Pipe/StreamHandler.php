@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Pipe;
 
-use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
@@ -18,13 +16,13 @@ final class StreamHandler implements Pipe
 {
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
-    private ?ProjectorLock $lock;
+    private ?ProjectorLock $projectorLock;
 
     public function __construct(Chronicler $chronicler, MessageAlias $messageAlias, ?ProjectorLock $lock)
     {
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
-        $this->lock = $lock;
+        $this->projectorLock = $lock;
     }
 
     public function __invoke(ProjectorContext $context, callable $next)
@@ -65,7 +63,7 @@ final class StreamHandler implements Pipe
 
             $context->position->setStreamNameAt($context->currentStreamName, $key);
 
-            if ($this->lock) {
+            if ($this->projectorLock) {
                 $context->counter->increment();
             }
 
@@ -73,8 +71,8 @@ final class StreamHandler implements Pipe
 
             if (is_array($eventHandlers)) {
                 if (!$messageHandler = $this->determineEventHandler($streamEvent, $eventHandlers)) {
-                    if ($this->lock) {
-                        $this->lock->updateProjectionOnCounter();
+                    if ($this->projectorLock) {
+                        $this->projectorLock->updateProjectionOnCounter();
                     }
 
                     if ($context->isStopped) {
@@ -91,8 +89,8 @@ final class StreamHandler implements Pipe
 
             $context->state->setState($projectionState);
 
-            if ($this->lock) {
-                $this->lock->updateProjectionOnCounter();
+            if ($this->projectorLock) {
+                $this->projectorLock->updateProjectionOnCounter();
             }
 
             if ($context->isStopped) {

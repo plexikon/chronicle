@@ -12,12 +12,12 @@ final class PersistentRunner implements PipeOnce
 {
     private bool $hasBeenPrepared = false;
     private ProjectionStatusRepository $statusRepository;
-    private ProjectorLock $lock;
+    private ProjectorLock $projectorLock;
 
-    public function __construct(ProjectionStatusRepository $statusLoader, ProjectorLock $lock)
+    public function __construct(ProjectionStatusRepository $statusLoader, ProjectorLock $projectorLock)
     {
         $this->statusRepository = $statusLoader;
-        $this->lock = $lock;
+        $this->projectorLock = $projectorLock;
     }
 
     public function __invoke(ProjectorContext $context, callable $next)
@@ -29,7 +29,7 @@ final class PersistentRunner implements PipeOnce
                 return true;
             }
 
-            $this->lock->prepareProjection($context);
+            $this->projectorLock->prepareProjection(null);
         }
 
         return $next($context);

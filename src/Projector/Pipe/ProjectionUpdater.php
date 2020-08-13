@@ -9,18 +9,18 @@ use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 
 final class ProjectionUpdater implements Pipe
 {
-    private ProjectorLock $lock;
+    private ProjectorLock $projectorLock;
 
-    public function __construct(ProjectorLock $lock)
+    public function __construct(ProjectorLock $projectorLock)
     {
-        $this->lock = $lock;
+        $this->projectorLock = $projectorLock;
     }
 
     public function __invoke(ProjectorContext $context, callable $next)
     {
         $context->counter->isReset()
             ? $this->sleepBeforeUpdateLock($context->option->sleep())
-            : $this->lock->persistProjection();
+            : $this->projectorLock->persistProjection();
 
         $context->counter->reset();
 
@@ -31,6 +31,6 @@ final class ProjectionUpdater implements Pipe
     {
         usleep($sleep);
 
-        $this->lock->updateLock();
+        $this->projectorLock->updateLock();
     }
 }
