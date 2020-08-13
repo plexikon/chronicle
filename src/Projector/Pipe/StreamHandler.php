@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Pipe;
 
+use Generator;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Stream\StreamName;
@@ -32,15 +33,14 @@ final class StreamHandler implements Pipe
         foreach ($streams as $streamName => $events) {
             $context->currentStreamName = $streamName;
 
-            $this->handleStreamEvents($context, $events, $context->eventHandlers());
+            $this->handleStreamEvents($events, $context);
         }
 
         return $next($context);
     }
 
-    private function retrieveStreams(ProjectorContext $context): array
+    private function retrieveStreams(ProjectorContext $context): Generator
     {
-        $eventStreams = [];
         $queryFilter = $context->queryFilter();
 
         foreach ($context->position->all() as $streamName => $position) {
@@ -50,14 +50,14 @@ final class StreamHandler implements Pipe
                 new StreamName($streamName), $queryFilter
             );
 
-            $eventStreams[$streamName] = new StreamEventIterator($events);
+            yield [$streamName => new StreamEventIterator($events)];
         }
-
-        return $eventStreams;
     }
 
-    private function handleStreamEvents(ProjectorContext $context, StreamEventIterator $streamEvents, $eventHandlers): void
+    private function handleStreamEvents(StreamEventIterator $streamEvents, ProjectorContext $context): void
     {
+        $eventHandlers = $context->eventHandlers();
+
         foreach ($streamEvents as $key => $streamEvent) {
             $context->dispatchSignal();
 
