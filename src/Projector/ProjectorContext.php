@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
+use Assert\AssertionFailedException;
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionState;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
@@ -33,6 +34,10 @@ class ProjectorContext
         $this->factory = new ProjectorContextFactory();
     }
 
+    /**
+     * @param object $eventHandlerContext
+     * @throws AssertionFailedException
+     */
     public function setUpProjection(object $eventHandlerContext): void
     {
         $this->validateFactory();
@@ -89,6 +94,9 @@ class ProjectorContext
         }
     }
 
+    /**
+     * @throws AssertionFailedException
+     */
     public function validateFactory(): void
     {
         Assertion::notNull($this->queryFilter(), 'Query filter not set');
