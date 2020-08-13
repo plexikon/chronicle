@@ -46,6 +46,11 @@ trait HasProjectorRepository
         return $this->projectorRepository->loadStatus();
     }
 
+    public function updateOnStatus(bool $shouldStop, bool $keepRunning): bool
+    {
+        return $this->projectorRepository->updateOnStatus($shouldStop, $keepRunning);
+    }
+
     public function acquireLock(): void
     {
         $this->projectorRepository->acquireLock();

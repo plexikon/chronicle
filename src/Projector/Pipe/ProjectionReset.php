@@ -3,22 +3,22 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Pipe;
 
-use Plexikon\Chronicle\Projector\ProjectionStatusRepository;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
 final class ProjectionReset implements Pipe
 {
-    private ProjectionStatusRepository $statusRepository;
+    private ProjectorRepository $projectorRepository;
 
-    public function __construct(ProjectionStatusRepository $statusRepository)
+    public function __construct(ProjectorRepository $projectorRepository)
     {
-        $this->statusRepository = $statusRepository;
+        $this->projectorRepository = $projectorRepository;
     }
 
     public function __invoke(ProjectorContext $context, callable $next)
     {
-        $this->statusRepository->updateStatus(false, $context->keepRunning());
+        $this->projectorRepository->updateOnStatus(false, $context->keepRunning());
 
         $context->position->make($context->streamNames());
 

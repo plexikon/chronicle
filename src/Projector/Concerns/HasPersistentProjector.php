@@ -8,7 +8,6 @@ use Plexikon\Chronicle\Projector\Pipe\ProjectionReset;
 use Plexikon\Chronicle\Projector\Pipe\ProjectionUpdater;
 use Plexikon\Chronicle\Projector\Pipe\SignalDispatcher;
 use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
-use Plexikon\Chronicle\Projector\ProjectionStatusRepository;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
@@ -21,7 +20,6 @@ trait HasPersistentProjector
 {
     protected ProjectorContext $projectorContext;
     protected ProjectorRepository $projectorRepository;
-    protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
 
@@ -29,7 +27,7 @@ trait HasPersistentProjector
     {
         $this->projectorContext->factory->withKeepRunning($keepRunning);
 
-        /** @var PersistentProjector&HasPersistentProjector $this */
+        /** @var PersistentProjector&static $this */
         $this->projectorContext->setUpProjection(
             $this->createEventHandlerContext($this, $this->projectorContext->currentStreamName)
         );
@@ -79,11 +77,11 @@ trait HasPersistentProjector
     protected function getPipes(): array
     {
         return [
-            new PersistentRunner($this->statusRepository, $this->projectorRepository),
+            new PersistentRunner($this->projectorRepository),
             new StreamHandler($this->chronicler, $this->messageAlias, $this->projectorRepository),
             new ProjectionUpdater($this->projectorRepository),
             new SignalDispatcher(),
-            new ProjectionReset($this->statusRepository)
+            new ProjectionReset($this->projectorRepository)
         ];
     }
 

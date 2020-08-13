@@ -41,6 +41,15 @@ interface ProjectorRepository
     public function loadStatus(): ProjectionStatus;
 
     /**
+     * Update projection on projection status
+     *
+     * @param bool $shouldStop
+     * @param bool $keepRunning
+     * @return bool
+     */
+    public function updateOnStatus(bool $shouldStop, bool $keepRunning): bool;
+
+    /**
      * Persist projection
      */
     public function persist(): void;

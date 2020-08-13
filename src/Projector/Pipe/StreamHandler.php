@@ -17,13 +17,15 @@ final class StreamHandler implements Pipe
 {
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
-    private ?ProjectorRepository $projectorLock;
+    private ?ProjectorRepository $projectorRepository;
 
-    public function __construct(Chronicler $chronicler, MessageAlias $messageAlias, ?ProjectorRepository $lock)
+    public function __construct(Chronicler $chronicler,
+                                MessageAlias $messageAlias,
+                                ?ProjectorRepository $projectorRepository)
     {
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
-        $this->projectorLock = $lock;
+        $this->projectorRepository = $projectorRepository;
     }
 
     public function __invoke(ProjectorContext $context, callable $next)
@@ -63,7 +65,7 @@ final class StreamHandler implements Pipe
 
             $context->position->setStreamNameAt($context->currentStreamName, $key);
 
-            if ($this->projectorLock) {
+            if ($this->projectorRepository) {
                 $context->counter->increment();
             }
 
@@ -71,8 +73,8 @@ final class StreamHandler implements Pipe
 
             if (is_array($eventHandlers)) {
                 if (!$messageHandler = $this->determineEventHandler($streamEvent, $eventHandlers)) {
-                    if ($this->projectorLock) {
-                        $this->projectorLock->updateOnCounter();
+                    if ($this->projectorRepository) {
+                        $this->projectorRepository->updateOnCounter();
                     }
 
                     if ($context->isStopped) {
@@ -89,8 +91,8 @@ final class StreamHandler implements Pipe
 
             $context->state->setState($projectionState);
 
-            if ($this->projectorLock) {
-                $this->projectorLock->updateOnCounter();
+            if ($this->projectorRepository) {
+                $this->projectorRepository->updateOnCounter();
             }
 
             if ($context->isStopped) {

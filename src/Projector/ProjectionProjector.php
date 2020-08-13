@@ -21,7 +21,6 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
 {
     use HasPersistentProjector, HasProjectorFactory;
 
-    protected ProjectionStatusRepository $statusRepository;
     protected ProjectorContext $context;
     protected Chronicler $chronicler;
     protected ProjectorRepository $lock;
@@ -40,7 +39,6 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
         $this->messageAlias = $messageAlias;
         $this->streamName = $streamName;
         $this->streamCached = new StreamCached($context->option->persistBlockSize());
-        $this->statusRepository = new ProjectionStatusRepository($this->lock);
     }
 
     public function emit(DomainEvent $event): void

@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository as BaseProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository as BaseProjectorRepository;
 
 final class ProjectionStatusRepository
 {
-    private BaseProjectorLock $projectorLock;
+    private BaseProjectorRepository $projectorLock;
 
-    public function __construct(BaseProjectorLock $projectorLock)
+    public function __construct(BaseProjectorRepository $projectorLock)
     {
         $this->projectorLock = $projectorLock;
     }
