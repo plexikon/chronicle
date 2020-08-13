@@ -41,21 +41,12 @@ final class ProjectorContextFactory
 
             $result = $callback();
 
-            if (is_array($result)) {
-                $this->factory->put('init', $callback);
+            $this->factory->put('init', $callback);
 
-                return $result;
-            }
+            return $result;
         }
 
         return [];
-    }
-
-    public function get(string $key)
-    {
-        Assertion::keyExists($this->factory->toArray(), $key);
-
-        return $this->factory->get($key);
     }
 
     public function withCallback(callable $initCallback): void

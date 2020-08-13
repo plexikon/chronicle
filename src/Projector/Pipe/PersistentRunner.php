@@ -28,13 +28,13 @@ final class PersistentRunner implements PipeOnce
     public function __invoke(ProjectorContext $context, callable $next)
     {
         if (!$this->hasBeenPrepared) {
+            $this->hasBeenPrepared = true;
+
             if ($this->statusLoader->fromRemote(true, $context->keepRunning())) {
                 return true;
             }
 
             $this->prepareProjection($context);
-
-            $this->hasBeenPrepared = true;
         }
 
         return $next($context);

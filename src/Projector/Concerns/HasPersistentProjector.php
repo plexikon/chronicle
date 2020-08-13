@@ -42,9 +42,7 @@ trait HasPersistentProjector
                 $isStopped = $pipeline
                     ->through($this->getPipes())
                     ->send($this->context)
-                    ->then(function (ProjectorContext $context): bool {
-                        return $context->isStopped;
-                    });
+                    ->then(fn(ProjectorContext $context): bool => $context->isStopped);
             } while ($this->context->keepRunning() && !$isStopped);
         } finally {
             $this->lock->releaseLock();

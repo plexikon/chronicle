@@ -22,7 +22,6 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
 
-
     public function __construct(ProjectorContext $projectorContext,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias)
@@ -53,7 +52,8 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
             ->through([
                 new StreamHandler($this->chronicler, $this->messageAlias, null),
             ])
-            ->send($this->context);
+            ->send($this->context)
+            ->then(fn(ProjectorContext $context): bool => $context->isStopped);
     }
 
     public function stop(): void

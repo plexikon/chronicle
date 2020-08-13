@@ -39,14 +39,16 @@ class ProjectorContext
 
         $this->factory->bindHandlers($eventHandlerContext);
 
-        $this->state->setState(
-            $this->factory->bindInit($eventHandlerContext)
-        );
+        if(is_callable($this->factory->getInit())){
+            $this->state->setState(
+                $this->factory->bindInit($eventHandlerContext)
+            );
+        }
     }
 
     public function hasSingleHandler(): bool
     {
-        return !is_array($this->factory->get('event_handlers'));
+        return !is_array($this->factory->getEventHandlers());
     }
 
     public function initCallback(): ?callable
