@@ -28,9 +28,9 @@ final class ProjectorLock implements BaseProjectorLock
         $this->streamName = $streamName;
     }
 
-    public function prepareProjection(ProjectorContext $context, ?ReadModel $readModel = null): void
+    public function prepareProjection(?ReadModel $readModel): void
     {
-        $context->isStopped = false;
+        $this->context->isStopped = false;
 
         if (!$this->isProjectionExists()) {
             $this->createProjection();
@@ -42,7 +42,7 @@ final class ProjectorLock implements BaseProjectorLock
             $readModel->initialize();
         }
 
-        $context->position->make($context->streamNames());
+        $this->context->position->make($this->context->streamNames());
 
         $this->loadProjectionState();
     }

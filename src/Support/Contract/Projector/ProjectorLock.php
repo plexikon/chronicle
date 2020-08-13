@@ -4,16 +4,14 @@ namespace Plexikon\Chronicle\Support\Contract\Projector;
 
 use DateTimeImmutable;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
-use Plexikon\Chronicle\Projector\ProjectorContext;
 
 interface ProjectorLock
 {
     /**
      * Prepare projection
-     * @param ProjectorContext $context
      * @param ReadModel|null $readModel
      */
-    public function prepareProjection(ProjectorContext $context, ?ReadModel $readModel = null): void;
+    public function prepareProjection(?ReadModel $readModel): void;
 
     /**
      * Create new projection

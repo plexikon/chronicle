@@ -27,9 +27,9 @@ final class ProjectionLock implements ProjectorLockDecorator
         $this->chronicler = $chronicler;
     }
 
-    public function prepareProjection(ProjectorContext $context, ?ReadModel $readModel = null): void
+    public function prepareProjection(?ReadModel $readModel): void
     {
-        $this->projectorLock->prepareProjection($context);
+        $this->projectorLock->prepareProjection(null);
     }
 
     public function persistProjection(): void
