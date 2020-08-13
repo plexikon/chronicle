@@ -50,7 +50,7 @@ final class StreamHandler implements Pipe
                 new StreamName($streamName), $queryFilter
             );
 
-            yield [$streamName => new StreamEventIterator($events)];
+            yield from [$streamName => new StreamEventIterator($events)];
         }
     }
 
