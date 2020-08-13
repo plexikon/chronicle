@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
-final class ProjectionReset implements Pipe
+final class StreamUpdater implements Pipe
 {
     private ProjectorRepository $projectorRepository;
 

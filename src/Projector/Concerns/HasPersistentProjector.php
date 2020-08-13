@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector\Concerns;
 
 use Plexikon\Chronicle\Projector\Pipe\PersistentRunner;
-use Plexikon\Chronicle\Projector\Pipe\ProjectionReset;
-use Plexikon\Chronicle\Projector\Pipe\ProjectionUpdater;
+use Plexikon\Chronicle\Projector\Pipe\StreamUpdater;
+use Plexikon\Chronicle\Projector\Pipe\PersistenceAware;
 use Plexikon\Chronicle\Projector\Pipe\SignalDispatcher;
 use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
 use Plexikon\Chronicle\Projector\ProjectorContext;
@@ -79,9 +79,9 @@ trait HasPersistentProjector
         return [
             new PersistentRunner($this->projectorRepository),
             new StreamHandler($this->chronicler, $this->messageAlias, $this->projectorRepository),
-            new ProjectionUpdater($this->projectorRepository),
+            new PersistenceAware($this->projectorRepository),
             new SignalDispatcher(),
-            new ProjectionReset($this->projectorRepository)
+            new StreamUpdater($this->projectorRepository)
         ];
     }
 

@@ -12,7 +12,7 @@ use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepositoryDecorator;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ProjectionProjectorRepository implements ProjectorRepositoryDecorator
+final class ProjectionPersistence implements ProjectorRepositoryDecorator
 {
     use HasProjectorRepository;
 
