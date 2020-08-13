@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock as BaseProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository as BaseProjectorLock;
 
 final class ProjectionStatusRepository
 {
@@ -16,28 +16,28 @@ final class ProjectionStatusRepository
 
     public function updateStatus(bool $shouldStop, bool $keepRunning): bool
     {
-        switch ($this->projectorLock->fetchProjectionStatus()) {
+        switch ($this->projectorLock->loadStatus()) {
             case ProjectionStatus::STOPPING():
                 if ($shouldStop) {
-                    $this->projectorLock->loadProjectionState();
+                    $this->projectorLock->loadState();
                 }
 
-                $this->projectorLock->stopProjection();
+                $this->projectorLock->stop();
 
                 return $shouldStop;
             case ProjectionStatus::DELETING():
-                $this->projectorLock->deleteProjection(false);
+                $this->projectorLock->delete(false);
 
                 return $shouldStop;
             case ProjectionStatus::DELETING_EMITTED_EVENTS():
-                $this->projectorLock->deleteProjection(true);
+                $this->projectorLock->delete(true);
 
                 return $shouldStop;
             case ProjectionStatus::RESETTING():
-                $this->projectorLock->resetProjection();
+                $this->projectorLock->reset();
 
                 if (!$shouldStop && $keepRunning) {
-                    $this->projectorLock->startProjectionAgain();
+                    $this->projectorLock->startAgain();
                 }
 
                 return false;

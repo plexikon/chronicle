@@ -2,7 +2,7 @@
 
 namespace Plexikon\Chronicle\Support\Contract\Projector;
 
-interface ProjectorLockDecorator extends ProjectorLock
+interface ProjectorRepositoryDecorator extends ProjectorRepository
 {
     //
 }

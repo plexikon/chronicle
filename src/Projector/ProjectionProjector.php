@@ -14,7 +14,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectionProjector as BaseProjectionProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Projector\StreamCached;
 
 final class ProjectionProjector implements BaseProjectionProjector, ProjectorFactory
@@ -24,12 +24,12 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
     protected ProjectionStatusRepository $statusRepository;
     protected ProjectorContext $context;
     protected Chronicler $chronicler;
-    protected ProjectorLock $lock;
+    protected ProjectorRepository $lock;
     private string $streamName;
     private StreamCached $streamCached;
 
     public function __construct(ProjectorContext $context,
-                                ProjectorLock $lock,
+                                ProjectorRepository $lock,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias,
                                 string $streamName)

@@ -7,12 +7,12 @@ use DateInterval;
 use DateTimeImmutable;
 use Plexikon\Chronicle\Exception\ProjectionNotFound;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionProvider;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock as BaseProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository as BaseProjectorLock;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Plexikon\Chronicle\Support\Json;
 use Plexikon\Chronicle\Support\Projector\LockWaitTime;
 
-final class ProjectorLock implements BaseProjectorLock
+final class ProjectorRepository implements BaseProjectorLock
 {
     private ?DateTimeImmutable $lastLockUpdate = null;
     private ProjectorContext $context;
@@ -28,12 +28,12 @@ final class ProjectorLock implements BaseProjectorLock
         $this->streamName = $streamName;
     }
 
-    public function prepareProjection(?ReadModel $readModel): void
+    public function prepare(?ReadModel $readModel): void
     {
         $this->context->isStopped = false;
 
         if (!$this->isProjectionExists()) {
-            $this->createProjection();
+            $this->create();
         }
 
         $this->acquireLock();
@@ -44,10 +44,10 @@ final class ProjectorLock implements BaseProjectorLock
 
         $this->context->position->make($this->context->streamNames());
 
-        $this->loadProjectionState();
+        $this->loadState();
     }
 
-    public function createProjection(): void
+    public function create(): void
     {
         $this->provider->newProjection(
             $this->streamName,
@@ -55,9 +55,9 @@ final class ProjectorLock implements BaseProjectorLock
         );
     }
 
-    public function stopProjection(): void
+    public function stop(): void
     {
-        $this->persistProjection();
+        $this->persist();
 
         $this->context->isStopped = true;
         $idleProjection = ProjectionStatus::IDLE();
@@ -69,7 +69,7 @@ final class ProjectorLock implements BaseProjectorLock
         $this->context->status = $idleProjection;
     }
 
-    public function startProjectionAgain(): void
+    public function startAgain(): void
     {
         $this->context->isStopped = false;
         $runningStatus = ProjectionStatus::RUNNING();
@@ -84,7 +84,7 @@ final class ProjectorLock implements BaseProjectorLock
         $this->lastLockUpdate = $now->toDateTime();
     }
 
-    public function persistProjection(): void
+    public function persist(): void
     {
         $this->provider->updateStatus($this->streamName, [
             'position' => Json::encode($this->context->position->all()),
@@ -93,7 +93,7 @@ final class ProjectorLock implements BaseProjectorLock
         ]);
     }
 
-    public function resetProjection(): void
+    public function reset(): void
     {
         $this->context->position->reset();
 
@@ -112,7 +112,7 @@ final class ProjectorLock implements BaseProjectorLock
         ]);
     }
 
-    public function deleteProjection(bool $deleteEmittedEvents): void
+    public function delete(bool $deleteEmittedEvents): void
     {
         $this->provider->deleteByName($this->streamName);
 
@@ -126,7 +126,7 @@ final class ProjectorLock implements BaseProjectorLock
         $this->context->position->reset();
     }
 
-    public function loadProjectionState(): void
+    public function loadState(): void
     {
         $result = $this->provider->findByName($this->streamName);
 
@@ -146,7 +146,7 @@ final class ProjectorLock implements BaseProjectorLock
         }
     }
 
-    public function fetchProjectionStatus(): ProjectionStatus
+    public function loadStatus(): ProjectionStatus
     {
         $result = $this->provider->findByName($this->streamName);
 
@@ -157,16 +157,16 @@ final class ProjectorLock implements BaseProjectorLock
         return ProjectionStatus::byValue($result->status());
     }
 
-    public function updateProjectionOnCounter(): void
+    public function updateOnCounter(): void
     {
         $persistBlockSize = $this->context->option->persistBlockSize();
 
         if ($this->context->counter->equals($persistBlockSize)) {
-            $this->persistProjection();
+            $this->persist();
 
             $this->context->counter->reset();
 
-            $this->context->status = $this->fetchProjectionStatus();
+            $this->context->status = $this->loadStatus();
 
             $keepProjectionRunning = [ProjectionStatus::RUNNING(), ProjectionStatus::IDLE()];
 

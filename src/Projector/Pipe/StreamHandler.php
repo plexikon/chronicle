@@ -10,16 +10,16 @@ use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Projector\StreamEventIterator;
 
 final class StreamHandler implements Pipe
 {
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
-    private ?ProjectorLock $projectorLock;
+    private ?ProjectorRepository $projectorLock;
 
-    public function __construct(Chronicler $chronicler, MessageAlias $messageAlias, ?ProjectorLock $lock)
+    public function __construct(Chronicler $chronicler, MessageAlias $messageAlias, ?ProjectorRepository $lock)
     {
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
@@ -72,7 +72,7 @@ final class StreamHandler implements Pipe
             if (is_array($eventHandlers)) {
                 if (!$messageHandler = $this->determineEventHandler($streamEvent, $eventHandlers)) {
                     if ($this->projectorLock) {
-                        $this->projectorLock->updateProjectionOnCounter();
+                        $this->projectorLock->updateOnCounter();
                     }
 
                     if ($context->isStopped) {
@@ -90,7 +90,7 @@ final class StreamHandler implements Pipe
             $context->state->setState($projectionState);
 
             if ($this->projectorLock) {
-                $this->projectorLock->updateProjectionOnCounter();
+                $this->projectorLock->updateOnCounter();
             }
 
             if ($context->isStopped) {

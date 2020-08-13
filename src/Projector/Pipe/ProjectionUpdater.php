@@ -5,13 +5,13 @@ namespace Plexikon\Chronicle\Projector\Pipe;
 
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
 final class ProjectionUpdater implements Pipe
 {
-    private ProjectorLock $projectorLock;
+    private ProjectorRepository $projectorLock;
 
-    public function __construct(ProjectorLock $projectorLock)
+    public function __construct(ProjectorRepository $projectorLock)
     {
         $this->projectorLock = $projectorLock;
     }
@@ -20,7 +20,7 @@ final class ProjectionUpdater implements Pipe
     {
         $context->counter->isReset()
             ? $this->sleepBeforeUpdateLock($context->option->sleep())
-            : $this->projectorLock->persistProjection();
+            : $this->projectorLock->persist();
 
         $context->counter->reset();
 

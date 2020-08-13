@@ -5,61 +5,61 @@ namespace Plexikon\Chronicle\Support\Contract\Projector;
 use DateTimeImmutable;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
 
-interface ProjectorLock
+interface ProjectorRepository
 {
     /**
      * Prepare projection
      * @param ReadModel|null $readModel
      */
-    public function prepareProjection(?ReadModel $readModel): void;
+    public function prepare(?ReadModel $readModel): void;
 
     /**
      * Create new projection
      */
-    public function createProjection(): void;
+    public function create(): void;
 
     /**
      * Load projection state
      */
-    public function loadProjectionState(): void;
+    public function loadState(): void;
 
     /**
      * Stop projection
      */
-    public function stopProjection(): void;
+    public function stop(): void;
 
     /**
      * Start projection again
      */
-    public function startProjectionAgain(): void;
+    public function startAgain(): void;
 
     /**
      * Fetch projection status
      *
      * @return ProjectionStatus
      */
-    public function fetchProjectionStatus(): ProjectionStatus;
+    public function loadStatus(): ProjectionStatus;
 
     /**
      * Persist projection
      */
-    public function persistProjection(): void;
+    public function persist(): void;
 
     /**
      * Update projection on counter
      */
-    public function updateProjectionOnCounter(): void;
+    public function updateOnCounter(): void;
 
     /**
      * Reset projection
      */
-    public function resetProjection(): void;
+    public function reset(): void;
 
     /**
      * Delete projection
      * @param bool $deleteEmittedEvents
      */
-    public function deleteProjection(bool $deleteEmittedEvents): void;
+    public function delete(bool $deleteEmittedEvents): void;
 
     /**
      * Check if projection exists

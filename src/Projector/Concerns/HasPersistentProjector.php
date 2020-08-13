@@ -14,24 +14,24 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Projector\Pipeline;
 
 trait HasPersistentProjector
 {
-    protected ProjectorContext $context;
-    protected ProjectorLock $lock;
+    protected ProjectorContext $projectorContext;
+    protected ProjectorRepository $projectorRepository;
     protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
 
     public function run(bool $keepRunning = true): void
     {
-        $this->context->factory->withKeepRunning($keepRunning);
+        $this->projectorContext->factory->withKeepRunning($keepRunning);
 
         /** @var PersistentProjector&HasPersistentProjector $this */
-        $this->context->setUpProjection(
-            $this->createEventHandlerContext($this, $this->context->currentStreamName)
+        $this->projectorContext->setUpProjection(
+            $this->createEventHandlerContext($this, $this->projectorContext->currentStreamName)
         );
 
         try {
@@ -40,32 +40,32 @@ trait HasPersistentProjector
 
             do {
                 $isStopped = $pipeline
-                    ->send($this->context)
+                    ->send($this->projectorContext)
                     ->then(fn(ProjectorContext $context): bool => $context->isStopped);
-            } while ($this->context->keepRunning() && !$isStopped);
+            } while ($this->projectorContext->keepRunning() && !$isStopped);
         } finally {
-            $this->lock->releaseLock();
+            $this->projectorRepository->releaseLock();
         }
     }
 
     public function stop(): void
     {
-        $this->lock->stopProjection();
+        $this->projectorRepository->stop();
     }
 
     public function reset(): void
     {
-        $this->lock->resetProjection();
+        $this->projectorRepository->reset();
     }
 
     public function delete(bool $deleteEmittedEvents): void
     {
-        $this->lock->deleteProjection($deleteEmittedEvents);
+        $this->projectorRepository->delete($deleteEmittedEvents);
     }
 
     public function getState(): array
     {
-        return $this->context->state->getState();
+        return $this->projectorContext->state->getState();
     }
 
     public function getStreamName(): string
@@ -79,9 +79,9 @@ trait HasPersistentProjector
     protected function getPipes(): array
     {
         return [
-            new PersistentRunner($this->statusRepository, $this->lock),
-            new StreamHandler($this->chronicler, $this->messageAlias, $this->lock),
-            new ProjectionUpdater($this->lock),
+            new PersistentRunner($this->statusRepository, $this->projectorRepository),
+            new StreamHandler($this->chronicler, $this->messageAlias, $this->projectorRepository),
+            new ProjectionUpdater($this->projectorRepository),
             new SignalDispatcher(),
             new ProjectionReset($this->statusRepository)
         ];

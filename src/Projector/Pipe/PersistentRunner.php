@@ -6,15 +6,15 @@ namespace Plexikon\Chronicle\Projector\Pipe;
 use Plexikon\Chronicle\Projector\ProjectionStatusRepository;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\PipeOnce;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
 final class PersistentRunner implements PipeOnce
 {
     private bool $hasBeenPrepared = false;
     private ProjectionStatusRepository $statusRepository;
-    private ProjectorLock $projectorLock;
+    private ProjectorRepository $projectorLock;
 
-    public function __construct(ProjectionStatusRepository $statusLoader, ProjectorLock $projectorLock)
+    public function __construct(ProjectionStatusRepository $statusLoader, ProjectorRepository $projectorLock)
     {
         $this->statusRepository = $statusLoader;
         $this->projectorLock = $projectorLock;
@@ -29,7 +29,7 @@ final class PersistentRunner implements PipeOnce
                 return true;
             }
 
-            $this->projectorLock->prepareProjection(null);
+            $this->projectorLock->prepare(null);
         }
 
         return $next($context);

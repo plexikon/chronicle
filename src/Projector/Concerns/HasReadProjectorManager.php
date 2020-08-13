@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Concerns;
 
-
 use Plexikon\Chronicle\Exception\ProjectionNotFound;
+use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionModel;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionProvider;
 use Plexikon\Chronicle\Support\Json;
 
@@ -14,35 +14,35 @@ trait HasReadProjectorManager
 
     public function statusOf(string $projectionName): string
     {
-        $result = $this->projectionProvider->findByName($projectionName);
+        $projection = $this->projectionProvider->findByName($projectionName);
 
-        if (!$result) {
+        if (!$projection instanceof ProjectionModel) {
             throw ProjectionNotFound::withName($projectionName);
         }
 
-        return $result->status();
+        return $projection->status();
     }
 
     public function streamPositionsOf(string $projectionName): array
     {
-        $result = $this->projectionProvider->findByName($projectionName);
+        $projection = $this->projectionProvider->findByName($projectionName);
 
-        if (!$result) {
+        if (!$projection instanceof ProjectionModel) {
             throw ProjectionNotFound::withName($projectionName);
         }
 
-        return Json::decode($result->position());
+        return Json::decode($projection->position());
     }
 
     public function stateOf(string $projectionName): array
     {
-        $result = $this->projectionProvider->findByName($projectionName);
+        $projection = $this->projectionProvider->findByName($projectionName);
 
-        if (!$result) {
+        if (!$projection) {
             throw ProjectionNotFound::withName($projectionName);
         }
 
-        return Json::decode($result->state());
+        return Json::decode($projection->state());
     }
 
     public function filterNamesOf(string ...$projectionNames): array
