@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\Query;
+namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
 use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
-use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\Projector;

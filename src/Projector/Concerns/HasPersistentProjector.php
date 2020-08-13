@@ -8,7 +8,7 @@ use Plexikon\Chronicle\Projector\Pipe\ProjectionReset;
 use Plexikon\Chronicle\Projector\Pipe\ProjectionUpdater;
 use Plexikon\Chronicle\Projector\Pipe\SignalDispatcher;
 use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
-use Plexikon\Chronicle\Projector\ProjectionStatusLoader;
+use Plexikon\Chronicle\Projector\ProjectionStatusRepository;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
@@ -20,9 +20,9 @@ use Plexikon\Chronicle\Support\Projector\Pipeline;
 
 trait HasPersistentProjector
 {
-    protected ?ReadModel $readModel;
+    protected ?ReadModel $readModel = null;
     protected ProjectorLock $lock;
-    protected ProjectionStatusLoader $statusLoader;
+    protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
 
@@ -80,11 +80,11 @@ trait HasPersistentProjector
     protected function getPipes(): array
     {
         return [
-            new PersistentRunner($this->statusLoader, $this->lock, $this->readModel),
+            new PersistentRunner($this->statusRepository, $this->lock, $this->readModel),
             new StreamHandler($this->chronicler, $this->messageAlias, $this->lock),
             new ProjectionUpdater($this->lock),
             new SignalDispatcher(),
-            new ProjectionReset($this->statusLoader)
+            new ProjectionReset($this->statusRepository)
         ];
     }
 

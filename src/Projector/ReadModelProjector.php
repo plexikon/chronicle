@@ -1,12 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\ReadModel;
+namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Projector\Concerns\HasPersistentProjector;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
-use Plexikon\Chronicle\Projector\ProjectionStatusLoader;
-use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
@@ -19,10 +17,10 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
 {
     use HasPersistentProjector, HasProjectorFactory;
 
+    protected ?ReadModel $readModel = null;
     protected ProjectorContext $context;
-    protected ?ReadModel $readModel;
     protected ProjectorLock $lock;
-    protected ProjectionStatusLoader $statusLoader;
+    protected ProjectionStatusRepository $statusLoader;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
     private string $streamName;
@@ -40,7 +38,7 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
         $this->messageAlias = $messageAlias;
         $this->readModel = $readModel;
         $this->streamName = $streamName;
-        $this->statusLoader = new ProjectionStatusLoader($this->lock);
+        $this->statusLoader = new ProjectionStatusRepository($this->lock);
     }
 
     public function readModel(): ReadModel

@@ -74,7 +74,7 @@ final class StreamHandler implements Pipe
             if (is_array($eventHandlers)) {
                 if (!$messageHandler = $this->determineEventHandler($streamEvent, $eventHandlers)) {
                     if ($this->lock) {
-                        $this->updatePersistentProjection($context);
+                        $this->lock->updateProjectionOnCounter();
                     }
 
                     if ($context->isStopped) {
@@ -92,32 +92,11 @@ final class StreamHandler implements Pipe
             $context->state->setState($projectionState);
 
             if ($this->lock) {
-                $this->updatePersistentProjection($context);
+                $this->lock->updateProjectionOnCounter();
             }
 
             if ($context->isStopped) {
                 break;
-            }
-        }
-    }
-
-    private function updatePersistentProjection(ProjectorContext $context): void
-    {
-        Assertion::notNull($this->lock);
-
-        $persistBlockSize = $context->option->persistBlockSize();
-
-        if ($context->counter->equals($persistBlockSize)) {
-            $this->lock->persistProjection();
-
-            $context->counter->reset();
-
-            $context->status = $this->lock->fetchProjectionStatus();
-
-            $keepProjectionRunning = [ProjectionStatus::RUNNING(), ProjectionStatus::IDLE()];
-
-            if (!in_array($context->status, $keepProjectionRunning)) {
-                $context->isStopped = true;
             }
         }
     }

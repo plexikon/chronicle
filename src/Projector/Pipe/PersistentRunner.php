@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Pipe;
 
-use Plexikon\Chronicle\Projector\ProjectionStatusLoader;
+use Plexikon\Chronicle\Projector\ProjectionStatusRepository;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\PipeOnce;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
@@ -12,15 +12,15 @@ use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 final class PersistentRunner implements PipeOnce
 {
     private bool $hasBeenPrepared = false;
-    private ProjectionStatusLoader $statusLoader;
+    private ProjectionStatusRepository $statusRepository;
     private ProjectorLock $lock;
     private ?ReadModel $readModel;
 
-    public function __construct(ProjectionStatusLoader $statusLoader,
+    public function __construct(ProjectionStatusRepository $statusLoader,
                                 ProjectorLock $lock,
                                 ?ReadModel $readModel)
     {
-        $this->statusLoader = $statusLoader;
+        $this->statusRepository = $statusLoader;
         $this->lock = $lock;
         $this->readModel = $readModel;
     }
@@ -30,7 +30,7 @@ final class PersistentRunner implements PipeOnce
         if (!$this->hasBeenPrepared) {
             $this->hasBeenPrepared = true;
 
-            if ($this->statusLoader->fromRemote(true, $context->keepRunning())) {
+            if ($this->statusRepository->updateStatus(true, $context->keepRunning())) {
                 return true;
             }
 

@@ -2,9 +2,10 @@
 declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
+
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock as BaseProjectorLock;
 
-final class ProjectionStatusLoader
+final class ProjectionStatusRepository
 {
     private BaseProjectorLock $projectorLock;
 
@@ -13,7 +14,7 @@ final class ProjectionStatusLoader
         $this->projectorLock = $projectorLock;
     }
 
-    public function fromRemote(bool $shouldStop, bool $keepRunning): bool
+    public function updateStatus(bool $shouldStop, bool $keepRunning): bool
     {
         switch ($this->projectorLock->fetchProjectionStatus()) {
             case ProjectionStatus::STOPPING():
