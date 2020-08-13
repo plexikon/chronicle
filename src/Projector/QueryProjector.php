@@ -1,28 +1,31 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\Query;
+namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Exception\Assertion;
-use Plexikon\Chronicle\Projector\ProjectorContext;
-use Plexikon\Chronicle\Projector\StreamHandler;
+use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
+use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\Projector;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\QueryProjector as BaseQueryProjector;
+use Plexikon\Chronicle\Support\Projector\Pipeline;
 
-final class QueryProjector implements BaseQueryProjector
+final class QueryProjector implements BaseQueryProjector, ProjectorFactory
 {
-    private ProjectorContext $projectorContext;
+    use HasProjectorFactory;
+
+    protected ProjectorContext $context;
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
-
 
     public function __construct(ProjectorContext $projectorContext,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias)
     {
-        $this->projectorContext = $projectorContext;
+        $this->context = $projectorContext;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
     }
@@ -31,48 +34,54 @@ final class QueryProjector implements BaseQueryProjector
     {
         Assertion::false($keepRunning, 'Query projection can not run in background');
 
-        $this->projectorContext->setUpProjection(
+        $this->context->setUpProjection(
             $this->createEventHandlerContext(
-                $this, $this->projectorContext->currentStreamName
+                $this, $this->context->currentStreamName
             )
         );
 
-        $this->projectorContext->setupStreamPosition();
+        $this->context->position->make($this->context->streamNames());
 
-        $streamHandler = new StreamHandler(
-            $this->projectorContext, $this->chronicler, $this->messageAlias, null
-        );
+        $this->sendThroughPipes();
+    }
 
-        $streamHandler->handleStreams($this->projectorContext->streamPosition->all());
+    private function sendThroughPipes(): void
+    {
+        (new Pipeline())
+            ->through([
+                new StreamHandler($this->chronicler, $this->messageAlias, null),
+            ])
+            ->send($this->context)
+            ->then(fn(ProjectorContext $context): bool => $context->isStopped);
     }
 
     public function stop(): void
     {
-        $this->projectorContext->isProjectionStopped = true;
+        $this->context->isStopped = true;
     }
 
     public function reset(): void
     {
-        $this->projectorContext->streamPosition->reset();
+        $this->context->position->reset();
 
-        $callback = $this->projectorContext->initCallback();
+        $callback = $this->context->initCallback();
 
         if (is_callable($callback)) {
             $callback = $callback();
 
             if (is_array($callback)) {
-                $this->projectorContext->state->setState($callback);
+                $this->context->state->setState($callback);
 
                 return;
             }
         }
 
-        $this->projectorContext->state->resetState();
+        $this->context->state->resetState();
     }
 
     public function getState(): array
     {
-        return $this->projectorContext->state->getState();
+        return $this->context->state->getState();
     }
 
     private function createEventHandlerContext(Projector $projector, ?string $streamName): object

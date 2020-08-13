@@ -23,11 +23,11 @@ final class ChroniclerServiceProvider extends ServiceProvider
 
             $console = config('chronicler.console') ?? [];
 
-            if (true === $console['load_migrations']) {
+            if (true === $console['load_migrations'] ?? false) {
                 $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
             }
 
-            if (true === $console['load_commands']) {
+            if (true === $console['load_commands'] ?? false) {
                 $this->commands($console['commands']);
             }
         }
@@ -35,7 +35,11 @@ final class ChroniclerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $config = config('chronicler');
+        $this->mergeConfigFrom($this->getConfigPath(), 'chronicler');
+
+        if (empty($config = config('chronicler', []))) {
+            return;
+        }
 
         $this->registerModels($config['models']);
         $this->registerEventFactories($config['event']);

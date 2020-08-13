@@ -13,68 +13,79 @@ interface ProjectorLock
     public function createProjection(): void;
 
     /**
-     * Create new projection
+     * Load projection state
      */
     public function loadProjectionState(): void;
 
     /**
-     * Create new projection
+     * Stop projection
      */
     public function stopProjection(): void;
 
     /**
-     * Create new projection
+     * Start projection again
      */
     public function startProjectionAgain(): void;
 
     /**
+     * Fetch projection status
+     *
      * @return ProjectionStatus
      */
     public function fetchProjectionStatus(): ProjectionStatus;
 
     /**
-     * Create new projection
+     * Persist projection
      */
     public function persistProjection(): void;
 
     /**
-     * Create new projection
+     * Update projection on counter
+     */
+    public function updateProjectionOnCounter(): void;
+
+    /**
+     * Reset projection
      */
     public function resetProjection(): void;
 
     /**
-     * Create new projection
+     * Delete projection
      * @param bool $deleteEmittedEvents
      */
     public function deleteProjection(bool $deleteEmittedEvents): void;
 
     /**
+     * Check if projection exists
      * @return bool
      */
     public function isProjectionExists(): bool;
 
     /**
-     * Create new projection
+     * Acquire lock
      */
     public function acquireLock(): void;
 
     /**
-     * Create new projection
+     * Update lock
      */
     public function updateLock(): void;
 
     /**
-     * Create new projection
+     * Release lock
      */
     public function releaseLock(): void;
 
     /**
+     * Update lock on condition
+     *
      * @param DateTimeImmutable $dateTime
      * @return bool
      */
     public function shouldUpdateLock(DateTimeImmutable $dateTime): bool;
 
     /**
+     * Get stream name
      * @return string
      */
     public function getStreamName(): string;

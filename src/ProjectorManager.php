@@ -6,15 +6,15 @@ namespace Plexikon\Chronicle;
 use Illuminate\Database\QueryException;
 use Plexikon\Chronicle\Exception\QueryFailure;
 use Plexikon\Chronicle\Projector\Concerns\HasReadProjectorManager;
-use Plexikon\Chronicle\Projector\Projection\ProjectionLock;
-use Plexikon\Chronicle\Projector\Projection\ProjectionProjectorFactory;
+use Plexikon\Chronicle\Projector\ProjectionLock;
+use Plexikon\Chronicle\Projector\ProjectionProjector;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Projector\ProjectorLock;
 use Plexikon\Chronicle\Projector\ProjectorOption;
-use Plexikon\Chronicle\Projector\Query\QueryProjectorFactory;
-use Plexikon\Chronicle\Projector\ReadModel\ReadModelLock;
-use Plexikon\Chronicle\Projector\ReadModel\ReadModelProjectorFactory;
+use Plexikon\Chronicle\Projector\QueryProjector;
+use Plexikon\Chronicle\Projector\ReadModelLock;
+use Plexikon\Chronicle\Projector\ReadModelProjector;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionProvider;
@@ -56,7 +56,7 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        return new QueryProjectorFactory($context, $this->chronicler, $this->messageAlias);
+        return new QueryProjector($context, $this->chronicler, $this->messageAlias);
     }
 
     public function createProjection(string $streamName, array $options = []): ProjectorFactory
@@ -68,7 +68,7 @@ final class ProjectorManager implements BaseProjectorManager
             $this->chronicler
         );
 
-        return new ProjectionProjectorFactory(
+        return new ProjectionProjector(
             $context, $projectionLock, $this->chronicler,
             $this->messageAlias, $streamName
         );
@@ -85,7 +85,7 @@ final class ProjectorManager implements BaseProjectorManager
             $readModel
         );
 
-        return new ReadModelProjectorFactory(
+        return new ReadModelProjector(
             $context, $projectionLock, $this->chronicler,
             $this->messageAlias, $readModel, $streamName
         );

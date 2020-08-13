@@ -31,6 +31,11 @@ trait HasProjectorLock
         $this->projectorLock->startProjectionAgain();
     }
 
+    public function updateProjectionOnCounter(): void
+    {
+        $this->projectorLock->updateProjectionOnCounter();
+    }
+
     public function fetchProjectionStatus(): ProjectionStatus
     {
         return $this->projectorLock->fetchProjectionStatus();

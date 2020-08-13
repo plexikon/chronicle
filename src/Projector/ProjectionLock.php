@@ -1,35 +1,33 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\ReadModel;
+namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Exception\Assertion;
+use Plexikon\Chronicle\Exception\StreamNotFound;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorLock;
+use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLockDecorator;
-use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ReadModelLock implements ProjectorLockDecorator
+final class ProjectionLock implements ProjectorLockDecorator
 {
     use HasProjectorLock;
 
     protected ProjectorLock $projectorLock;
     private Chronicler $chronicler;
-    private ReadModel $readModel;
 
-    public function __construct(ProjectorLock $projectorLock, ReadModel $readModel)
+    public function __construct(ProjectorLock $projectorLock, Chronicler $chronicler)
     {
         Assertion::notIsInstanceOf($projectorLock, ProjectorLockDecorator::class);
 
         $this->projectorLock = $projectorLock;
-        $this->readModel = $readModel;
+        $this->chronicler = $chronicler;
     }
 
     public function persistProjection(): void
     {
-        $this->readModel->persist();
-
         $this->projectorLock->persistProjection();
     }
 
@@ -37,7 +35,7 @@ final class ReadModelLock implements ProjectorLockDecorator
     {
         $this->projectorLock->resetProjection();
 
-        $this->readModel->reset();
+        $this->deleteStream();
     }
 
     public function deleteProjection(bool $deleteEmittedEvents): void
@@ -45,7 +43,16 @@ final class ReadModelLock implements ProjectorLockDecorator
         $this->projectorLock->deleteProjection($deleteEmittedEvents);
 
         if ($deleteEmittedEvents) {
-            $this->readModel->down();
+            $this->deleteStream();
+        }
+    }
+
+    private function deleteStream(): void
+    {
+        try {
+            $this->chronicler->delete(new StreamName($this->getStreamName()));
+        } catch (StreamNotFound $streamNotFound) {
+            //
         }
     }
 }

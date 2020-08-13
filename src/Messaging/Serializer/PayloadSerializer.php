@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Messaging\Serializer;
 
 use Plexikon\Chronicle\Chronicling\Aggregate\AggregateChanged;
 use Plexikon\Chronicle\Exception\Assert;
+use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Aggregate\AggregateId;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Messaging\PayloadSerializer as BasePayloadSerializer;
@@ -26,6 +27,8 @@ final class PayloadSerializer implements BasePayloadSerializer
     {
         // From message serializer, payload is a straight event payload
         // From event serializer, payload hold headers
+
+        Assertion::classExists($className, 'Invalid event class name');
 
         if (is_subclass_of($className, AggregateChanged::class)) {
             $aggregateRootId = $payload['headers'][MessageHeader::AGGREGATE_ID] ?? null;

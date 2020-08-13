@@ -28,10 +28,14 @@ trait HasPromiseHandler
             }
         );
 
-        if ($raiseException && $exception instanceof Throwable) {
-            throw $exception;
+        if ($exception instanceof Throwable) {
+            if ($raiseException) {
+                throw $exception;
+            }
+
+            return $exception;
         }
 
-        return $exception ?? $result;
+        return $result;
     }
 }

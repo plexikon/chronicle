@@ -41,6 +41,9 @@ final class MessageSerializer implements BaseMessageSerializer
 
         $headers = $payload['headers'];
 
+        Assertion::keyIsset($headers, MessageHeader::EVENT_TYPE, 'Event type message header key missing');
+        Assertion::notBlank($headers[MessageHeader::EVENT_TYPE], 'Event type message header must be a valid string');
+
         $className = $this->messageAlias->typeToClass($headers[MessageHeader::EVENT_TYPE]);
 
         $event = $this->payloadSerializer->unserializePayload($className, $payload['payload']);

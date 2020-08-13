@@ -9,15 +9,15 @@ use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 
 trait HasProjectorFactory
 {
-    protected ProjectorContext $projectorContext;
+    protected ProjectorContext $context;
 
     /**
      * @param callable $initCallback
-     * @return ProjectorFactory&static
+     * @return ProjectorFactory&HasProjectorFactory
      */
     public function initialize(callable $initCallback): ProjectorFactory
     {
-        $this->projectorContext->withCallback($initCallback);
+        $this->context->factory->withCallback($initCallback);
 
         return $this;
     }
@@ -28,7 +28,7 @@ trait HasProjectorFactory
      */
     public function withQueryFilter(QueryFilter $queryFilter): ProjectorFactory
     {
-        $this->projectorContext->withQueryFilter($queryFilter);
+        $this->context->factory->withQueryFilter($queryFilter);
 
         return $this;
     }
@@ -39,7 +39,7 @@ trait HasProjectorFactory
      */
     public function fromStreams(string ...$streamNames): ProjectorFactory
     {
-        $this->projectorContext->withStreams(...$streamNames);
+        $this->context->factory->withStreams(...$streamNames);
 
         return $this;
     }
@@ -49,7 +49,7 @@ trait HasProjectorFactory
      */
     public function fromAll(): ProjectorFactory
     {
-        $this->projectorContext->withAllStreams();
+        $this->context->factory->withAllStreams();
 
         return $this;
     }
@@ -60,7 +60,7 @@ trait HasProjectorFactory
      */
     public function when(array $eventHandlers): ProjectorFactory
     {
-        $this->projectorContext->when($eventHandlers);
+        $this->context->factory->when($eventHandlers);
 
         return $this;
     }
@@ -71,7 +71,7 @@ trait HasProjectorFactory
      */
     public function whenAny(callable $eventHandler): ProjectorFactory
     {
-        $this->projectorContext->whenAny($eventHandler);
+        $this->context->factory->whenAny($eventHandler);
 
         return $this;
     }

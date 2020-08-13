@@ -1,41 +1,44 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\ReadModel;
+namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Projector\Concerns\HasPersistentProjector;
-use Plexikon\Chronicle\Projector\ProjectorContext;
+use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModelProjector as BaseProjector;
 
-final class ReadModelProjector implements BaseProjector
+final class ReadModelProjector implements BaseProjector, ProjectorFactory
 {
-    use HasPersistentProjector;
+    use HasPersistentProjector, HasProjectorFactory;
 
     protected ?ReadModel $readModel = null;
-    protected ?string $streamName;
-    protected ProjectorContext $projectorContext;
-    protected ProjectorLock $projectorLock;
+    protected ProjectorContext $context;
+    protected ProjectorLock $lock;
+    protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
+    private string $streamName;
 
-    public function __construct(ProjectorContext $projectorContext,
-                                ProjectorLock $projectorLock,
+    public function __construct(ProjectorContext $context,
+                                ProjectorLock $lock,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias,
                                 ReadModel $readModel,
                                 string $streamName)
     {
-        $this->projectorContext = $projectorContext;
-        $this->projectorLock = $projectorLock;
+        $this->context = $context;
+        $this->lock = $lock;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
         $this->readModel = $readModel;
         $this->streamName = $streamName;
+        $this->statusRepository = new ProjectionStatusRepository($this->lock);
     }
 
     public function readModel(): ReadModel
@@ -46,10 +49,10 @@ final class ReadModelProjector implements BaseProjector
     protected function createEventHandlerContext(PersistentProjector $projector, ?string $streamName): object
     {
         return new class($projector, $streamName) {
-            private ReadModelProjector $projector;
+            private BaseProjector $projector;
             private ?string $streamName;
 
-            public function __construct(ReadModelProjector $projector, ?string &$streamName)
+            public function __construct(BaseProjector $projector, ?string &$streamName)
             {
                 $this->projector = $projector;
                 $this->streamName = &$streamName;
