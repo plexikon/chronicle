@@ -20,7 +20,7 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
     protected ?ReadModel $readModel = null;
     protected ProjectorContext $context;
     protected ProjectorLock $lock;
-    protected ProjectionStatusRepository $statusLoader;
+    protected ProjectionStatusRepository $statusRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
     private string $streamName;
@@ -38,7 +38,7 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
         $this->messageAlias = $messageAlias;
         $this->readModel = $readModel;
         $this->streamName = $streamName;
-        $this->statusLoader = new ProjectionStatusRepository($this->lock);
+        $this->statusRepository = new ProjectionStatusRepository($this->lock);
     }
 
     public function readModel(): ReadModel
