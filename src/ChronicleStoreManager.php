@@ -5,7 +5,7 @@ namespace Plexikon\Chronicle;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Connection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Plexikon\Chronicle\Chronicling\EventChronicler;
@@ -83,6 +83,7 @@ class ChronicleStoreManager
     protected function createPgsqlChronicleDriver(array $config): Chronicler
     {
         $driver = $config['driver'];
+        /** @var Connection $connection */
         $connection = $this->container['db']->connection($driver);
 
         return new PgsqlChronicler(
@@ -95,7 +96,7 @@ class ChronicleStoreManager
         );
     }
 
-    protected function createInMemoryChronicleDriver(array $config): Chronicler
+    protected function createInMemoryChronicleDriver(): Chronicler
     {
         return new InMemoryChronicler();
     }
@@ -123,7 +124,7 @@ class ChronicleStoreManager
         throw new RuntimeException("Unable to configure chronicler decorator");
     }
 
-    protected function createDatabaseWriteLockDriver(ConnectionInterface $connection, bool $useWriteLock): WriteLockStrategy
+    protected function createDatabaseWriteLockDriver(Connection $connection, bool $useWriteLock): WriteLockStrategy
     {
         if (!$useWriteLock) {
             return new NoWriteLock();

@@ -11,7 +11,7 @@ final class AsyncMarkerMessageDecorator implements MessageDecorator
 {
     public function decorate(Message $message): Message
     {
-        if(!$message->isMessaging()){
+        if (!$message->isMessaging()) {
             return $message;
         }
 

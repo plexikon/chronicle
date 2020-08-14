@@ -22,7 +22,7 @@ final class MessageFactory implements BaseMessageFactory
             $message = $this->messageSerializer->unserializePayload($message)->current();
         }
 
-        Assertion::isObject($message, 'Message can be an array, an object and an instance of ' . Message::class);
+        Assertion::isObject($message, 'Message can be an array, an object or an instance of ' . Message::class);
 
         if ($message instanceof Message) {
             return $message;
