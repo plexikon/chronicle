@@ -157,7 +157,7 @@ final class ProjectorRepository implements BaseProjectorRepository
         return ProjectionStatus::byValue($result->status());
     }
 
-    public function updateOnStatus(bool $shouldStop, bool $keepRunning): bool
+    public function processOnStatus(bool $shouldStop, bool $keepRunning): bool
     {
         switch ($this->loadStatus()) {
             case ProjectionStatus::STOPPING():
@@ -189,7 +189,7 @@ final class ProjectorRepository implements BaseProjectorRepository
         }
     }
 
-    public function updateOnCounter(): void
+    public function persistOnReachedCounter(): void
     {
         $persistBlockSize = $this->projectorContext->option->persistBlockSize();
 

@@ -18,7 +18,7 @@ final class StreamUpdater implements Pipe
 
     public function __invoke(ProjectorContext $context, callable $next)
     {
-        $this->projectorRepository->updateOnStatus(false, $context->keepRunning());
+        $this->projectorRepository->processOnStatus(false, $context->keepRunning());
 
         $context->position->make($context->streamNames());
 

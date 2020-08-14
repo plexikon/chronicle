@@ -74,7 +74,7 @@ final class StreamEventHandler implements Pipe
             if (is_array($eventHandlers)) {
                 if (!$messageHandler = $this->determineEventHandler($streamEvent, $eventHandlers)) {
                     if ($this->projectorRepository) {
-                        $this->projectorRepository->updateOnCounter();
+                        $this->projectorRepository->persistOnReachedCounter();
                     }
 
                     if ($context->isStopped) {
@@ -92,7 +92,7 @@ final class StreamEventHandler implements Pipe
             $context->state->setState($projectionState);
 
             if ($this->projectorRepository) {
-                $this->projectorRepository->updateOnCounter();
+                $this->projectorRepository->persistOnReachedCounter();
             }
 
             if ($context->isStopped) {

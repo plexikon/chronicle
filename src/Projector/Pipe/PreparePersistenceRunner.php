@@ -22,7 +22,7 @@ final class PreparePersistenceRunner implements PipeOnce
         if (!$this->hasBeenPrepared) {
             $this->hasBeenPrepared = true;
 
-            if ($this->projectorRepository->updateOnStatus(true, $context->keepRunning())) {
+            if ($this->projectorRepository->processOnStatus(true, $context->keepRunning())) {
                 return true;
             }
 

@@ -47,7 +47,7 @@ interface ProjectorRepository
      * @param bool $keepRunning
      * @return bool
      */
-    public function updateOnStatus(bool $shouldStop, bool $keepRunning): bool;
+    public function processOnStatus(bool $shouldStop, bool $keepRunning): bool;
 
     /**
      * Persist projection
@@ -55,9 +55,9 @@ interface ProjectorRepository
     public function persist(): void;
 
     /**
-     * Update projection on counter
+     * Persist projection on counter
      */
-    public function updateOnCounter(): void;
+    public function persistOnReachedCounter(): void;
 
     /**
      * Reset projection

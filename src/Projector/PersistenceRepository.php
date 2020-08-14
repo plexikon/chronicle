@@ -31,9 +31,9 @@ abstract class PersistenceRepository implements BaseProjectorRepository
         $this->projectorRepository->startAgain();
     }
 
-    public function updateOnCounter(): void
+    public function persistOnReachedCounter(): void
     {
-        $this->projectorRepository->updateOnCounter();
+        $this->projectorRepository->persistOnReachedCounter();
     }
 
     public function isProjectionExists(): bool
@@ -46,9 +46,9 @@ abstract class PersistenceRepository implements BaseProjectorRepository
         return $this->projectorRepository->loadStatus();
     }
 
-    public function updateOnStatus(bool $shouldStop, bool $keepRunning): bool
+    public function processOnStatus(bool $shouldStop, bool $keepRunning): bool
     {
-        return $this->projectorRepository->updateOnStatus($shouldStop, $keepRunning);
+        return $this->projectorRepository->processOnStatus($shouldStop, $keepRunning);
     }
 
     public function acquireLock(): void
