@@ -6,7 +6,7 @@ namespace Plexikon\Chronicle\Projector\Pipe;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 
-final class SignalDispatcher implements Pipe
+final class DispatchSignal implements Pipe
 {
     public function __invoke(ProjectorContext $context, callable $next)
     {

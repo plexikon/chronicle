@@ -5,9 +5,9 @@ namespace Plexikon\Chronicle\Projector\Concerns;
 
 use Plexikon\Chronicle\Projector\Pipe\PersistEventOrSleepOnEventCounter;
 use Plexikon\Chronicle\Projector\Pipe\PreparePersistenceRunner;
-use Plexikon\Chronicle\Projector\Pipe\SignalDispatcher;
-use Plexikon\Chronicle\Projector\Pipe\StreamEventHandler;
-use Plexikon\Chronicle\Projector\Pipe\StreamUpdater;
+use Plexikon\Chronicle\Projector\Pipe\DispatchSignal;
+use Plexikon\Chronicle\Projector\Pipe\HandleStreamEvent;
+use Plexikon\Chronicle\Projector\Pipe\UpdateStatusAndStreamsPositions;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
@@ -83,10 +83,10 @@ trait HasPersistentProjector
     {
         return [
             new PreparePersistenceRunner($this->projectorRepository),
-            new StreamEventHandler($this->chronicler, $this->messageAlias, $this->projectorRepository),
+            new HandleStreamEvent($this->chronicler, $this->messageAlias, $this->projectorRepository),
             new PersistEventOrSleepOnEventCounter($this->projectorRepository),
-            new SignalDispatcher(),
-            new StreamUpdater($this->projectorRepository)
+            new DispatchSignal(),
+            new UpdateStatusAndStreamsPositions($this->projectorRepository)
         ];
     }
 

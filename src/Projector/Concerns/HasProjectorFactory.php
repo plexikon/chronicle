@@ -17,7 +17,7 @@ trait HasProjectorFactory
      */
     public function initialize(callable $initCallback): ProjectorFactory
     {
-        $this->context->factory->withCallback($initCallback);
+        $this->context->withCallback($initCallback);
 
         return $this;
     }
@@ -28,7 +28,7 @@ trait HasProjectorFactory
      */
     public function withQueryFilter(QueryFilter $queryFilter): ProjectorFactory
     {
-        $this->context->factory->withQueryFilter($queryFilter);
+        $this->context->withQueryFilter($queryFilter);
 
         return $this;
     }
@@ -39,7 +39,7 @@ trait HasProjectorFactory
      */
     public function fromStreams(string ...$streamNames): ProjectorFactory
     {
-        $this->context->factory->withStreams(...$streamNames);
+        $this->context->withStreams(...$streamNames);
 
         return $this;
     }
@@ -49,7 +49,7 @@ trait HasProjectorFactory
      */
     public function fromAll(): ProjectorFactory
     {
-        $this->context->factory->withAllStreams();
+        $this->context->withAllStreams();
 
         return $this;
     }
@@ -60,7 +60,7 @@ trait HasProjectorFactory
      */
     public function when(array $eventHandlers): ProjectorFactory
     {
-        $this->context->factory->when($eventHandlers);
+        $this->context->when($eventHandlers);
 
         return $this;
     }
@@ -71,7 +71,7 @@ trait HasProjectorFactory
      */
     public function whenAny(callable $eventHandler): ProjectorFactory
     {
-        $this->context->factory->whenAny($eventHandler);
+        $this->context->whenAny($eventHandler);
 
         return $this;
     }

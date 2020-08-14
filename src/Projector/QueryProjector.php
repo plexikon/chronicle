@@ -5,7 +5,7 @@ namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
-use Plexikon\Chronicle\Projector\Pipe\StreamEventHandler;
+use Plexikon\Chronicle\Projector\Pipe\HandleStreamEvent;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\Projector;
@@ -49,7 +49,7 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
     {
         (new Pipeline())
             ->through([
-                new StreamEventHandler($this->chronicler, $this->messageAlias, null),
+                new HandleStreamEvent($this->chronicler, $this->messageAlias, null),
             ])
             ->send($this->context)
             ->then(fn(ProjectorContext $context): bool => $context->isStopped);

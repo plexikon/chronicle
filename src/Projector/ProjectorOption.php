@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
+
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorOption as BaseProjectorOption;
 

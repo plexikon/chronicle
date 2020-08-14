@@ -36,7 +36,7 @@ final class LoggerCommandSubscriber implements MessageSubscriber
                     'message' => $this->messageSerializer->serializeMessage($message)
                 ]
             ]);
-        }, 1);
+        }, 1); //add debug before message factory subscriber
 
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
             $this->logger->debug('Command on finalize', [
