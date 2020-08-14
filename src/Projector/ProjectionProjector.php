@@ -14,43 +14,41 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectionProjector as BaseProjectionProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Projector\StreamCached;
 
 final class ProjectionProjector implements BaseProjectionProjector, ProjectorFactory
 {
     use HasPersistentProjector, HasProjectorFactory;
 
-    protected ?string $streamName;
-    protected ProjectionStatusRepository $statusRepository;
-    protected ProjectorContext $context;
+    protected ProjectorContext $projectorContext;
     protected Chronicler $chronicler;
-    protected ProjectorLock $lock;
+    protected ProjectorRepository $projectorRepository;
+    private string $streamName;
     private StreamCached $streamCached;
 
-    public function __construct(ProjectorContext $context,
-                                ProjectorLock $lock,
+    public function __construct(ProjectorContext $projectorContext,
+                                ProjectorRepository $projectorRepository,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias,
                                 string $streamName)
     {
-        $this->context = $context;
-        $this->lock = $lock;
+        $this->projectorContext = $projectorContext;
+        $this->projectorRepository = $projectorRepository;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
         $this->streamName = $streamName;
-        $this->streamCached = new StreamCached($context->option->persistBlockSize());
-        $this->statusRepository = new ProjectionStatusRepository($this->lock);
+        $this->streamCached = new StreamCached($projectorContext->option->persistBlockSize());
     }
 
     public function emit(DomainEvent $event): void
     {
         $streamName = new StreamName($this->streamName);
 
-        if (!$this->context->isStreamCreated && !$this->chronicler->hasStream($streamName)) {
+        if (!$this->projectorContext->isStreamCreated && !$this->chronicler->hasStream($streamName)) {
             $this->chronicler->persistFirstCommit(new Stream($streamName));
 
-            $this->context->isStreamCreated = true;
+            $this->projectorContext->isStreamCreated = true;
         }
 
         $this->linkTo($this->streamName, $event);

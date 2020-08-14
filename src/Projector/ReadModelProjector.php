@@ -9,7 +9,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorLock;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModelProjector as BaseProjector;
 
@@ -17,28 +17,26 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
 {
     use HasPersistentProjector, HasProjectorFactory;
 
-    protected ?ReadModel $readModel = null;
-    protected ProjectorContext $context;
-    protected ProjectorLock $lock;
-    protected ProjectionStatusRepository $statusRepository;
+    protected ProjectorContext $projectorContext;
+    protected ProjectorRepository $projectorRepository;
     protected Chronicler $chronicler;
     protected MessageAlias $messageAlias;
+    private ReadModel $readModel;
     private string $streamName;
 
-    public function __construct(ProjectorContext $context,
-                                ProjectorLock $lock,
+    public function __construct(ProjectorContext $projectorContext,
+                                ProjectorRepository $projectorRepository,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias,
                                 ReadModel $readModel,
                                 string $streamName)
     {
-        $this->context = $context;
-        $this->lock = $lock;
+        $this->projectorContext = $projectorContext;
+        $this->projectorRepository = $projectorRepository;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
         $this->readModel = $readModel;
         $this->streamName = $streamName;
-        $this->statusRepository = new ProjectionStatusRepository($this->lock);
     }
 
     public function readModel(): ReadModel

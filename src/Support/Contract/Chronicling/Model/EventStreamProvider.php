@@ -28,12 +28,12 @@ interface EventStreamProvider
      * @param array $streamNames
      * @return array
      */
-    public function filterByStreamNames(array $streamNames): array;
+    public function filterByStream(array $streamNames): array;
 
     /**
      * @return array
      */
-    public function allStreamNamesWithoutInternal(): array;
+    public function allStreamWithoutInternal(): array;
 
     /**
      * @param StreamName $streamName

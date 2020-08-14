@@ -31,7 +31,7 @@ class EventStream extends Model implements EventStreamModel, EventStreamProvider
         return 0 !== $result;
     }
 
-    public function filterByStreamNames(array $streamNames): array
+    public function filterByStream(array $streamNames): array
     {
         return $this->newInstance()->newQuery()
             ->whereIn('real_stream_name', $streamNames)
@@ -39,7 +39,7 @@ class EventStream extends Model implements EventStreamModel, EventStreamProvider
             ->toArray();
     }
 
-    public function allStreamNamesWithoutInternal(): array
+    public function allStreamWithoutInternal(): array
     {
         return $this->newInstance()->newQuery()
             ->whereRaw("real_stream_name NOT LIKE '$%'")

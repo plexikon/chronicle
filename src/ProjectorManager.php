@@ -6,14 +6,14 @@ namespace Plexikon\Chronicle;
 use Illuminate\Database\QueryException;
 use Plexikon\Chronicle\Exception\QueryFailure;
 use Plexikon\Chronicle\Projector\Concerns\HasReadProjectorManager;
-use Plexikon\Chronicle\Projector\ProjectionLock;
+use Plexikon\Chronicle\Projector\ProjectionPersistenceRepository;
 use Plexikon\Chronicle\Projector\ProjectionProjector;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
-use Plexikon\Chronicle\Projector\ProjectorLock;
+use Plexikon\Chronicle\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Projector\ProjectorOption;
 use Plexikon\Chronicle\Projector\QueryProjector;
-use Plexikon\Chronicle\Projector\ReadModelLock;
+use Plexikon\Chronicle\Projector\ReadModelPersistenceRepository;
 use Plexikon\Chronicle\Projector\ReadModelProjector;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
@@ -63,8 +63,8 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        $projectionLock = new ProjectionLock(
-            new ProjectorLock($context, $this->projectionProvider, $streamName),
+        $projectionLock = new ProjectionPersistenceRepository(
+            new ProjectorRepository($context, $this->projectionProvider, $streamName),
             $this->chronicler
         );
 
@@ -80,8 +80,8 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        $projectionLock = new ReadModelLock(
-            new ProjectorLock($context, $this->projectionProvider, $streamName),
+        $projectionLock = new ReadModelPersistenceRepository(
+            new ProjectorRepository($context, $this->projectionProvider, $streamName),
             $readModel
         );
 
@@ -118,7 +118,7 @@ final class ProjectorManager implements BaseProjectorManager
     private function updateProjectionStatus(ProjectionStatus $projectionStatus, string $name): void
     {
         try {
-            $result = $this->projectionProvider->updateStatus(
+            $result = $this->projectionProvider->updateProjection(
                 $name,
                 ['status' => $projectionStatus->getValue()]
             );
