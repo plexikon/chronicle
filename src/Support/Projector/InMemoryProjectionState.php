@@ -7,6 +7,9 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionState;
 
 final class InMemoryProjectionState implements ProjectionState
 {
+    /**
+     * @var array<array>
+     */
     private array $state = [];
 
     public function setState($state): void
@@ -16,6 +19,9 @@ final class InMemoryProjectionState implements ProjectionState
         }
     }
 
+    /**
+     * @return array<array>
+     */
     public function getState(): array
     {
         return $this->state;

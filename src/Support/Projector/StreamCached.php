@@ -4,11 +4,15 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Support\Projector;
 
 use Plexikon\Chronicle\Exception\Assert;
+use function in_array;
 
 final class StreamCached
 {
-    private int $size;
+    /**
+     * @var array<int,null|string>
+     */
     private array $container;
+    private int $size;
     private int $position = -1;
 
     public function __construct(int $size)
@@ -20,7 +24,7 @@ final class StreamCached
         $this->container = array_fill(0, $size, null);
     }
 
-    public function toNextPosition($value): void
+    public function toNextPosition(string $value): void
     {
         $this->container[$this->nextPosition()] = $value;
     }
@@ -33,7 +37,7 @@ final class StreamCached
         return $this->container[$position];
     }
 
-    public function has($value): bool
+    public function has(string $value): bool
     {
         return in_array($value, $this->container, true);
     }

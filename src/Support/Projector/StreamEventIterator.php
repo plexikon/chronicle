@@ -12,6 +12,9 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 
 final class StreamEventIterator implements Iterator
 {
+    /**
+     * @var Generator<Message>
+     */
     private Generator $eventStreams;
     private ?Message $currentMessage = null;
     private int $currentKey = 0;
@@ -63,7 +66,7 @@ final class StreamEventIterator implements Iterator
         return null !== $this->currentMessage;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         //
     }

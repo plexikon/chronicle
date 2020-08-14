@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Reporter\Subscribers;
 
+use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Reporter\Router;
@@ -24,7 +25,10 @@ final class ReporterRouterSubscriber implements MessageSubscriber
     public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
-            $this->messageProducer->mustBeHandledSync($context->getMessage())
+            /** @var Message $message */
+            $message = $context->getMessage();
+
+            $this->messageProducer->mustBeHandledSync($message)
                 ? $this->handleSyncMessage($context)
                 : $this->handleAsyncMessage($context);
         }, 1000);
@@ -32,6 +36,7 @@ final class ReporterRouterSubscriber implements MessageSubscriber
 
     private function handleSyncMessage(MessageContext $context): void
     {
+        /** @var Message $message */
         $message = $context->getMessage();
 
         $context->withMessageHandlers($this->router->route($message));
@@ -39,10 +44,11 @@ final class ReporterRouterSubscriber implements MessageSubscriber
 
     private function handleAsyncMessage(MessageContext $context): void
     {
-        $message = $this->messageProducer->produce(
-            $context->getMessage()
-        );
+        /** @var Message $message */
+        $message = $context->getMessage();
 
-        $context->withMessage($message);
+        $asyncMessage = $this->messageProducer->produce($message);
+
+        $context->withMessage($asyncMessage);
     }
 }

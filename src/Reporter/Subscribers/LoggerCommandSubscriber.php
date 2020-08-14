@@ -42,6 +42,7 @@ final class LoggerCommandSubscriber implements MessageSubscriber
         }, 100001);
 
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
+            /** @var Message $message */
             $message = $context->getMessage();
 
             $this->logger->debug('Command on dispatch', [
@@ -55,9 +56,12 @@ final class LoggerCommandSubscriber implements MessageSubscriber
         }, 1);
 
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
+            /** @var Message $message */
+            $message = $context->getMessage();
+
             $this->logger->debug('Command on finalize', [
                 'context' => [
-                    'message_name' => $this->determineMessageName($context->getMessage()),
+                    'message_name' => $this->determineMessageName($message),
                     'message_handled' => $context->isMessageHandled(),
                     'exception' => $context->hasException() ? $context->getException() : null,
                 ]
@@ -66,7 +70,7 @@ final class LoggerCommandSubscriber implements MessageSubscriber
     }
 
     /**
-     * @param array|Message $message
+     * @param array<string,mixed>|Message $message
      * @return string
      */
     private function determineMessageName($message): string

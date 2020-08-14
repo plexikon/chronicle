@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Reporter\Subscribers;
 
+use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
@@ -20,7 +21,9 @@ final class TrackingEventSubscriber implements MessageSubscriber
     private function subscribeToDispatchEvent(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
+            /** @var Message $message */
             $message = $context->getMessage();
+
             $event = $message->isMessaging() ? $message->eventWithHeaders() : $message->event();
 
             foreach ($context->messageHandlers() as $messageHandler) {
@@ -31,11 +34,11 @@ final class TrackingEventSubscriber implements MessageSubscriber
         });
     }
 
-    private function subscribeToFinalizeEvent(MessageTracker $tracker)
+    private function subscribeToFinalizeEvent(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
-            if ($context->hasException()) {
-                throw $context->getException();
+            if ($exception = $context->getException()) {
+                throw $exception;
             }
         });
     }

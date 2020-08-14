@@ -8,7 +8,7 @@ interface Router
 {
     /**
      * @param Message $message
-     * @return array
+     * @return array<null|callable>
      */
     public function route(Message $message): array;
 }

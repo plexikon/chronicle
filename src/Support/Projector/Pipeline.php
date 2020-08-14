@@ -23,6 +23,10 @@ final class Pipeline
         return $this;
     }
 
+    /**
+     * @param Pipe[] $pipes
+     * @return $this
+     */
     public function through(array $pipes): self
     {
         $this->pipes = $pipes;
@@ -30,7 +34,11 @@ final class Pipeline
         return $this;
     }
 
-    public function then(Closure $destination)
+    /**
+     * @param Closure $destination
+     * @return bool
+     */
+    public function then(Closure $destination): bool
     {
         $pipeline = array_reduce(
             array_reverse($this->pipes()), $this->carry(), $this->prepareDestination($destination)
@@ -39,7 +47,7 @@ final class Pipeline
         return $pipeline($this->passable);
     }
 
-    protected function prepareDestination(Closure $destination)
+    private function prepareDestination(Closure $destination): Closure
     {
         return function ($passable) use ($destination) {
             try {
@@ -50,7 +58,7 @@ final class Pipeline
         };
     }
 
-    protected function carry(): Closure
+    private function carry(): Closure
     {
         return function ($stack, $pipe) {
             return function ($passable) use ($stack, $pipe) {
@@ -63,13 +71,11 @@ final class Pipeline
         };
     }
 
-    protected function pipes(): array
+    /**
+     * @return Pipe[]
+     */
+    private function pipes(): array
     {
         return $this->pipes;
-    }
-
-    protected function handleCarry($carry)
-    {
-        return $carry;
     }
 }

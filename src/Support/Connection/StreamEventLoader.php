@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\LazyCollection;
 use Plexikon\Chronicle\Exception\QueryFailure;
 use Plexikon\Chronicle\Exception\StreamNotFound;
+use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Messaging\EventSerializer;
 use Plexikon\Chronicle\Support\Json;
@@ -23,6 +24,11 @@ class StreamEventLoader
         $this->eventSerializer = $eventSerializer;
     }
 
+    /**
+     * @param Builder $builder
+     * @param StreamName $streamName
+     * @return Generator<Message>
+     */
     public function query(Builder $builder, StreamName $streamName): Generator
     {
         try {
@@ -46,6 +52,11 @@ class StreamEventLoader
         }
     }
 
+    /**
+     * @param Builder $builder
+     * @param StreamName $streamName
+     * @return LazyCollection<stdClass>
+     */
     protected function fromCursor(Builder $builder, StreamName $streamName): LazyCollection
     {
         return $builder->cursor()->whenEmpty(static function () use ($streamName) {
@@ -53,6 +64,10 @@ class StreamEventLoader
         });
     }
 
+    /**
+     * @param stdClass $event
+     * @return Generator<Message>
+     */
     protected function unserializeEvent(stdClass $event): Generator
     {
         $data = [

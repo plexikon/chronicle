@@ -16,6 +16,11 @@ final class SingleHandlerRouter implements Router
         $this->router = $router;
     }
 
+    /**
+     * @param Message $message
+     * @return array<callable>
+     * @throws ReporterFailure
+     */
     public function route(Message $message): array
     {
         $messageHandlers = $this->router->route($message);

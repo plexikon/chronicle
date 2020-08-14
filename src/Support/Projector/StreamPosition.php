@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Support\Projector;
 
-
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
 
 final class StreamPosition
 {
-    private array $streamPositions = [];
+    /**
+     * @var array<string,int>
+     */
+    private array $streamsPosition = [];
     private EventStreamProvider $eventStreamProvider;
 
     public function __construct(EventStreamProvider $eventStreamProvider)
@@ -16,39 +18,48 @@ final class StreamPosition
         $this->eventStreamProvider = $eventStreamProvider;
     }
 
+    /**
+     * @param string[] $streamNames
+     */
     public function make(array $streamNames): void
     {
-        $streamPositions = [];
+        $streamsPosition = [];
 
         foreach ($this->gatherStreamNames($streamNames) as $realStreamName) {
-            $streamPositions[$realStreamName] = 0;
+            $streamsPosition[$realStreamName] = 0;
         }
 
-        $this->streamPositions = array_merge($streamPositions, $this->streamPositions);
+        $this->streamsPosition = array_merge($streamsPosition, $this->streamsPosition);
     }
 
-    public function mergeStreamsFromRemote(array $streamPositions): void
+    /**
+     * @param array<string,int> $streamsPosition
+     */
+    public function mergeStreamsFromRemote(array $streamsPosition): void
     {
-        $this->streamPositions = array_merge($this->streamPositions, $streamPositions);
+        $this->streamsPosition = array_merge($this->streamsPosition, $streamsPosition);
     }
 
     public function setStreamNameAt(string $streamName, int $position): void
     {
-        $this->streamPositions[$streamName] = $position;
+        $this->streamsPosition[$streamName] = $position;
     }
 
     public function reset(): void
     {
-        $this->streamPositions = [];
-    }
-
-    public function all(): array
-    {
-        return $this->streamPositions;
+        $this->streamsPosition = [];
     }
 
     /**
-     * @param array $streamNames
+     * @return array<string, int>
+     */
+    public function all(): array
+    {
+        return $this->streamsPosition;
+    }
+
+    /**
+     * @param array<string> $streamNames
      * @return string[]
      */
     private function gatherStreamNames(array $streamNames): array

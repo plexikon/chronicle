@@ -13,8 +13,11 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 final class ReporterRouter implements Router
 {
     private iterable $map;
+
     private MessageAlias $messageAlias;
+
     private ?Container $container;
+
     private ?string $callableMethod;
 
     public function __construct(iterable $map,

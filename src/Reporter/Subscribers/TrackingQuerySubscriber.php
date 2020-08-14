@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Reporter\Subscribers;
 
+use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
@@ -15,7 +16,9 @@ final class TrackingQuerySubscriber implements MessageSubscriber
     public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
+            /** @var Message $message */
             $message = $context->getMessage();
+
             $event = $message->isMessaging() ? $message->eventWithHeaders() : $message->event();
 
             $messageHandler = $context->messageHandlers()->current();

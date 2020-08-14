@@ -18,6 +18,10 @@ final class MultipleHandlerRouter implements Router
         $this->allowNoMessageHandler = $allowNoMessageHandler;
     }
 
+    /**
+     * @param Message $message
+     * @return array<null|callable>
+     */
     public function route(Message $message): array
     {
         $messageHandlers = $this->router->route($message);

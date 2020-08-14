@@ -9,6 +9,7 @@ use Plexikon\Chronicle\Exception\MessageValidationFailed;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Messaging\PreValidateMessage;
+use Plexikon\Chronicle\Support\Contract\Messaging\SerializablePayload;
 use Plexikon\Chronicle\Support\Contract\Messaging\ValidateMessage;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
@@ -27,6 +28,7 @@ final class CommandValidationSubscriber implements MessageSubscriber
     public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
+            /** @var Message $message */
             $message = $context->getMessage();
 
             if (!$message->isMessaging()) {
@@ -49,10 +51,10 @@ final class CommandValidationSubscriber implements MessageSubscriber
 
     private function validateMessage(Message $message): void
     {
-        $validator = $this->validator->make(
-            $message->event()->toPayload(),
-            $message->event()->validationRules()
-        );
+        /** @var ValidateMessage|SerializablePayload $event */
+        $event = $message->event();
+
+        $validator = $this->validator->make($event->toPayload(), $event->validationRules());
 
         if ($validator->fails()) {
             throw MessageValidationFailed::withValidator($validator, $message);
