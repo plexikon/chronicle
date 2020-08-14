@@ -14,7 +14,6 @@ final class Pipeline
      * @var Pipe[]
      */
     protected array $pipes = [];
-
     protected ProjectorContext $passable;
 
     public function send(ProjectorContext $passable): self
