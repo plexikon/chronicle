@@ -19,7 +19,7 @@ final class ReadModelPersistenceRepository extends PersistenceRepository
 
     public function prepare(?ReadModel $readModel): void
     {
-        $this->projectorRepository->prepare($this->readModel);
+        $this->projectorRepository->prepare($readModel ?? $this->readModel);
     }
 
     public function persist(): void

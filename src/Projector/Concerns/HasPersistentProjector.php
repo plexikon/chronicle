@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Concerns;
 
-use Plexikon\Chronicle\Projector\Pipe\PersistEventOrSleepOnEventCounter;
+use Plexikon\Chronicle\Projector\Pipe\PersistOrSleepBeforeResetCounter;
 use Plexikon\Chronicle\Projector\Pipe\PreparePersistenceRunner;
 use Plexikon\Chronicle\Projector\Pipe\DispatchSignal;
 use Plexikon\Chronicle\Projector\Pipe\HandleStreamEvent;
@@ -84,7 +84,7 @@ trait HasPersistentProjector
         return [
             new PreparePersistenceRunner($this->projectorRepository),
             new HandleStreamEvent($this->chronicler, $this->messageAlias, $this->projectorRepository),
-            new PersistEventOrSleepOnEventCounter($this->projectorRepository),
+            new PersistOrSleepBeforeResetCounter($this->projectorRepository),
             new DispatchSignal(),
             new UpdateStatusAndStreamsPositions($this->projectorRepository)
         ];
