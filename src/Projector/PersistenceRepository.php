@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\Concerns;
+namespace Plexikon\Chronicle\Projector;
 
 use DateTimeImmutable;
-use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository as BaseProjectorRepository;
 
-trait HasProjectorRepository
+abstract class PersistenceRepository implements BaseProjectorRepository
 {
     protected ProjectorRepository $projectorRepository;
 

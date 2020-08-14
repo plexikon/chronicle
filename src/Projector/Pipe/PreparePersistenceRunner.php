@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\PipeOnce;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
-final class PersistentRunner implements PipeOnce
+final class PreparePersistenceRunner implements PipeOnce
 {
     private bool $hasBeenPrepared = false;
     private ProjectorRepository $projectorRepository;

@@ -13,7 +13,7 @@ use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Projector\StreamEventIterator;
 
-final class StreamHandler implements Pipe
+final class StreamEventHandler implements Pipe
 {
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;

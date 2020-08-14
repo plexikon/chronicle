@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector;
 
 use Assert\AssertionFailedException;
-use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionState;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
@@ -40,11 +39,11 @@ class ProjectorContext
      */
     public function setUpProjection(object $eventHandlerContext): void
     {
-        $this->validateFactory();
+        $this->factory->validate();
 
         $this->factory->bindHandlers($eventHandlerContext);
 
-        if(is_callable($this->factory->getInit())){
+        if (is_callable($this->factory->getInit())) {
             $this->state->setState(
                 $this->factory->bindInit($eventHandlerContext)
             );
@@ -92,17 +91,5 @@ class ProjectorContext
         if ($this->option->dispatchSignal()) {
             pcntl_signal_dispatch();
         }
-    }
-
-    /**
-     * @throws AssertionFailedException
-     */
-    public function validateFactory(): void
-    {
-        Assertion::notNull($this->queryFilter(), 'Query filter not set');
-
-        Assertion::notEmpty($this->streamNames(), 'Stream names not set');
-
-        Assertion::notNull($this->eventHandlers(), 'Event handlers not set');
     }
 }

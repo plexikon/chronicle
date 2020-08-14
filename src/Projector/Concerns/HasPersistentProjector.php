@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Concerns;
 
-use Plexikon\Chronicle\Projector\Pipe\PersistentRunner;
-use Plexikon\Chronicle\Projector\Pipe\StreamUpdater;
-use Plexikon\Chronicle\Projector\Pipe\PersistenceAware;
+use Plexikon\Chronicle\Projector\Pipe\PersistEventOrSleepOnEventCounter;
+use Plexikon\Chronicle\Projector\Pipe\PreparePersistenceRunner;
 use Plexikon\Chronicle\Projector\Pipe\SignalDispatcher;
-use Plexikon\Chronicle\Projector\Pipe\StreamHandler;
+use Plexikon\Chronicle\Projector\Pipe\StreamEventHandler;
+use Plexikon\Chronicle\Projector\Pipe\StreamUpdater;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
@@ -32,18 +32,7 @@ trait HasPersistentProjector
             $this->createEventHandlerContext($this, $this->projectorContext->currentStreamName)
         );
 
-        try {
-            $pipeline = new Pipeline();
-            $pipeline->through($this->getPipes());
-
-            do {
-                $isStopped = $pipeline
-                    ->send($this->projectorContext)
-                    ->then(fn(ProjectorContext $context): bool => $context->isStopped);
-            } while ($this->projectorContext->keepRunning() && !$isStopped);
-        } finally {
-            $this->projectorRepository->releaseLock();
-        }
+        $this->processProjection();
     }
 
     public function stop(): void
@@ -71,15 +60,31 @@ trait HasPersistentProjector
         return $this->streamName;
     }
 
+    protected function processProjection(): void
+    {
+        try {
+            $pipeline = new Pipeline();
+            $pipeline->through($this->getPipes());
+
+            do {
+                $isStopped = $pipeline
+                    ->send($this->projectorContext)
+                    ->then(fn(ProjectorContext $context): bool => $context->isStopped);
+            } while ($this->projectorContext->keepRunning() && !$isStopped);
+        } finally {
+            $this->projectorRepository->releaseLock();
+        }
+    }
+
     /**
      * @return Pipe[]
      */
     protected function getPipes(): array
     {
         return [
-            new PersistentRunner($this->projectorRepository),
-            new StreamHandler($this->chronicler, $this->messageAlias, $this->projectorRepository),
-            new PersistenceAware($this->projectorRepository),
+            new PreparePersistenceRunner($this->projectorRepository),
+            new StreamEventHandler($this->chronicler, $this->messageAlias, $this->projectorRepository),
+            new PersistEventOrSleepOnEventCounter($this->projectorRepository),
             new SignalDispatcher(),
             new StreamUpdater($this->projectorRepository)
         ];
