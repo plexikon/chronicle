@@ -74,7 +74,7 @@ final class ReporterRouter implements Router
             return $messageHandler;
         }
 
-        if ($this->callableMethod && (is_object($messageHandler) && method_exists($messageHandler, $this->callableMethod))) {
+        if ($this->callableMethod && method_exists($messageHandler, $this->callableMethod)) {
             return Closure::fromCallable([$messageHandler, $this->callableMethod]);
         }
 
@@ -96,12 +96,18 @@ final class ReporterRouter implements Router
         return is_array($messageHandlers) ? $messageHandlers : [$messageHandlers];
     }
 
+    /**
+     * @param string|object|callable $messageHandler
+     */
     private function assertTypeOfMessageHandler($messageHandler): void
     {
-        $invalidType = !is_string($messageHandler) || !is_object($messageHandler) || !is_callable($messageHandler);
-
-        if ($invalidType) {
-            throw ReporterFailure::unsupportedMessageHandler($messageHandler);
+        switch ($messageHandler) {
+            case is_string($messageHandler):
+            case is_callable($messageHandler):
+            case is_object($messageHandler):
+                return;
+            default:
+                throw ReporterFailure::unsupportedMessageHandler($messageHandler);
         }
     }
 }
