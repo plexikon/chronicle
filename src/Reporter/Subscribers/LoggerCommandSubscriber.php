@@ -28,6 +28,22 @@ final class LoggerCommandSubscriber implements MessageSubscriber
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
             $message = $context->getMessage();
 
+            if (!is_array($message)) {
+                return;
+            }
+
+            $this->logger->debug('Command on dispatch', [
+                'context' => [
+                    'message_name' => $this->determineMessageName($message),
+                    'exception' => $context->hasException() ? $context->getException() : null,
+                    'message' => $message
+                ]
+            ]);
+        }, 100001);
+
+        $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
+            $message = $context->getMessage();
+
             $this->logger->debug('Command on dispatch', [
                 'context' => [
                     'message_name' => $this->determineMessageName($message),
@@ -36,7 +52,7 @@ final class LoggerCommandSubscriber implements MessageSubscriber
                     'message' => $this->messageSerializer->serializeMessage($message)
                 ]
             ]);
-        }, 1); //add debug before message factory subscriber
+        }, 1);
 
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
             $this->logger->debug('Command on finalize', [
@@ -49,10 +65,20 @@ final class LoggerCommandSubscriber implements MessageSubscriber
         }, 1);
     }
 
-    private function determineMessageName(Message $message): string
+    /**
+     * @param array|Message $message
+     * @return string
+     */
+    private function determineMessageName($message): string
     {
-        $eventType = $message->header(MessageHeader::EVENT_TYPE);
+        if ($message instanceof Message) {
+            $eventType = $message->header(MessageHeader::EVENT_TYPE);
 
-        return $eventType ?? get_class($message->event());
+            return $eventType ?? get_class($message->event());
+        }
+
+        $eventType = $message[MessageHeader::EVENT_TYPE];
+
+        return is_string($eventType) ? $eventType : 'invalid event type';
     }
 }
