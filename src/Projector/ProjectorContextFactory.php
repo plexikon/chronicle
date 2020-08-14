@@ -27,13 +27,13 @@ class ProjectorContextFactory
 
     public function bindHandlers(object $eventHandlerContext): void
     {
-        if ($this->getEventHandlers() instanceof Closure) {
+        if ($this->eventHandlers() instanceof Closure) {
             $this->factory->put(self::EVENT_HANDLERS_KEY,
-                Closure::bind($this->getEventHandlers(), $eventHandlerContext)
+                Closure::bind($this->eventHandlers(), $eventHandlerContext)
             );
         } else {
             $bindings = [];
-            foreach ($this->getEventHandlers() as $eventName => $eventHandler) {
+            foreach ($this->eventHandlers() as $eventName => $eventHandler) {
                 $bindings[$eventName] = Closure::bind($eventHandler, $eventHandlerContext);
             }
 
@@ -43,8 +43,8 @@ class ProjectorContextFactory
 
     public function bindInit(object $eventHandlerContext): array
     {
-        if (is_callable($this->getInit())) {
-            $callback = Closure::bind($this->getInit(), $eventHandlerContext);
+        if (is_callable($this->initCallback())) {
+            $callback = Closure::bind($this->initCallback(), $eventHandlerContext);
 
             $result = $callback();
 
@@ -58,14 +58,14 @@ class ProjectorContextFactory
 
     public function withCallback(callable $initCallback): void
     {
-        Assertion::null($this->getInit(), 'Callback already initialized');
+        Assertion::null($this->initCallback(), 'Callback already initialized');
 
         $this->factory->put(self::INIT_KEY, $initCallback);
     }
 
     public function withQueryFilter(QueryFilter $queryFilter): void
     {
-        Assertion::null($this->getQueryFilter(), 'Query filter has already been set');
+        Assertion::null($this->queryFilter(), 'Query filter has already been set');
 
         $this->factory->put(self::QUERY_FILTER_KEY, $queryFilter);
     }
@@ -74,14 +74,14 @@ class ProjectorContextFactory
     {
         Assertion::notEmpty($streamNames, 'Stream names can not be empty');
 
-        Assertion::count($this->getStreamNames(), 0, 'With All|Streams? already called');
+        Assertion::count($this->streamNames(), 0, 'With All|Streams? already called');
 
         $this->factory->put(self::STREAM_NAMES_KEY, $streamNames);
     }
 
     public function withAllStreams(): void
     {
-        Assertion::count($this->getStreamNames(), 0, 'With stream names already called');
+        Assertion::count($this->streamNames(), 0, 'With stream names already called');
 
         $this->factory->put(self::STREAM_NAMES_KEY, ['all']);
     }
@@ -93,19 +93,22 @@ class ProjectorContextFactory
 
     public function when(array $eventHandlers): void
     {
-        Assertion::null($this->getEventHandlers(), 'Event handlers already set');
+        Assertion::null($this->eventHandlers(), 'Event handlers already set');
 
         $this->factory->put(self::EVENT_HANDLERS_KEY, $eventHandlers);
     }
 
     public function whenAny(callable $eventHandler): void
     {
-        Assertion::null($this->getEventHandlers(), 'Event handlers already set');
+        Assertion::null($this->eventHandlers(), 'Event handlers already set');
 
         $this->factory->put(self::EVENT_HANDLERS_KEY, $eventHandler);
     }
 
-    public function getInit(): ?Closure
+    /**
+     * @return Closure|null
+     */
+    public function initCallback(): ?Closure
     {
         return $this->factory->get(self::INIT_KEY);
     }
@@ -113,7 +116,7 @@ class ProjectorContextFactory
     /**
      * @return null|array|callable
      */
-    public function getEventHandlers()
+    public function eventHandlers()
     {
         return $this->factory->get(self::EVENT_HANDLERS_KEY);
     }
@@ -121,12 +124,15 @@ class ProjectorContextFactory
     /**
      * @return string[]
      */
-    public function getStreamNames(): array
+    public function streamNames(): array
     {
         return $this->factory->get(self::STREAM_NAMES_KEY);
     }
 
-    public function getKeepRunning(): bool
+    /**
+     * @return bool
+     */
+    public function keepRunning(): bool
     {
         return $this->factory->get(self::KEEP_RUNNING_KEY);
     }
@@ -134,22 +140,21 @@ class ProjectorContextFactory
     /**
      * @return QueryFilter|ProjectionQueryFilter|null
      */
-    public function getQueryFilter(): ?QueryFilter
+    public function queryFilter(): ?QueryFilter
     {
         return $this->factory->get(self::QUERY_FILTER_KEY);
     }
-
 
     /**
      * @throws AssertionFailedException
      */
     public function validate(): void
     {
-        Assertion::notNull($this->getQueryFilter(), 'Query filter not set');
+        Assertion::notNull($this->queryFilter(), 'Query filter not set');
 
-        Assertion::notEmpty($this->getStreamNames(), 'Stream names not set');
+        Assertion::notEmpty($this->streamNames(), 'Stream names not set');
 
-        Assertion::notNull($this->getEventHandlers(), 'Event handlers not set');
+        Assertion::notNull($this->eventHandlers(), 'Event handlers not set');
     }
 
     private function prepareCollection(): Collection
