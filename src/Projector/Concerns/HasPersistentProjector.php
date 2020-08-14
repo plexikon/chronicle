@@ -25,7 +25,7 @@ trait HasPersistentProjector
 
     public function run(bool $keepRunning = true): void
     {
-        $this->projectorContext->factory->withKeepRunning($keepRunning);
+        $this->projectorContext->withKeepRunning($keepRunning);
 
         /** @var PersistentProjector&static $this */
         $this->projectorContext->setUpProjection(

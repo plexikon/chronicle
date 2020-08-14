@@ -21,34 +21,34 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
 {
     use HasPersistentProjector, HasProjectorFactory;
 
-    protected ProjectorContext $context;
+    protected ProjectorContext $projectorContext;
     protected Chronicler $chronicler;
-    protected ProjectorRepository $lock;
+    protected ProjectorRepository $projectorRepository;
     private string $streamName;
     private StreamCached $streamCached;
 
-    public function __construct(ProjectorContext $context,
-                                ProjectorRepository $lock,
+    public function __construct(ProjectorContext $projectorContext,
+                                ProjectorRepository $projectorRepository,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias,
                                 string $streamName)
     {
-        $this->context = $context;
-        $this->lock = $lock;
+        $this->projectorContext = $projectorContext;
+        $this->projectorRepository = $projectorRepository;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
         $this->streamName = $streamName;
-        $this->streamCached = new StreamCached($context->option->persistBlockSize());
+        $this->streamCached = new StreamCached($projectorContext->option->persistBlockSize());
     }
 
     public function emit(DomainEvent $event): void
     {
         $streamName = new StreamName($this->streamName);
 
-        if (!$this->context->isStreamCreated && !$this->chronicler->hasStream($streamName)) {
+        if (!$this->projectorContext->isStreamCreated && !$this->chronicler->hasStream($streamName)) {
             $this->chronicler->persistFirstCommit(new Stream($streamName));
 
-            $this->context->isStreamCreated = true;
+            $this->projectorContext->isStreamCreated = true;
         }
 
         $this->linkTo($this->streamName, $event);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector;
 
 use Assert\AssertionFailedException;
+use Closure;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\ProjectionState;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorOption;
@@ -11,32 +12,32 @@ use Plexikon\Chronicle\Support\Projector\EventCounter;
 use Plexikon\Chronicle\Support\Projector\StreamPosition;
 
 /**
- * @method ProjectorContextFactory bindHandlers(object $eventHandlerContext)
- * @method ProjectorContextFactory bindInit(object $eventHandlerContext)
- * @method ProjectorContextFactory withCallback(callable $initCallback)
- * @method ProjectorContextFactory withQueryFilter(QueryFilter $queryFilter)
- * @method ProjectorContextFactory withStreams(string ...$streamNames)
- * @method ProjectorContextFactory withAllStreams()
- * @method ProjectorContextFactory withKeepRunning(bool $keepRunning)
- * @method ProjectorContextFactory when(array $eventHandlers)
- * @method ProjectorContextFactory whenAny(callable $eventHandler)
- * @method ProjectorContextFactory initCallback()
- * @method ProjectorContextFactory queryFilter()
- * @method ProjectorContextFactory streamNames()
- * @method ProjectorContextFactory eventHandlers()
- * @method ProjectorContextFactory keepRunning()
+ * @method void bindHandlers(object $eventHandlerContext)
+ * @method array bindInit(object $eventHandlerContext)
+ * @method void withCallback(callable $initCallback)
+ * @method void withQueryFilter(QueryFilter $queryFilter)
+ * @method void withStreams(string ...$streamNames)
+ * @method void withAllStreams()
+ * @method void withKeepRunning(bool $keepRunning)
+ * @method void when(array $eventHandlers)
+ * @method void whenAny(callable $eventHandler)
+ * @method null|Closure initCallback()
+ * @method QueryFilter queryFilter()
+ * @method array streamNames()
+ * @method array eventHandlers()
+ * @method bool keepRunning()
  */
 class ProjectorContext
 {
     public ?string $currentStreamName = null;
     public bool $isStopped = false;
     public bool $isStreamCreated = false;
-    public ProjectorContextFactory $factory;
     public ProjectorOption $option;
     public StreamPosition $position;
     public ProjectionState $state;
     public ProjectionStatus $status;
     public EventCounter $counter;
+    private ProjectorContextFactory $factory;
 
     public function __construct(ProjectorOption $option, StreamPosition $position, ProjectionState $state)
     {
