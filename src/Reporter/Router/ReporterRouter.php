@@ -12,7 +12,10 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 
 final class ReporterRouter implements Router
 {
-    private iterable $map;
+    /**
+     * @var array<string,null|array|object|callable>
+     */
+    private array $map;
 
     private MessageAlias $messageAlias;
 
@@ -20,7 +23,7 @@ final class ReporterRouter implements Router
 
     private ?string $callableMethod;
 
-    public function __construct(iterable $map,
+    public function __construct(array $map,
                                 MessageAlias $messageAlias,
                                 ?Container $container,
                                 ?string $callableMethod)
@@ -63,6 +66,10 @@ final class ReporterRouter implements Router
         throw ReporterFailure::unsupportedMessageHandler($messageHandler);
     }
 
+    /**
+     * @param Message $message
+     * @return array<null|string|object|callable>
+     */
     private function determineMessageHandler(Message $message): array
     {
         $messageAlias = $this->messageAlias->instanceToAlias($message->event());
