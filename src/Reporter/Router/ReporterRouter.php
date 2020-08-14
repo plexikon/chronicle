@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Reporter\Router;
 
 use Closure;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Plexikon\Chronicle\Exception\ReporterFailure;
 use Plexikon\Chronicle\Messaging\Message;
@@ -13,7 +14,7 @@ use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 final class ReporterRouter implements Router
 {
     /**
-     * @var array<string,null|array|object|callable>
+     * @var array<string,mixed>
      */
     private array $map;
 
@@ -23,6 +24,13 @@ final class ReporterRouter implements Router
 
     private ?string $callableMethod;
 
+    /**
+     * ReporterRouter constructor.
+     * @param array<string,mixed> $map
+     * @param MessageAlias $messageAlias
+     * @param Container|null $container
+     * @param string|null $callableMethod
+     */
     public function __construct(array $map,
                                 MessageAlias $messageAlias,
                                 ?Container $container,
@@ -45,6 +53,11 @@ final class ReporterRouter implements Router
         return $messageHandlers;
     }
 
+    /**
+     * @param string|object|callable $messageHandler
+     * @return callable
+     * @throws BindingResolutionException
+     */
     private function messageHandlerToCallable($messageHandler): callable
     {
         if (is_string($messageHandler)) {
@@ -59,7 +72,7 @@ final class ReporterRouter implements Router
             return $messageHandler;
         }
 
-        if ($this->callableMethod && method_exists($messageHandler, $this->callableMethod)) {
+        if ($this->callableMethod && (is_object($messageHandler) && method_exists($messageHandler, $this->callableMethod))) {
             return Closure::fromCallable([$messageHandler, $this->callableMethod]);
         }
 
@@ -68,7 +81,7 @@ final class ReporterRouter implements Router
 
     /**
      * @param Message $message
-     * @return array<null|string|object|callable>
+     * @return array<mixed>
      */
     private function determineMessageHandler(Message $message): array
     {
