@@ -60,6 +60,8 @@ final class ReporterRouter implements Router
      */
     private function messageHandlerToCallable($messageHandler): callable
     {
+        $this->assertTypeOfMessageHandler($messageHandler);
+
         if (is_string($messageHandler)) {
             if (!$this->container) {
                 throw ReporterFailure::missingContainerForMessageHandler($messageHandler);
@@ -92,5 +94,14 @@ final class ReporterRouter implements Router
         }
 
         return is_array($messageHandlers) ? $messageHandlers : [$messageHandlers];
+    }
+
+    private function assertTypeOfMessageHandler($messageHandler): void
+    {
+        $invalidType = !is_string($messageHandler) || !is_object($messageHandler) || !is_callable($messageHandler);
+
+        if ($invalidType) {
+            throw ReporterFailure::unsupportedMessageHandler($messageHandler);
+        }
     }
 }
