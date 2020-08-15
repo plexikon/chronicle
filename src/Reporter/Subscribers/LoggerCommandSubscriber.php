@@ -81,8 +81,10 @@ final class LoggerCommandSubscriber implements MessageSubscriber
             return $eventType ?? get_class($message->event());
         }
 
-        $eventType = $message[MessageHeader::EVENT_TYPE];
+        if (!isset($message['headers']) || !$eventType = $message['headers'][MessageHeader::EVENT_TYPE]) {
+            return 'possible invalid event type';
+        }
 
-        return is_string($eventType) ? $eventType : 'invalid event type';
+        return $eventType;
     }
 }
