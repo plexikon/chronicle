@@ -8,6 +8,9 @@ use Plexikon\Chronicle\Support\Contract\Projector\ProjectorOption as BaseProject
 
 final class ProjectorOption implements BaseProjectorOption
 {
+    /**
+     * @var array<string,int|bool>
+     */
     protected array $options = [
         self::OPTION_PCNTL_DISPATCH => false,
         self::OPTION_LOCK_TIMEOUT_MS => 1000,
@@ -16,6 +19,10 @@ final class ProjectorOption implements BaseProjectorOption
         self::OPTION_UPDATE_LOCK_THRESHOLD => 0
     ];
 
+    /**
+     * ProjectorOption constructor.
+     * @param array<string,int|bool> $options
+     */
     public function __construct(array $options = [])
     {
         $this->mergeOptions($options);
@@ -46,11 +53,17 @@ final class ProjectorOption implements BaseProjectorOption
         return $this->options[static::OPTION_UPDATE_LOCK_THRESHOLD];
     }
 
+    /**
+     * @param array<string,int|bool> $options
+     */
     public function withOptions(array $options): void
     {
         $this->mergeOptions($options);
     }
 
+    /**
+     * @param array<string,int|bool> $options
+     */
     private function mergeOptions(array $options): void
     {
         foreach ($options as $option => $default) {
@@ -58,7 +71,7 @@ final class ProjectorOption implements BaseProjectorOption
                 throw new RuntimeException("Projector option $option does not exists");
             }
 
-            if (!is_integer($default) && (!is_bool($default) && $default >= 0)) {
+            if (!is_integer($default) || !is_bool($default)) {
                 throw new RuntimeException("Projector option value accept positive integer (or 0) and boolean value only");
             }
 

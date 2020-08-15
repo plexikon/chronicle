@@ -1,6 +1,6 @@
 <?php
 
-namespace Plexikon\Chronicle\Support\Contract;
+namespace Plexikon\Chronicle\Support\Contract\Projector;
 
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 

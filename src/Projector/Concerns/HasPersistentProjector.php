@@ -14,6 +14,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
+use Plexikon\Chronicle\Support\Contract\Projector\ReadModelProjector;
 use Plexikon\Chronicle\Support\Projector\Pipeline;
 
 trait HasPersistentProjector
@@ -90,6 +91,11 @@ trait HasPersistentProjector
         ];
     }
 
+    /**
+     * @param PersistentProjector|ReadModelProjector $projector
+     * @param string|null $streamName
+     * @return object
+     */
     abstract protected function createEventHandlerContext(PersistentProjector $projector,
                                                           ?string &$streamName): object;
 }

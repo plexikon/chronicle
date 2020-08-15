@@ -7,7 +7,7 @@ use Illuminate\Database\Query\Builder;
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
-use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectionQueryFilter;
 
 abstract class ConnectionQueryScope implements QueryScope
 {

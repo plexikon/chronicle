@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Support\Collection;
 use Plexikon\Chronicle\Exception\Assertion;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
-use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectionQueryFilter;
 
 class ProjectorContextFactory
 {

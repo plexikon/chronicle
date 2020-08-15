@@ -37,7 +37,7 @@ final class DefaultMessageContext implements MessageContext
         $this->promise = $promise;
     }
 
-    public function setMessageHandled(bool $isMessageHandled): void
+    public function markMessageHandled(bool $isMessageHandled): void
     {
         $this->isMessageHandled = $isMessageHandled;
     }

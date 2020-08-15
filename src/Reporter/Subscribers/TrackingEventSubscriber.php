@@ -30,7 +30,7 @@ final class TrackingEventSubscriber implements MessageSubscriber
                 $messageHandler($event);
             }
 
-            $context->setMessageHandled(true);
+            $context->markMessageHandled(true);
         });
     }
 

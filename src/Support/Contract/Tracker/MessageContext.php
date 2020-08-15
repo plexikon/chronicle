@@ -27,7 +27,7 @@ interface MessageContext extends Context
     /**
      * @param bool $isMessageHandled
      */
-    public function setMessageHandled(bool $isMessageHandled): void;
+    public function markMessageHandled(bool $isMessageHandled): void;
 
     /**
      * @return bool

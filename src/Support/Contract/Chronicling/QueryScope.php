@@ -2,7 +2,7 @@
 
 namespace Plexikon\Chronicle\Support\Contract\Chronicling;
 
-use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectionQueryFilter;
 
 interface QueryScope
 {

@@ -8,7 +8,7 @@ use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryFilter;
 use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
-use Plexikon\Chronicle\Support\Contract\ProjectionQueryFilter;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectionQueryFilter;
 
 class InMemoryQueryScope implements QueryScope
 {

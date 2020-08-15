@@ -119,7 +119,9 @@ final class ProjectorRepository implements BaseProjectorRepository
         $this->projectorContext->isStopped = true;
         $this->projectorContext->state->resetState();
 
-        if (is_callable($callback = $this->projectorContext->initCallback())) {
+        $callback = $this->projectorContext->initCallback();
+
+        if (is_callable($callback)) {
             $this->projectorContext->state->setState($callback());
         }
 

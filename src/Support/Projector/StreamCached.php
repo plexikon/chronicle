@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Support\Projector;
 
 use Plexikon\Chronicle\Exception\Assert;
+use Plexikon\Chronicle\Stream\StreamName;
 use function in_array;
 
 final class StreamCached
@@ -24,12 +25,12 @@ final class StreamCached
         $this->container = array_fill(0, $size, null);
     }
 
-    public function toNextPosition(string $value): void
+    public function toNextPosition(StreamName $value): void
     {
         $this->container[$this->nextPosition()] = $value;
     }
 
-    public function getStreamAt(int $position): ?string
+    public function getStreamAt(int $position): ?StreamName
     {
         Assert::that($position, "Position must be between 0 and " . ($this->size - 1))
             ->between(0, $this->size - 1);
@@ -37,7 +38,7 @@ final class StreamCached
         return $this->container[$position];
     }
 
-    public function has(string $value): bool
+    public function has(StreamName $value): bool
     {
         return in_array($value, $this->container, true);
     }

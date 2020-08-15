@@ -18,9 +18,21 @@ use Plexikon\Chronicle\Support\QueryScope\QueryScopeFactory;
 
 class ProjectorServiceManager
 {
+    /**
+     * @var array<string,callable>
+     */
     protected array $customProjectors = [];
+
+    /**
+     * @var array<string,BaseProjectorManager>
+     */
     protected array $projectors = [];
+
+    /**
+     * @var array<mixed>
+     */
     protected array $config;
+
     protected Container $container;
 
     public function __construct(Container $container)
@@ -49,6 +61,11 @@ class ProjectorServiceManager
         $this->customProjectors[$driver] = $projectorManager;
     }
 
+    /**
+     * @param string $driver
+     * @param array<mixed> $config
+     * @return BaseProjectorManager
+     */
     protected function resolveProjectorManager(string $driver, array $config): BaseProjectorManager
     {
         if ($customProjector = $this->customProjectors[$driver] ?? null) {
@@ -66,6 +83,10 @@ class ProjectorServiceManager
         throw new RuntimeException("Unable to resolve projector manager with driver $driver");
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return BaseProjectorManager
+     */
     protected function createPgsqlProjectorManagerDriver(array $config): BaseProjectorManager
     {
         $queryScope = $this->determineScopeConnection($config['connection']);
@@ -81,6 +102,10 @@ class ProjectorServiceManager
         );
     }
 
+    /**
+     * @param string|null $optionKey
+     * @return array<mixed>
+     */
     protected function determineProjectorOptions(?string $optionKey): array
     {
         return $this->fromChronicle("projectors.options.$optionKey") ?? [];

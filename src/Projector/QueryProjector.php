@@ -8,7 +8,6 @@ use Plexikon\Chronicle\Projector\Concerns\HasProjectorFactory;
 use Plexikon\Chronicle\Projector\Pipe\HandleStreamEvent;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
-use Plexikon\Chronicle\Support\Contract\Projector\Projector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\QueryProjector as BaseQueryProjector;
 use Plexikon\Chronicle\Support\Projector\Pipeline;
@@ -84,13 +83,13 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
         return $this->context->state->getState();
     }
 
-    private function createEventHandlerContext(Projector $projector, ?string $streamName): object
+    private function createEventHandlerContext(BaseQueryProjector $projector, ?string $streamName): object
     {
         return new class($projector, $streamName) {
-            private QueryProjector $query;
+            private BaseQueryProjector $query;
             private ?string $streamName;
 
-            public function __construct(QueryProjector $query, ?string &$streamName)
+            public function __construct(BaseQueryProjector $query, ?string &$streamName)
             {
                 $this->query = $query;
                 $this->streamName = &$streamName;

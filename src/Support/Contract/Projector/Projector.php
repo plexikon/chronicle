@@ -20,7 +20,7 @@ interface Projector
     public function reset(): void;
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getState(): array;
 }
