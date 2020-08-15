@@ -15,7 +15,7 @@ use Plexikon\Chronicle\Support\Contract\Projector\PersistentProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectionProjector as BaseProjectionProjector;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
-use Plexikon\Chronicle\Support\Projector\StreamCached;
+use Plexikon\Chronicle\Support\Projector\CachedStream;
 
 final class ProjectionProjector implements BaseProjectionProjector, ProjectorFactory
 {
@@ -25,7 +25,7 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
     protected Chronicler $chronicler;
     protected ProjectorRepository $projectorRepository;
     private string $streamName;
-    private StreamCached $streamCached;
+    private CachedStream $cachedStream;
 
     public function __construct(ProjectorContext $projectorContext,
                                 ProjectorRepository $projectorRepository,
@@ -38,7 +38,7 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
         $this->streamName = $streamName;
-        $this->streamCached = new StreamCached($projectorContext->option->persistBlockSize());
+        $this->cachedStream = new CachedStream($projectorContext->option->persistBlockSize());
     }
 
     public function emit(DomainEvent $event): void
@@ -60,10 +60,10 @@ final class ProjectionProjector implements BaseProjectionProjector, ProjectorFac
 
         $stream = new Stream($streamName, [new Message($event, $event->headers())]);
 
-        if ($this->streamCached->has($streamName)) {
+        if ($this->cachedStream->has($streamName)) {
             $append = true;
         } else {
-            $this->streamCached->toNextPosition($streamName);
+            $this->cachedStream->toNextPosition($streamName);
             $append = $this->chronicler->hasStream($streamName);
         }
 

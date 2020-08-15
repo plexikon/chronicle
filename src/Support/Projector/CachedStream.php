@@ -7,10 +7,10 @@ use Plexikon\Chronicle\Exception\Assert;
 use Plexikon\Chronicle\Stream\StreamName;
 use function in_array;
 
-final class StreamCached
+final class CachedStream
 {
     /**
-     * @var array<int,null|string>
+     * @var array<int,null|StreamName>
      */
     private array $container;
     private int $size;
