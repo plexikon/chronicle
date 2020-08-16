@@ -31,7 +31,7 @@ class EventStream extends Model implements EventStreamModel, EventStreamProvider
         return 0 !== $result;
     }
 
-    public function filterByStream(array $streamNames): array
+    public function filterByStreams(array $streamNames): array
     {
         return $this->newInstance()->newQuery()
             ->whereIn('real_stream_name', $streamNames)

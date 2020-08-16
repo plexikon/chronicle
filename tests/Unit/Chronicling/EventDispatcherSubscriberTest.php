@@ -10,10 +10,10 @@ use Plexikon\Chronicle\Exception\ConcurrencyException;
 use Plexikon\Chronicle\Exception\StreamAlreadyExists;
 use Plexikon\Chronicle\Exception\StreamNotFound;
 use Plexikon\Chronicle\Messaging\Message;
+use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Stream\Stream;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\EventChronicler;
-use Plexikon\Chronicle\Support\Contract\Chronicling\EventDispatcher;
 use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Tests\Double\SomeEvent;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
@@ -21,7 +21,6 @@ use Plexikon\Chronicle\Tracker\TransactionalTrackingEvent;
 use ReflectionClass;
 use Throwable;
 
-// todo replace deleted event dispatcher to event reporter
 final class EventDispatcherSubscriberTest extends TestCase
 {
     /**
@@ -146,15 +145,15 @@ final class EventDispatcherSubscriberTest extends TestCase
 
     private function eventDispatcherSubscriberInstance(array $events): EventDispatcherSubscriber
     {
-        $dispatcher = $this->prophesize(EventDispatcher::class);
+        $reporter = $this->prophesize(ReportEvent::class);
 
         if (empty($events)) {
-            $dispatcher->dispatch()->shouldNotBeCalled();
+            $reporter->publish()->shouldNotBeCalled();
         } else {
-            $dispatcher->dispatch(...$events)->shouldBeCalled();
+            $reporter->publish(...$events)->shouldBeCalled();
         }
 
-        return new EventDispatcherSubscriber($dispatcher->reveal());
+        return new EventDispatcherSubscriber($reporter->reveal());
     }
 
     public function provideExceptionOnEvent(): Generator

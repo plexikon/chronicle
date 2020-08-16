@@ -49,7 +49,7 @@ final class ProjectorRepository implements BaseProjectorRepository
 
     public function create(): void
     {
-        $this->projectionProvider->newProjection(
+        $this->projectionProvider->createProjection(
             $this->streamName,
             $this->projectorContext->status->getValue()
         );

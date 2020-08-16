@@ -444,7 +444,7 @@ final class PgsqlChroniclerTest extends TestCase
 
         $chronicler = $this->pgsqlChroniclerInstance();
 
-        $this->eventStreamProvider->filterByStreamNames([$streamNameDoesNotExists, $streamNameExists])->willReturn([$streamNameExists]);
+        $this->eventStreamProvider->filterByStreams([$streamNameDoesNotExists, $streamNameExists])->willReturn([$streamNameExists]);
 
         $this->assertEquals([$streamNameExists], $chronicler->fetchStreamNames($streamNameDoesNotExists, $streamNameExists));
     }

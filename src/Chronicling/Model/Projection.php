@@ -16,7 +16,7 @@ class Projection extends Model implements ProjectionModel, ProjectionProvider
     protected $fillable = ['name', 'position', 'state', 'locked_until'];
     protected $primaryKey = 'no';
 
-    public function newProjection(string $name, string $status): bool
+    public function createProjection(string $name, string $status): bool
     {
         $projection = $this->newInstance();
 

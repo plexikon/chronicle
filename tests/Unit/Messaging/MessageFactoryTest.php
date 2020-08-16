@@ -60,7 +60,7 @@ final class MessageFactoryTest extends TestCase
     public function it_raise_exception_when_message_is_invalid_type($invalidEvent): void
     {
         $this->expectException(AssertionFailedException::class);
-        $this->expectExceptionMessage('Message can be an array, an object and an instance of ' . Message::class);
+        $this->expectExceptionMessage('Message can be an array, an object or an instance of ' . Message::class);
 
         $serializer = $this->prophesize(MessageSerializer::class);
         $serializer->unserializePayload()->shouldNotBeCalled();
