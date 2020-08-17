@@ -329,6 +329,28 @@ final class EventChroniclerTest extends TestCase
     /**
      * @test
      */
+    public function it_dispatch_fetch_stream_names_and_return_stream_names_if_exists(): void
+    {
+        $fooStreamName = new StreamName('foo');
+        $barStreamName = new StreamName('bar');
+
+        $tracker = new TrackingEvent();
+        $chronicler = $this->prophesize(Chronicler::class);
+        $chronicler->fetchStreamNames($fooStreamName, $barStreamName)->willReturn([
+            $fooStreamName
+        ])->shouldBeCalled();
+
+        $eventChronicler = new EventChronicler($chronicler->reveal(), $tracker);
+        $tracker->listen(EventChronicler::FETCH_STREAM_NAMES, function (EventContext $context) use ($fooStreamName): void {
+            $this->assertEquals([$fooStreamName], $context->streamNames());
+        });
+
+        $eventChronicler->fetchStreamNames($fooStreamName, $barStreamName);
+    }
+
+    /**
+     * @test
+     */
     public function it_access_inner_chronicler(): void
     {
         $tracker = new TrackingEvent();
