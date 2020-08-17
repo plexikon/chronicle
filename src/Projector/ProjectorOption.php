@@ -71,7 +71,7 @@ final class ProjectorOption implements BaseProjectorOption
                 throw new RuntimeException("Projector option $option does not exists");
             }
 
-            if (!is_integer($default) || (!is_bool($default) || $default < 0)) {
+            if (!is_integer($default) && (!is_bool($default) || $default < 0)) {
                 throw new RuntimeException("Projector option value accept positive integer (or 0) and boolean value only");
             }
 
