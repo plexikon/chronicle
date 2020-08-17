@@ -13,6 +13,7 @@ interface EventChronicler extends ChroniclerDecorator
     public const RETRIEVE_ALL_FILTERED_STREAM_EVENT = 'retrieve_all_filtered_stream_event';
     public const DELETE_STREAM_EVENT = 'delete_stream_event';
     public const HAS_STREAM_EVENT = 'has_stream_event';
+    public const FETCH_STREAM_NAMES = 'fetch_stream_names_event';
 
     /**
      * @param string $eventName

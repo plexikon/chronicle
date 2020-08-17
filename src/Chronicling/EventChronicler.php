@@ -101,6 +101,12 @@ class EventChronicler implements EventChroniclerDecorator
             $context->setStreamExists($streamExists);
         });
 
+        $tracker->listen(self::FETCH_STREAM_NAMES, function (EventContext $context): void {
+            $streamNames = $this->chronicler->fetchStreamNames(...$context->streamNames());
+
+            $context->withStreamNames(...$streamNames);
+        });
+
         $this->chronicler = $chronicler;
         $this->tracker = $tracker;
     }
@@ -176,7 +182,12 @@ class EventChronicler implements EventChroniclerDecorator
 
     public function fetchStreamNames(StreamName ...$streamNames): array
     {
-        return $this->chronicler->fetchStreamNames(...$streamNames);
+        $context = $this->tracker->newContext(self::FETCH_STREAM_NAMES);
+        $context->withStreamNames(...$streamNames);
+
+        $this->tracker->fire($context);
+
+        return $context->streamNames();
     }
 
     public function hasStream(StreamName $streamName): bool

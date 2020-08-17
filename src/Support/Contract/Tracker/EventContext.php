@@ -21,6 +21,11 @@ interface EventContext extends Context
     public function withStreamName(StreamName $streamName): void;
 
     /**
+     * @param StreamName ...$streamNames
+     */
+    public function withStreamNames(StreamName ...$streamNames): void;
+
+    /**
      * @param bool $isStreamExists
      */
     public function setStreamExists(bool $isStreamExists): void;
@@ -74,6 +79,11 @@ interface EventContext extends Context
      * @return StreamName|null
      */
     public function streamName(): ?StreamName;
+
+    /**
+     * @return StreamName[]
+     */
+    public function streamNames(): array;
 
     /**
      * @return AggregateId|null

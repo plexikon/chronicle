@@ -23,6 +23,7 @@ class DefaultEventContext implements EventContext
 
     protected ?Stream $stream = null;
     protected ?StreamName $streamName = null;
+    protected array $streamNames = [];
     protected ?AggregateId $aggregateId = null;
     protected ?string $direction = null;
     protected ?QueryFilter $queryFilter = null;
@@ -36,6 +37,11 @@ class DefaultEventContext implements EventContext
     public function withStreamName(StreamName $streamName): void
     {
         $this->streamName = $streamName;
+    }
+
+    public function withStreamNames(StreamName ...$streamNames): void
+    {
+        $this->streamNames = $streamNames;
     }
 
     public function setStreamExists(bool $isStreamExists): void
@@ -103,6 +109,11 @@ class DefaultEventContext implements EventContext
     public function streamName(): ?StreamName
     {
         return $this->streamName;
+    }
+
+    public function streamNames(): array
+    {
+        return $this->streamNames;
     }
 
     public function aggregateId(): ?AggregateId
