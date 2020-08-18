@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Tests\Unit\Clock;
 
+use DateInterval;
 use Plexikon\Chronicle\Clock\PointInTime;
 use Plexikon\Chronicle\Clock\SystemClock;
 use Plexikon\Chronicle\Exception\InvalidArgumentException;
@@ -38,11 +39,82 @@ final class PointInTimeTest extends TestCase
     /**
      * @test
      */
-    public function it_raise_exception_with_invalid_time(): void
+    public function it_can_be_compared_and_assert_false(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $pointInTime = (new SystemClock())->pointInTime();
+        $pointInTime2 = (new SystemClock())->pointInTime();
 
-        PointInTime::fromString('invalid');
+        $this->assertFalse($pointInTime->equals($pointInTime2));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_compared_and_assert_true(): void
+    {
+        $pointInTime = (new SystemClock())->pointInTime();
+
+        $this->assertTrue($pointInTime->equals($pointInTime));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_interval(): void
+    {
+        $pointInTime = (new SystemClock())->pointInTime();
+
+        $interval = new DateInterval('PT10S');
+
+        $next = $pointInTime->add('PT10S');
+
+        $this->assertNotEquals($pointInTime, $next);
+        $this->assertEquals($interval->format('s'), $pointInTime->diff($next)->format('s'));
+        $this->assertGreaterThan($pointInTime, $next);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_sub_interval(): void
+    {
+        $pointInTime = (new SystemClock())->pointInTime();
+
+        $interval = new DateInterval('PT10S');
+
+        $previous = $pointInTime->sub('PT10S');
+
+        $this->assertNotEquals($pointInTime, $previous);
+        $this->assertEquals($interval->format('s'), $pointInTime->diff($previous)->format('s'));
+        $this->assertLessThan($pointInTime, $previous);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_diff_and_return_interval(): void
+    {
+        $pointInTime = (new SystemClock())->pointInTime();
+
+        $interval = new DateInterval('PT10S');
+
+        $next = $pointInTime->add('PT10S');
+
+        $this->assertEquals($interval, $pointInTime->diff($next));
+    }
+
+    /**
+     * @test
+     */
+    public function it_assert_is_greater_than(): void
+    {
+        $pointInTime = (new SystemClock())->pointInTime();
+
+        $next = $pointInTime->add('PT10S');
+        $this->assertTrue($next->after($pointInTime));
+
+        $previous = $pointInTime->sub('PT10S');
+        $this->assertFalse($previous->after($pointInTime));
     }
 
     /**
@@ -68,5 +140,4 @@ final class PointInTimeTest extends TestCase
 
         $this->assertEquals($dateTimeString, (string)$pointInTime);
     }
-
 }
