@@ -17,11 +17,8 @@ final class ReporterRouter implements Router
      * @var array<string,mixed>
      */
     private array $map;
-
     private MessageAlias $messageAlias;
-
     private ?Container $container;
-
     private ?string $callableMethod;
 
     /**

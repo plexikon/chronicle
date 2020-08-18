@@ -42,7 +42,7 @@ final class PointInTimeTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-         PointInTime::fromString('invalid');
+        PointInTime::fromString('invalid');
     }
 
     /**
@@ -56,4 +56,17 @@ final class PointInTimeTest extends TestCase
 
         $this->assertEquals($dateTimeString, $pointInTime->toString());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_be_serialized_with_magic_method(): void
+    {
+        $dateTimeString = '2020-07-24T16:01:07.612585';
+
+        $pointInTime = PointInTime::fromString($dateTimeString);
+
+        $this->assertEquals($dateTimeString, (string)$pointInTime);
+    }
+
 }
