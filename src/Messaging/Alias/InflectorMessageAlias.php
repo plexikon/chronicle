@@ -33,7 +33,6 @@ final class InflectorMessageAlias implements MessageAlias
         return $this->classToAlias($eventClass);
     }
 
-
     public function instanceToType(object $instance): string
     {
         if ($instance instanceof Message) {

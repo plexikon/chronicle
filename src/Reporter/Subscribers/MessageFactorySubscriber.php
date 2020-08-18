@@ -22,7 +22,6 @@ final class MessageFactorySubscriber implements MessageSubscriber
     public function attachToTracker(MessageTracker $tracker): void
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (MessageContext $context): void {
-
             /** @var Message $message */
             $message = $context->getMessage();
 
