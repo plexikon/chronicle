@@ -26,6 +26,14 @@ final class InflectorMessageAlias implements MessageAlias
         return str_replace('_', '-', end($eventType));
     }
 
+    public function typeToAlias(string $eventType): string
+    {
+        $eventClass = $this->typeToClass($eventType);
+
+        return $this->classToAlias($eventClass);
+    }
+
+
     public function instanceToType(object $instance): string
     {
         if ($instance instanceof Message) {

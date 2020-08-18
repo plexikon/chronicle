@@ -24,6 +24,11 @@ final class ClassNameMessageAlias implements MessageAlias
         return $eventClass;
     }
 
+    public function typeToAlias(string $eventType): string
+    {
+        return $eventType;
+    }
+
     public function instanceToType(object $instance): string
     {
         if ($instance instanceof Message) {

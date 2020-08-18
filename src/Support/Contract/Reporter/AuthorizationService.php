@@ -7,9 +7,9 @@ use Plexikon\Chronicle\Messaging\Message;
 interface AuthorizationService
 {
     /**
-     * @param string $eventType
+     * @param string             $event
      * @param null|Message|mixed $context
      * @return mixed
      */
-    public function isGranted(string $eventType, $context = null);
+    public function isGranted(string $event, $context = null);
 }

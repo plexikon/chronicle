@@ -23,6 +23,12 @@ interface MessageAlias
     public function classToAlias(string $eventClass): string;
 
     /**
+     * @param string $eventType
+     * @return string
+     */
+    public function typeToAlias(string $eventType): string;
+
+    /**
      * @param object $instance
      * @return string
      */

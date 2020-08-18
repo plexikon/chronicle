@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Reporter\Subscribers;
 
 use Plexikon\Chronicle\Exception\UnauthorizedException;
 use Plexikon\Chronicle\Messaging\Message;
+use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Reporter\AuthorizationService;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
@@ -16,10 +17,12 @@ use React\Promise\PromiseInterface;
 final class FinalizeQueryGuardSubscriber implements MessageSubscriber
 {
     private AuthorizationService $authorizationService;
+    private MessageAlias $messageAlias;
 
-    public function __construct(AuthorizationService $authorizationService)
+    public function __construct(AuthorizationService $authorizationService, MessageAlias $messageAlias)
     {
         $this->authorizationService = $authorizationService;
+        $this->messageAlias = $messageAlias;
     }
 
     public function attachToTracker(MessageTracker $tracker): void
@@ -48,12 +51,15 @@ final class FinalizeQueryGuardSubscriber implements MessageSubscriber
     {
         /** @var Message $message */
         $message = $context->getMessage();
-        $eventType = $message->header(MessageHeader::EVENT_TYPE);
 
-        if (!$this->authorizationService->isGranted($eventType, $result ?? $message)) {
+        $eventAlias = $this->messageAlias->typeToAlias(
+            $message->header(MessageHeader::EVENT_TYPE)
+        );
+
+        if (!$this->authorizationService->isGranted($eventAlias, $result ?? $message)) {
             $context->stopPropagation(true);
 
-            throw new UnauthorizedException("Unauthorized for event $eventType");
+            throw new UnauthorizedException("Unauthorized for event $eventAlias");
         }
     }
 }
