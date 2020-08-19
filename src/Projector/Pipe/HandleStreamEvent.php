@@ -93,7 +93,7 @@ final class HandleStreamEvent implements Pipe
             $context->state->setState($projectionState);
 
             if ($this->projectorRepository) {
-                $this->projectorRepository->persistOnReachedCounter();
+                $this->persistOnReachedCounter($context);
             }
 
             if ($context->isStopped) {
