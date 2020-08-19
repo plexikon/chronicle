@@ -10,7 +10,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ProjectionPersistenceRepository implements ProjectorRepository
+final class ProjectionRepository implements ProjectorRepository
 {
     use HasProjectorRepository;
 

@@ -6,14 +6,14 @@ namespace Plexikon\Chronicle;
 use Illuminate\Database\QueryException;
 use Plexikon\Chronicle\Exception\QueryFailure;
 use Plexikon\Chronicle\Projector\Concerns\HasReadProjectorManager;
-use Plexikon\Chronicle\Projector\ProjectionPersistenceRepository;
+use Plexikon\Chronicle\Projector\ProjectionRepository;
 use Plexikon\Chronicle\Projector\ProjectionProjector;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Projector\ProjectorOption;
 use Plexikon\Chronicle\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Projector\QueryProjector;
-use Plexikon\Chronicle\Projector\ReadModelPersistenceRepository;
+use Plexikon\Chronicle\Projector\ReadModelRepository;
 use Plexikon\Chronicle\Projector\ReadModelProjector;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Model\EventStreamProvider;
@@ -64,7 +64,7 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        $projectorRepository = new ProjectionPersistenceRepository(
+        $projectorRepository = new ProjectionRepository(
             $this->newProjectorRepository($streamName, $context),
             $this->chronicler
         );
@@ -81,7 +81,7 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        $projectorRepository = new ReadModelPersistenceRepository(
+        $projectorRepository = new ReadModelRepository(
             $this->newProjectorRepository($streamName, $context),
             $readModel
         );

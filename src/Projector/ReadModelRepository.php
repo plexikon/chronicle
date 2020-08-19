@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Projector\Concerns\HasProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ReadModelPersistenceRepository implements ProjectorRepository
+final class ReadModelRepository implements ProjectorRepository
 {
     use HasProjectorRepository;
 
