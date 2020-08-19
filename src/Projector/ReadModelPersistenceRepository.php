@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector;
 
+use Plexikon\Chronicle\Projector\Concerns\HasProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ReadModelPersistenceRepository extends PersistenceRepository
+final class ReadModelPersistenceRepository implements ProjectorRepository
 {
+    use HasProjectorRepository;
+
     protected ProjectorRepository $projectorRepository;
     private ReadModel $readModel;
 

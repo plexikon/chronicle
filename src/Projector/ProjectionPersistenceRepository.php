@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector;
 
 use Plexikon\Chronicle\Exception\StreamNotFound;
+use Plexikon\Chronicle\Projector\Concerns\HasProjectorRepository;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 
-final class ProjectionPersistenceRepository extends PersistenceRepository
+final class ProjectionPersistenceRepository implements ProjectorRepository
 {
+    use HasProjectorRepository;
+
     protected ProjectorRepository $projectorRepository;
     private Chronicler $chronicler;
 
