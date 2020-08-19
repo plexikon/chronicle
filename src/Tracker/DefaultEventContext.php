@@ -23,10 +23,10 @@ class DefaultEventContext implements EventContext
 
     protected ?Stream $stream = null;
     protected ?StreamName $streamName = null;
-    protected array $streamNames = [];
     protected ?AggregateId $aggregateId = null;
     protected ?string $direction = null;
     protected ?QueryFilter $queryFilter = null;
+    protected array $streamNames = [];
     protected bool $isStreamExists = false;
 
     public function withStream(Stream $stream): void
