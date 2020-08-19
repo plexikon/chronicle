@@ -88,7 +88,7 @@ final class ProjectorManager implements BaseProjectorManager
 
         return new ReadModelProjector(
             $context, $projectorRepository, $this->chronicler,
-            $this->messageAlias, $readModel, $streamName
+            $this->messageAlias, $streamName, $readModel
         );
     }
 

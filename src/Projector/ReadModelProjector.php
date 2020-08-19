@@ -28,8 +28,8 @@ final class ReadModelProjector implements BaseProjector, ProjectorFactory
                                 ProjectorRepository $projectorRepository,
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias,
-                                ReadModel $readModel,
-                                string $streamName)
+                                string $streamName,
+                                ReadModel $readModel)
     {
         $this->projectorContext = $projectorContext;
         $this->projectorRepository = $projectorRepository;
