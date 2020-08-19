@@ -1,13 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Projector\Pipe;
+namespace Plexikon\Chronicle\Projector\Concerns;
 
 use Plexikon\Chronicle\Projector\ProjectionStatus;
-use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
-abstract class RemoteProjectionStatusAware implements Pipe
+trait HasRemoteProjectionStatus
 {
     protected ProjectorRepository $projectorRepository;
 

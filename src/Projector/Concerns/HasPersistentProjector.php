@@ -7,7 +7,7 @@ use Plexikon\Chronicle\Projector\Pipe\PersistOrSleepBeforeResetCounter;
 use Plexikon\Chronicle\Projector\Pipe\PreparePersistenceRunner;
 use Plexikon\Chronicle\Projector\Pipe\DispatchSignal;
 use Plexikon\Chronicle\Projector\Pipe\HandleStreamEvent;
-use Plexikon\Chronicle\Projector\Pipe\UpdateRemoteProjectionStatusAndStreamsPositions;
+use Plexikon\Chronicle\Projector\Pipe\UpdateProjectionStatusAndPositions;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
@@ -87,7 +87,7 @@ trait HasPersistentProjector
             new HandleStreamEvent($this->chronicler, $this->messageAlias, $this->projectorRepository),
             new PersistOrSleepBeforeResetCounter($this->projectorRepository),
             new DispatchSignal(),
-            new UpdateRemoteProjectionStatusAndStreamsPositions($this->projectorRepository)
+            new UpdateProjectionStatusAndPositions($this->projectorRepository)
         ];
     }
 

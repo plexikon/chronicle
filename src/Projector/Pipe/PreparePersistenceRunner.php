@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Plexikon\Chronicle\Projector\Pipe;
 
+use Plexikon\Chronicle\Projector\Concerns\HasRemoteProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\PipeOnce;
 
-final class PreparePersistenceRunner extends RemoteProjectionStatusAware implements PipeOnce
+final class PreparePersistenceRunner implements PipeOnce
 {
+    use HasRemoteProjectionStatus;
+
     private bool $hasBeenPrepared = false;
 
     public function __invoke(ProjectorContext $context, callable $next)
