@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Plexikon\Chronicle\Projector\Pipe;
 
 use Plexikon\Chronicle\Projector\ProjectorContext;
-use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
 final class UpdateRemoteProjectionStatusAndStreamsPositions extends RemoteProjectionStatusAware
 {

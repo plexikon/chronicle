@@ -5,7 +5,6 @@ namespace Plexikon\Chronicle\Projector\Pipe;
 
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\PipeOnce;
-use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
 final class PreparePersistenceRunner extends RemoteProjectionStatusAware implements PipeOnce
 {
