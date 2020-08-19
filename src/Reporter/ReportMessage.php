@@ -23,9 +23,9 @@ abstract class ReportMessage implements Reporter, TrackingReporter, NamingReport
         $this->tracker = $tracker ?? new TrackingMessage();
     }
 
-    public function subscribe(MessageSubscriber $messageSubscriber): void
+    public function subscribe(MessageSubscriber $subscriber): void
     {
-        $messageSubscriber->attachToTracker($this->tracker);
+        $subscriber->attachToTracker($this->tracker);
     }
 
     public function reporterName(): string
@@ -33,21 +33,21 @@ abstract class ReportMessage implements Reporter, TrackingReporter, NamingReport
         return $this->reporterName ?? $this->reporterName = get_called_class();
     }
 
-    protected function publishMessage(MessageContext $messageContext): void
+    protected function publishMessage(MessageContext $context): void
     {
         try {
-            $this->tracker->fire($messageContext);
+            $this->tracker->fire($context);
         } catch (Throwable $exception) {
-            $messageContext->withRaisedException($exception);
+            $context->withRaisedException($exception);
         } finally {
-            $this->finalizeDispatching($messageContext);
+            $this->finalizeDispatching($context);
         }
     }
 
-    protected function finalizeDispatching(MessageContext $messageContext): void
+    protected function finalizeDispatching(MessageContext $context): void
     {
-        $messageContext->withEvent(self::FINALIZE_EVENT);
+        $context->withEvent(self::FINALIZE_EVENT);
 
-        $this->tracker->fire($messageContext);
+        $this->tracker->fire($context);
     }
 }

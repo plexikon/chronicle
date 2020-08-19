@@ -29,11 +29,13 @@ trait DetectReporterType
     protected function detectBusTypeFromEvent(object $event): string
     {
         if ($event instanceof Messaging) {
-            switch ($messageType = $event->messageType()) {
+            switch ($event->messageType()) {
                 case Messaging::COMMAND:
                     return ReportCommand::class;
+
                 case Messaging::EVENT:
                     return ReportEvent::class;
+
                 case Messaging::QUERY:
                     return ReportQuery::class;
             }

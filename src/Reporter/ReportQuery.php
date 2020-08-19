@@ -11,6 +11,7 @@ class ReportQuery extends ReportMessage
     public function publish($query): PromiseInterface
     {
         $context = $this->tracker->newContext(Reporter::DISPATCH_EVENT);
+
         $context->withMessage($query);
 
         $this->publishMessage($context);
