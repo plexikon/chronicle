@@ -31,11 +31,6 @@ abstract class PersistenceRepository implements BaseProjectorRepository
         $this->projectorRepository->startAgain();
     }
 
-    public function persistOnReachedCounter(): void
-    {
-        $this->projectorRepository->persistOnReachedCounter();
-    }
-
     public function isProjectionExists(): bool
     {
         return $this->projectorRepository->isProjectionExists();

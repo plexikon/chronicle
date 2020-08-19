@@ -47,11 +47,6 @@ interface ProjectorRepository
     public function persist(): void;
 
     /**
-     * Persist projection on counter
-     */
-    public function persistOnReachedCounter(): void;
-
-    /**
      * Reset projection
      */
     public function reset(): void;

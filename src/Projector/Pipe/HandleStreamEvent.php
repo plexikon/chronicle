@@ -5,6 +5,7 @@ namespace Plexikon\Chronicle\Projector\Pipe;
 
 use Generator;
 use Plexikon\Chronicle\Messaging\Message;
+use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Stream\StreamName;
 use Plexikon\Chronicle\Support\Contract\Chronicling\Chronicler;
@@ -74,7 +75,7 @@ final class HandleStreamEvent implements Pipe
             if (is_array($eventHandlers)) {
                 if (!$messageHandler = $this->determineEventHandler($streamEvent, $eventHandlers)) {
                     if ($this->projectorRepository) {
-                        $this->projectorRepository->persistOnReachedCounter();
+                        $this->persistOnReachedCounter($context);
                     }
 
                     if ($context->isStopped) {
@@ -97,6 +98,25 @@ final class HandleStreamEvent implements Pipe
 
             if ($context->isStopped) {
                 break;
+            }
+        }
+    }
+
+    private function persistOnReachedCounter(ProjectorContext $context): void
+    {
+        $persistBlockSize = $context->option->persistBlockSize();
+
+        if ($context->counter->equals($persistBlockSize)) {
+            $this->projectorRepository->persist();
+
+            $context->counter->reset();
+
+            $context->status = $this->projectorRepository->loadStatus();
+
+            $keepProjectionRunning = [ProjectionStatus::RUNNING(), ProjectionStatus::IDLE()];
+
+            if (!in_array($context->status, $keepProjectionRunning)) {
+                $context->isStopped = true;
             }
         }
     }

@@ -159,25 +159,6 @@ final class ProjectorRepository implements BaseProjectorRepository
         return ProjectionStatus::byValue($result->status());
     }
 
-    public function persistOnReachedCounter(): void
-    {
-        $persistBlockSize = $this->projectorContext->option->persistBlockSize();
-
-        if ($this->projectorContext->counter->equals($persistBlockSize)) {
-            $this->persist();
-
-            $this->projectorContext->counter->reset();
-
-            $this->projectorContext->status = $this->loadStatus();
-
-            $keepProjectionRunning = [ProjectionStatus::RUNNING(), ProjectionStatus::IDLE()];
-
-            if (!in_array($this->projectorContext->status, $keepProjectionRunning)) {
-                $this->projectorContext->isStopped = true;
-            }
-        }
-    }
-
     public function isProjectionExists(): bool
     {
         return $this->projectionProvider->projectionExists($this->streamName);
