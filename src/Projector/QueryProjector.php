@@ -16,7 +16,7 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
 {
     use HasProjectorFactory;
 
-    protected ProjectorContext $context;
+    protected ProjectorContext $projectorContext;
     private Chronicler $chronicler;
     private MessageAlias $messageAlias;
 
@@ -24,7 +24,7 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
                                 Chronicler $chronicler,
                                 MessageAlias $messageAlias)
     {
-        $this->context = $projectorContext;
+        $this->projectorContext = $projectorContext;
         $this->chronicler = $chronicler;
         $this->messageAlias = $messageAlias;
     }
@@ -33,13 +33,13 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
     {
         Assertion::false($keepRunning, 'Query projection can not run in background');
 
-        $this->context->setUpProjection(
+        $this->projectorContext->setUpProjection(
             $this->createEventHandlerContext(
-                $this, $this->context->currentStreamName
+                $this, $this->projectorContext->currentStreamName
             )
         );
 
-        $this->context->position->make($this->context->streamNames());
+        $this->projectorContext->position->make($this->projectorContext->streamNames());
 
         $this->sendThroughPipes();
     }
@@ -50,37 +50,37 @@ final class QueryProjector implements BaseQueryProjector, ProjectorFactory
             ->through([
                 new HandleStreamEvent($this->chronicler, $this->messageAlias, null),
             ])
-            ->send($this->context)
+            ->send($this->projectorContext)
             ->then(fn(ProjectorContext $context): bool => $context->isStopped);
     }
 
     public function stop(): void
     {
-        $this->context->isStopped = true;
+        $this->projectorContext->isStopped = true;
     }
 
     public function reset(): void
     {
-        $this->context->position->reset();
+        $this->projectorContext->position->reset();
 
-        $callback = $this->context->initCallback();
+        $callback = $this->projectorContext->initCallback();
 
         if (is_callable($callback)) {
             $callback = $callback();
 
             if (is_array($callback)) {
-                $this->context->state->setState($callback);
+                $this->projectorContext->state->setState($callback);
 
                 return;
             }
         }
 
-        $this->context->state->resetState();
+        $this->projectorContext->state->resetState();
     }
 
     public function getState(): array
     {
-        return $this->context->state->getState();
+        return $this->projectorContext->state->getState();
     }
 
     private function createEventHandlerContext(BaseQueryProjector $projector, ?string $streamName): object
