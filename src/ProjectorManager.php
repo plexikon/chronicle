@@ -10,8 +10,8 @@ use Plexikon\Chronicle\Projector\ProjectionPersistenceRepository;
 use Plexikon\Chronicle\Projector\ProjectionProjector;
 use Plexikon\Chronicle\Projector\ProjectionStatus;
 use Plexikon\Chronicle\Projector\ProjectorContext;
-use Plexikon\Chronicle\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Projector\ProjectorOption;
+use Plexikon\Chronicle\Projector\ProjectorRepository;
 use Plexikon\Chronicle\Projector\QueryProjector;
 use Plexikon\Chronicle\Projector\ReadModelPersistenceRepository;
 use Plexikon\Chronicle\Projector\ReadModelProjector;
@@ -22,6 +22,7 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\QueryScope;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorFactory;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorManager as BaseProjectorManager;
+use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository as BaseProjectorRepository;
 use Plexikon\Chronicle\Support\Contract\Projector\ReadModel;
 use Plexikon\Chronicle\Support\Projector\InMemoryProjectionState;
 use Plexikon\Chronicle\Support\Projector\StreamPosition;
@@ -63,13 +64,13 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        $projectionLock = new ProjectionPersistenceRepository(
-            new ProjectorRepository($context, $this->projectionProvider, $streamName),
+        $projectorRepository = new ProjectionPersistenceRepository(
+            $this->newProjectorRepository($streamName, $context),
             $this->chronicler
         );
 
         return new ProjectionProjector(
-            $context, $projectionLock, $this->chronicler,
+            $context, $projectorRepository, $this->chronicler,
             $this->messageAlias, $streamName
         );
     }
@@ -80,25 +81,25 @@ final class ProjectorManager implements BaseProjectorManager
     {
         $context = $this->newProjectorContext($options);
 
-        $projectionLock = new ReadModelPersistenceRepository(
-            new ProjectorRepository($context, $this->projectionProvider, $streamName),
+        $projectorRepository = new ReadModelPersistenceRepository(
+            $this->newProjectorRepository($streamName, $context),
             $readModel
         );
 
         return new ReadModelProjector(
-            $context, $projectionLock, $this->chronicler,
+            $context, $projectorRepository, $this->chronicler,
             $this->messageAlias, $readModel, $streamName
         );
     }
 
     public function stopProjection(string $name): void
     {
-        $this->updateProjectionStatus(ProjectionStatus::STOPPING(), $name);
+        $this->updateProjectionStatus($name, ProjectionStatus::STOPPING());
     }
 
     public function resetProjection(string $name): void
     {
-        $this->updateProjectionStatus(ProjectionStatus::RESETTING(), $name);
+        $this->updateProjectionStatus($name, ProjectionStatus::RESETTING());
     }
 
     public function deleteProjection(string $name, bool $deleteEmittedEvents): void
@@ -107,7 +108,7 @@ final class ProjectorManager implements BaseProjectorManager
             ? ProjectionStatus::DELETING_EMITTED_EVENTS()
             : ProjectionStatus::DELETING();
 
-        $this->updateProjectionStatus($deleteProjectionStatus, $name);
+        $this->updateProjectionStatus($name, $deleteProjectionStatus);
     }
 
     public function projectionQueryScope(): QueryScope
@@ -115,7 +116,7 @@ final class ProjectorManager implements BaseProjectorManager
         return $this->queryScope;
     }
 
-    private function updateProjectionStatus(ProjectionStatus $projectionStatus, string $name): void
+    private function updateProjectionStatus(string $name, ProjectionStatus $projectionStatus): void
     {
         try {
             $result = $this->projectionProvider->updateProjection(
@@ -138,5 +139,11 @@ final class ProjectorManager implements BaseProjectorManager
             new StreamPosition($this->eventStreamProvider),
             new InMemoryProjectionState()
         );
+    }
+
+    private function newProjectorRepository(string $streamName,
+                                            ProjectorContext $context): BaseProjectorRepository
+    {
+        return new ProjectorRepository($context, $this->projectionProvider, $streamName);
     }
 }
