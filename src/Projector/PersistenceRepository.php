@@ -46,11 +46,6 @@ abstract class PersistenceRepository implements BaseProjectorRepository
         return $this->projectorRepository->loadStatus();
     }
 
-    public function processOnStatus(bool $shouldStop, bool $keepRunning): bool
-    {
-        return $this->projectorRepository->processOnStatus($shouldStop, $keepRunning);
-    }
-
     public function acquireLock(): void
     {
         $this->projectorRepository->acquireLock();

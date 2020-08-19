@@ -9,6 +9,7 @@ interface ProjectorRepository
 {
     /**
      * Prepare projection
+     *
      * @param ReadModel|null $readModel
      */
     public function prepare(?ReadModel $readModel): void;
@@ -41,15 +42,6 @@ interface ProjectorRepository
     public function loadStatus(): ProjectionStatus;
 
     /**
-     * Update projection on projection status
-     *
-     * @param bool $shouldStop
-     * @param bool $keepRunning
-     * @return bool
-     */
-    public function processOnStatus(bool $shouldStop, bool $keepRunning): bool;
-
-    /**
      * Persist projection
      */
     public function persist(): void;
@@ -66,12 +58,14 @@ interface ProjectorRepository
 
     /**
      * Delete projection
+     *
      * @param bool $deleteEmittedEvents
      */
     public function delete(bool $deleteEmittedEvents): void;
 
     /**
      * Check if projection exists
+     *
      * @return bool
      */
     public function isProjectionExists(): bool;
@@ -101,6 +95,7 @@ interface ProjectorRepository
 
     /**
      * Get stream name
+     *
      * @return string
      */
     public function getStreamName(): string;

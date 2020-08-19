@@ -159,38 +159,6 @@ final class ProjectorRepository implements BaseProjectorRepository
         return ProjectionStatus::byValue($result->status());
     }
 
-    public function processOnStatus(bool $shouldStop, bool $keepRunning): bool
-    {
-        switch ($this->loadStatus()) {
-            case ProjectionStatus::STOPPING():
-                if ($shouldStop) {
-                    $this->loadState();
-                }
-
-                $this->stop();
-
-                return $shouldStop;
-            case ProjectionStatus::DELETING():
-                $this->delete(false);
-
-                return $shouldStop;
-            case ProjectionStatus::DELETING_EMITTED_EVENTS():
-                $this->delete(true);
-
-                return $shouldStop;
-            case ProjectionStatus::RESETTING():
-                $this->reset();
-
-                if (!$shouldStop && $keepRunning) {
-                    $this->startAgain();
-                }
-
-                return false;
-            default:
-                return false;
-        }
-    }
-
     public function persistOnReachedCounter(): void
     {
         $persistBlockSize = $this->projectorContext->option->persistBlockSize();

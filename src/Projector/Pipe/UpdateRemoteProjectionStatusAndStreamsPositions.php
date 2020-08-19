@@ -7,18 +7,11 @@ use Plexikon\Chronicle\Projector\ProjectorContext;
 use Plexikon\Chronicle\Support\Contract\Projector\Pipe;
 use Plexikon\Chronicle\Support\Contract\Projector\ProjectorRepository;
 
-final class UpdateStatusAndStreamsPositions implements Pipe
+final class UpdateRemoteProjectionStatusAndStreamsPositions extends RemoteProjectionStatusAware
 {
-    private ProjectorRepository $projectorRepository;
-
-    public function __construct(ProjectorRepository $projectorRepository)
-    {
-        $this->projectorRepository = $projectorRepository;
-    }
-
     public function __invoke(ProjectorContext $context, callable $next)
     {
-        $this->projectorRepository->processOnStatus(false, $context->keepRunning());
+        $this->processOnStatus(false, $context->keepRunning());
 
         $context->position->make($context->streamNames());
 
