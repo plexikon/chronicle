@@ -46,7 +46,7 @@ final class CommandValidationSubscriber implements MessageSubscriber
                     $this->validateMessage($message);
                 }
             }
-        }, 80000);
+        }, Reporter::PRIORITY_MESSAGE_VALIDATION);
     }
 
     private function validateMessage(Message $message): void

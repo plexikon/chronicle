@@ -20,16 +20,12 @@ class ReportCommand extends ReportMessage
             try {
                 while ($command = array_shift($this->queue)) {
                     $context = $this->tracker->newContext(self::DISPATCH_EVENT);
+
                     $context->withMessage($command);
 
-                    try {
-                        $this->publishMessage($context);
-                    } catch (Throwable $exception) {
-                        $context->withRaisedException($exception);
-                    } finally {
-                        $this->finalizeDispatching($context);
-                    }
+                    $this->publishMessage($context);
                 }
+
                 $this->isDispatching = false;
             } catch (Throwable $exception) {
                 $this->isDispatching = false;

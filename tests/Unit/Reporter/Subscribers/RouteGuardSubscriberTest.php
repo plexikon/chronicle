@@ -6,7 +6,7 @@ namespace Plexikon\Chronicle\Tests\Unit\Reporter\Subscribers;
 use Generator;
 use Plexikon\Chronicle\Exception\UnauthorizedException;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Reporter\Subscribers\RouteCommandGuardSubscriber;
+use Plexikon\Chronicle\Reporter\Subscribers\RouteGuardSubscriber;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Reporter\AuthorizationService;
@@ -16,7 +16,7 @@ use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tracker\TrackingMessage;
 use stdClass;
 
-final class RouteCommandGuardSubscriberTest extends TestCase
+final class RouteGuardSubscriberTest extends TestCase
 {
     /**
      * @test
@@ -35,7 +35,7 @@ final class RouteCommandGuardSubscriberTest extends TestCase
         $alias = $this->prophesize(MessageAlias::class);
         $alias->typeToAlias('foo_bar')->willReturn('foo')->shouldBeCalled();
 
-        $subscriber = new RouteCommandGuardSubscriber($auth->reveal(), $alias->reveal());
+        $subscriber = new RouteGuardSubscriber($auth->reveal(), $alias->reveal());
 
         $context = $this->prophesize(MessageContext::class);
         $context->getCurrentEvent()->willReturn(Reporter::DISPATCH_EVENT);

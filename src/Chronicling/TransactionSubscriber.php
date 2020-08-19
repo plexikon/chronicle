@@ -22,7 +22,7 @@ final class TransactionSubscriber implements MessageSubscriber
     {
         $tracker->listen(Reporter::DISPATCH_EVENT, function (): void {
             $this->chronicler->beginTransaction();
-        }, 1000);
+        }, Reporter::PRIORITY_INVOKE_HANDLER + 1000);
 
         $tracker->listen(Reporter::FINALIZE_EVENT, function (MessageContext $context): void {
             if (!$this->chronicler->inTransaction()) {

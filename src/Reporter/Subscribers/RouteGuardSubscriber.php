@@ -13,7 +13,7 @@ use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 
-final class RouteCommandGuardSubscriber implements MessageSubscriber
+final class RouteGuardSubscriber implements MessageSubscriber
 {
     private AuthorizationService $authorizationService;
     private MessageAlias $messageAlias;
@@ -39,6 +39,6 @@ final class RouteCommandGuardSubscriber implements MessageSubscriber
 
                 throw new UnauthorizedException("Unauthorized for event $eventAlias");
             }
-        }, 20000);
+        }, Reporter::PRIORITY_ROUTE + 1000);
     }
 }

@@ -35,6 +35,6 @@ final class TrackingQuerySubscriber implements MessageSubscriber
                     $context->markMessageHandled(true);
                 }
             }
-        });
+        }, Reporter::PRIORITY_INVOKE_HANDLER);
     }
 }

@@ -5,7 +5,6 @@ namespace Plexikon\Chronicle\Reporter;
 
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use React\Promise\PromiseInterface;
-use Throwable;
 
 class ReportQuery extends ReportMessage
 {
@@ -14,13 +13,7 @@ class ReportQuery extends ReportMessage
         $context = $this->tracker->newContext(Reporter::DISPATCH_EVENT);
         $context->withMessage($query);
 
-        try {
-            $this->publishMessage($context);
-        } catch (Throwable $exception) {
-            $context->withRaisedException($exception);
-        } finally {
-            $this->finalizeDispatching($context);
-        }
+        $this->publishMessage($context);
 
         return $context->getPromise();
     }

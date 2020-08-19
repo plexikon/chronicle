@@ -28,6 +28,6 @@ final class MessageFactorySubscriber implements MessageSubscriber
             $context->withMessage(
                 $this->messageFactory->createMessageFrom($message)
             );
-        }, 100000);
+        }, Reporter::PRIORITY_MESSAGE_FACTORY);
     }
 }

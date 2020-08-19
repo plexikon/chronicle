@@ -28,6 +28,6 @@ final class ChainMessageDecoratorSubscriber implements MessageSubscriber
             $context->withMessage(
                 $this->messageDecorator->decorate($currentMessage)
             );
-        }, 90000);
+        }, Reporter::PRIORITY_MESSAGE_DECORATOR);
     }
 }

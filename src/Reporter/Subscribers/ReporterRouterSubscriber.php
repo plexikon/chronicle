@@ -31,7 +31,7 @@ final class ReporterRouterSubscriber implements MessageSubscriber
             $this->messageProducer->mustBeHandledSync($message)
                 ? $this->handleSyncMessage($context)
                 : $this->handleAsyncMessage($context);
-        }, 1000);
+        }, Reporter::PRIORITY_ROUTE);
     }
 
     private function handleSyncMessage(MessageContext $context): void

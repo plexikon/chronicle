@@ -31,7 +31,7 @@ final class TrackingEventSubscriber implements MessageSubscriber
             }
 
             $context->markMessageHandled(true);
-        });
+        }, Reporter::PRIORITY_INVOKE_HANDLER);
     }
 
     private function subscribeToFinalizeEvent(MessageTracker $tracker): void

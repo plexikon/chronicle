@@ -10,6 +10,7 @@ use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use Plexikon\Chronicle\Tracker\TrackingMessage;
+use Throwable;
 
 abstract class ReportMessage implements Reporter, TrackingReporter, NamingReporter
 {
@@ -34,7 +35,13 @@ abstract class ReportMessage implements Reporter, TrackingReporter, NamingReport
 
     protected function publishMessage(MessageContext $messageContext): void
     {
-        $this->tracker->fire($messageContext);
+        try {
+            $this->tracker->fire($messageContext);
+        } catch (Throwable $exception) {
+            $messageContext->withRaisedException($exception);
+        } finally {
+            $this->finalizeDispatching($messageContext);
+        }
     }
 
     protected function finalizeDispatching(MessageContext $messageContext): void
