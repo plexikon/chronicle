@@ -24,9 +24,9 @@ final class ReadModelPersistenceRepository extends PersistenceRepository
 
     public function persist(): void
     {
-        $this->readModel->persist();
-
         $this->projectorRepository->persist();
+
+        $this->readModel->persist();
     }
 
     public function reset(): void
