@@ -12,6 +12,11 @@ final class SomeCommandHandler
         $this->commandHandled = true;
     }
 
+    public function command(SomeCommand $command): void
+    {
+        $this->commandHandled = true;
+    }
+
     public function isCommandHandled(): bool
     {
         return $this->commandHandled;

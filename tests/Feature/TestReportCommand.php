@@ -242,7 +242,7 @@ final class TestReportCommand
         return new Message($command);
     }
 
-    public function provideInvalidMessageHandler(): Generator
+    public function provideInvalidMessageHandler(): \Generator
     {
         yield [new \stdClass()];
 

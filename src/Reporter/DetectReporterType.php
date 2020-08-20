@@ -7,6 +7,8 @@ use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
 use Plexikon\Chronicle\Support\Contract\Messaging\Messaging;
+use function get_class;
+use function is_string;
 
 trait DetectReporterType
 {
