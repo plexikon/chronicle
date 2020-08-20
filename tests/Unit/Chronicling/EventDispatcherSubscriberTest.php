@@ -18,6 +18,8 @@ use Plexikon\Chronicle\Support\Contract\Chronicling\TransactionalChronicler;
 use Plexikon\Chronicle\Tests\Double\SomeEvent;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tracker\TransactionalTrackingEvent;
+use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use ReflectionClass;
 use Throwable;
 
@@ -27,10 +29,10 @@ final class EventDispatcherSubscriberTest extends TestCase
      * @test
      * @dataProvider providePersistingEvent
      * @param string $event
-     * @param bool $inTransaction
-     * @param array $events
+     * @param bool   $inTransaction
+     * @param array  $events
      */
-    public function it_dispatch_or_record_events(string $event, bool $inTransaction, array $events): void
+    public function it_dispatch_or_record_events_depends_on_transaction(string $event, bool $inTransaction, array $events): void
     {
         $stream = new Stream(new StreamName('foo'), $events);
 
@@ -46,7 +48,14 @@ final class EventDispatcherSubscriberTest extends TestCase
         $context = $this->tracker->newContext($event);
         $context->withStream($stream);
 
-        $subscriber = $this->eventDispatcherSubscriberInstance($inTransaction ? [] : $events);
+        $subscriber = new EventDispatcherSubscriber($this->reportEvent->reveal());
+
+        // test flatten array
+        if ($inTransaction) {
+            $this->reportEvent->publish()->shouldNotBeCalled();
+        } else {
+            $this->reportEvent->publish(Argument::any())->shouldBeCalled();
+        }
 
         $this->assertRecordedEvents($subscriber, []);
 
@@ -60,7 +69,7 @@ final class EventDispatcherSubscriberTest extends TestCase
     /**
      * @test
      * @dataProvider provideExceptionOnEvent
-     * @param string $event
+     * @param string    $event
      * @param Throwable $exception
      */
     public function it_does_not_dispatch_events_when_context_as_exception(string $event, Throwable $exception): void
@@ -85,7 +94,9 @@ final class EventDispatcherSubscriberTest extends TestCase
         $context->withStream($stream);
         $context->withRaisedException($exception);
 
-        $subscriber = $this->eventDispatcherSubscriberInstance([]);
+        $subscriber = new EventDispatcherSubscriber($this->reportEvent->reveal());;
+
+        $this->reportEvent->publish()->shouldNotBeCalled();
 
         $this->assertRecordedEvents($subscriber, []);
 
@@ -112,9 +123,13 @@ final class EventDispatcherSubscriberTest extends TestCase
 
         $context = $this->tracker->newContext($event);
 
-        $subscriber = $this->eventDispatcherSubscriberInstance(
-            $event === TransactionalChronicler::COMMIT_TRANSACTION_EVENT ? $events : []
-        );
+        $subscriber = new EventDispatcherSubscriber($this->reportEvent->reveal());;
+
+        if ($event === TransactionalChronicler::COMMIT_TRANSACTION_EVENT) {
+            $this->reportEvent->publish(Argument::any())->shouldBeCalled();
+        } else {
+            $this->reportEvent->publish()->shouldNotBeCalled();
+        }
 
         $this->assertRecordedEvents($subscriber, []);
 
@@ -141,19 +156,6 @@ final class EventDispatcherSubscriberTest extends TestCase
         $recordedEvents = $prop->getValue($subscriber);
 
         empty($events) ? $this->assertEmpty($recordedEvents) : $this->assertEquals($events, $recordedEvents);
-    }
-
-    private function eventDispatcherSubscriberInstance(array $events): EventDispatcherSubscriber
-    {
-        $reporter = $this->prophesize(ReportEvent::class);
-
-        if (empty($events)) {
-            $reporter->publish()->shouldNotBeCalled();
-        } else {
-            $reporter->publish(...$events)->shouldBeCalled();
-        }
-
-        return new EventDispatcherSubscriber($reporter->reveal());
     }
 
     public function provideExceptionOnEvent(): Generator
@@ -189,9 +191,11 @@ final class EventDispatcherSubscriberTest extends TestCase
     }
 
     private TransactionalTrackingEvent $tracker;
+    private ObjectProphecy $reportEvent;
 
     protected function setUp(): void
     {
         $this->tracker = new TransactionalTrackingEvent();
+        $this->reportEvent = $this->prophesize(ReportEvent::class);
     }
 }

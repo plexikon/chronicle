@@ -17,10 +17,6 @@ final class TransactionalEventChronicler extends EventChronicler implements Tran
      * @var Chronicler|TransactionalChronicler
      */
     protected Chronicler $chronicler;
-
-    /**
-     * @var EventTracker|TransactionalEventTracker
-     */
     protected EventTracker $tracker;
 
     public function __construct(TransactionalChronicler $chronicler, TransactionalEventTracker $tracker)
