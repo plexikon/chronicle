@@ -17,6 +17,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Support\Contract\Reporter\Router;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
+use Plexikon\Chronicle\Support\Contract\Tracker\MessageTracker;
 use Plexikon\Chronicle\Support\Contract\Tracker\Tracker;
 use Plexikon\Chronicle\Tracker\TrackingMessage;
 
@@ -32,13 +33,13 @@ final class ReporterFactory
      */
     private array $messageSubscribers = [];
 
-    private ?Tracker $tracker = null;
+    private ?MessageTracker $tracker = null;
     private ?MessageAlias $messageAlias = null;
     private ?Container $container;
-    private ?MessageProducer $messageProducer;
+    private MessageProducer $messageProducer;
     private array $map;
 
-    public function __construct(array $map, ?Container $container, ?MessageProducer $messageProducer)
+    public function __construct(array $map, ?Container $container, MessageProducer $messageProducer)
     {
         $this->map = $map;
         $this->container = $container;
@@ -75,48 +76,36 @@ final class ReporterFactory
 
     public function reportCommand(?Tracker $tracker): ReportCommand
     {
-        $this->tracker = $tracker ?? new TrackingMessage();
-
         $commandRouterSubscriber = new ReporterRouterSubscriber(
             new SingleHandlerRouter($this->defaultRouterInstance()),
             $this->messageProducer
         );
 
-        $this->messageSubscribers[] = $commandRouterSubscriber;
-
-        $this->attachSubscribers();
+        $this->setUpReporter($commandRouterSubscriber, $tracker);
 
         return new ReportCommand(null, $this->tracker);
     }
 
     public function reportEvent(?Tracker $tracker): ReportEvent
     {
-        $this->tracker = $tracker ?? new TrackingMessage();
-
         $eventRouterSubscriber = new ReporterRouterSubscriber(
             new MultipleHandlerRouter($this->defaultRouterInstance(), true),
             $this->messageProducer
         );
 
-        $this->messageSubscribers[] = $eventRouterSubscriber;
-
-        $this->attachSubscribers();
+        $this->setUpReporter($eventRouterSubscriber, $tracker);
 
         return new ReportEvent(null, $this->tracker);
     }
 
     public function reportQuery(?Tracker $tracker): ReportQuery
     {
-        $this->tracker = $tracker ?? new TrackingMessage();
-
         $queryRouterSubscriber = new ReporterRouterSubscriber(
             new SingleHandlerRouter($this->defaultRouterInstance()),
             $this->messageProducer
         );
 
-        $this->messageSubscribers[] = $queryRouterSubscriber;
-
-        $this->attachSubscribers();
+        $this->setUpReporter($queryRouterSubscriber, $tracker);
 
         return new ReportQuery(null, $this->tracker);
     }
@@ -129,6 +118,15 @@ final class ReporterFactory
             $this->container,
             $this->callableMethod
         );
+    }
+
+    private function setUpReporter(MessageSubscriber $router, ?Tracker $tracker): void
+    {
+        $this->tracker = $tracker ?? new TrackingMessage();
+
+        $this->messageSubscribers [] = $router;
+
+        $this->attachSubscribers();
     }
 
     private function attachSubscribers(): void

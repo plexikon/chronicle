@@ -10,17 +10,18 @@ use Plexikon\Chronicle\Providers\ReporterServiceProvider;
 use Plexikon\Chronicle\Reporter\ReportCommand;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageHeader;
+use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageContext;
 use Plexikon\Chronicle\Tests\Double\SomeCommand;
+use Plexikon\Chronicle\Tests\Factory\MergeWithReporterConfig;
+use Plexikon\Chronicle\Tests\Factory\RegisterDefaultReporterTrait;
 use Plexikon\Chronicle\Tests\Feature\ITestCase;
-use Plexikon\Chronicle\Tests\Feature\Util\RegisterDefaultReporterTrait;
-use Plexikon\Chronicle\Tests\Feature\Util\SpyOnDispatchEventReporterTrait;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 final class ItDispatchCommand extends ITestCase
 {
-    use RegisterDefaultReporterTrait, SpyOnDispatchEventReporterTrait;
+    use MergeWithReporterConfig, RegisterDefaultReporterTrait;
 
     private bool $commandHandled = false;
     private ?MessageAlias $messageAlias;
@@ -52,7 +53,7 @@ final class ItDispatchCommand extends ITestCase
      */
     public function it_dispatch_command(): void
     {
-        $this->spyAfterMessageDecorator(function (MessageContext $context): void {
+        $context = function (MessageContext $context): void {
             $message = $context->getMessage();
 
             $this->assertEquals(ReportCommand::class, $message->header(MessageHeader::MESSAGE_BUS_TYPE));
@@ -62,8 +63,9 @@ final class ItDispatchCommand extends ITestCase
                 $this->messageAlias->classToType(SomeCommand::class),
                 $message->header(MessageHeader::EVENT_TYPE)
             );
+        };
 
-        }, 'reporter.reporting.command.default.messaging.subscribers');
+        $this->setUpReporterWithContext($context);
 
         $this->publishCommand(SomeCommand::withData(['foo' => 'bar']));
 
@@ -83,17 +85,30 @@ final class ItDispatchCommand extends ITestCase
             MessageHeader::TIME_OF_RECORDING => $timeOfRecording = (new SystemClock())->pointInTime(),
         ]);
 
-        $this->spyAfterMessageDecorator(function (MessageContext $context) use ($eventId, $eventType, $timeOfRecording): void {
-            $message = $context->getMessage();
+        $context = function (MessageContext $context) use ($message): void {
+            $contextMessage = $context->getMessage();
 
-            $this->assertEquals(ReportCommand::class, $message->header(MessageHeader::MESSAGE_BUS_TYPE));
-            $this->assertEquals($eventId, $message->header(MessageHeader::EVENT_ID));
-            $this->assertEquals($eventType, $message->header(MessageHeader::EVENT_TYPE));
-            $this->assertEquals($timeOfRecording, $message->header(MessageHeader::TIME_OF_RECORDING));
-        }, 'reporter.reporting.command.default.messaging.subscribers');
+            $this->assertEquals(ReportCommand::class, $contextMessage->header(MessageHeader::MESSAGE_BUS_TYPE));
+            $this->assertEquals($message->header(MessageHeader::EVENT_ID), $contextMessage->header(MessageHeader::EVENT_ID));
+            $this->assertEquals($message->header(MessageHeader::EVENT_TYPE), $contextMessage->header(MessageHeader::EVENT_TYPE));
+            $this->assertEquals($message->header(MessageHeader::TIME_OF_RECORDING), $contextMessage->header(MessageHeader::TIME_OF_RECORDING));
+        };
+
+        $this->setUpReporterWithContext($context);
 
         $this->publishCommand($message);
 
         $this->assertTrue($this->commandHandled);
+    }
+
+    protected function setUpReporterWithContext(callable $context): void
+    {
+        $factory = $this->messageSubscriberFactory($this->messageAlias);
+
+        $sub = $factory->onDispatch($context, Reporter::PRIORITY_MESSAGE_DECORATOR - 1);
+        $factory->addSubscribers($sub);
+
+        $subscribers = array_merge($factory->messageSubscribers(), [$sub]);
+        $this->mergeConfigSubscribers('command', ...$subscribers);
     }
 }

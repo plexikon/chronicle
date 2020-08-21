@@ -16,6 +16,7 @@ use Plexikon\Chronicle\Tests\Factory\ReporterFactory;
 use Plexikon\Chronicle\Tests\Util\HasMessageSubscribersAssertion;
 use Prophecy\Argument;
 
+// todo delete
 final class TestReportCommand
 {
     use HasMessageSubscribersAssertion;

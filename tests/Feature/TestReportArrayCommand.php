@@ -21,7 +21,7 @@ use Plexikon\Chronicle\Tests\Factory\ReporterFactory;
 use Plexikon\Chronicle\Tests\Unit\TestCase;
 use Plexikon\Chronicle\Tests\Util\HasMessageSubscribersAssertion;
 use Ramsey\Uuid\Uuid;
-
+// todo delete
 final class TestReportArrayCommand
 {
     use HasMessageSubscribersAssertion;
@@ -70,20 +70,22 @@ final class TestReportArrayCommand
 
     private function assertMessageAreEqualsSubscriber(array $command): MessageSubscriber
     {
-        return MessageSubscriberTestFactory::create($this,
-            function (TestCase $testCase, MessageContext $context) use ($command) {
-                $testCase->assertInstanceof(
-                    SomeCommand::class, $context->getMessage()->event()
-                );
+        $factory = MessageSubscriberFactory::create(new ClassNameMessageAlias());
 
-                $testCase->assertEquals(
-                    $command['headers'], $context->getMessage()->headers()
-                );
+        $context = function (MessageContext $context)use($command): void{
+            $this->assertInstanceof(
+                SomeCommand::class, $context->getMessage()->event()
+            );
 
-                $testCase->assertEquals(
-                    $command['payload'], $context->getMessage()->event()->toPayload()
-                );
-            })->onFinalize(10);
+            $this->assertEquals(
+                $command['headers'], $context->getMessage()->headers()
+            );
+
+            $this->assertEquals(
+                $command['payload'], $context->getMessage()->event()->toPayload()
+            );
+        }
+
     }
 
     private function messageFactorySubscriberInstance(MessageAlias $messageAlias): MessageSubscriber

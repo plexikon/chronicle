@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Plexikon\Chronicle\Tests\Feature\Util;
+namespace Plexikon\Chronicle\Tests\Factory;
 
 use Illuminate\Contracts\Foundation\Application;
 use Plexikon\Chronicle\Reporter\ReportCommand;
 use Plexikon\Chronicle\Reporter\ReporterManager;
 use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Reporter\ReportQuery;
+use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use React\Promise\PromiseInterface;
 
 trait RegisterDefaultReporterTrait
@@ -47,6 +48,11 @@ trait RegisterDefaultReporterTrait
 
     protected function publishQuery($query): PromiseInterface
     {
-      return $this->app->get(ReportQuery::class)->publish($query);
+        return $this->app->get(ReportQuery::class)->publish($query);
+    }
+
+    protected function messageSubscriberFactory(?MessageAlias $messageAlias): MessageSubscriberFactory
+    {
+        return MessageSubscriberFactory::create($messageAlias);
     }
 }
