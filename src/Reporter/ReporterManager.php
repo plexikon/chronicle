@@ -8,6 +8,7 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use Plexikon\Chronicle\Exception\RuntimeException;
+use Plexikon\Chronicle\Messaging\Decorator\BusTypeMessageDecorator;
 use Plexikon\Chronicle\Messaging\Decorator\ChainMessageDecorator;
 use Plexikon\Chronicle\Messaging\Producer\AsyncMessageProducer;
 use Plexikon\Chronicle\Messaging\Producer\IlluminateProducer;
@@ -21,6 +22,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageProducer;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageSerializer;
 use Plexikon\Chronicle\Support\Contract\Messaging\Messaging;
+use Plexikon\Chronicle\Support\Contract\Reporter\NamingReporter;
 use Plexikon\Chronicle\Support\Contract\Reporter\Reporter;
 use Plexikon\Chronicle\Support\Contract\Reporter\TrackingReporter;
 use Plexikon\Chronicle\Support\Contract\Tracker\MessageSubscriber;
@@ -125,7 +127,7 @@ class ReporterManager
     protected function subscribeToReporter(TrackingReporter $reporter, string $type, array $config): void
     {
         $subscribers = $this->resolveServices([
-            $this->resolveMessageDecoratorSubscriber($config),
+            $this->resolveMessageDecoratorSubscriber($reporter, $config),
             $this->resolveReporterRouterSubscriber($type, $config),
             $this->fromReporter("messaging.subscribers") ?? [],
             $config['messaging']['subscribers'] ?? []
@@ -136,12 +138,16 @@ class ReporterManager
         }
     }
 
-    protected function resolveMessageDecoratorSubscriber(array $config): MessageSubscriber
+    protected function resolveMessageDecoratorSubscriber(TrackingReporter $reporter, array $config): MessageSubscriber
     {
         $messageDecorators = $this->resolveServices(
             $this->fromReporter('messaging.decorators' ?? []),
             $config['messaging']['decorators'] ?? []
         );
+
+        if ($reporter instanceof NamingReporter) {
+            $messageDecorators[] = new BusTypeMessageDecorator($reporter->reporterName());
+        }
 
         return new ChainMessageDecoratorSubscriber(
             new ChainMessageDecorator(...$messageDecorators)
@@ -243,7 +249,7 @@ class ReporterManager
 
     /**
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      */
     protected function fromReporter(string $key, $default = null)
