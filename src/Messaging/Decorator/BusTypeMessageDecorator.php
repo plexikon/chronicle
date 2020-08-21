@@ -18,10 +18,10 @@ final class BusTypeMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
-        if (null !== $message->header(MessageHeader::MESSAGE_BUS_TYPE)) {
+        if (null !== $message->header(MessageHeader::MESSAGE_BUS_NAME)) {
             return $message;
         }
 
-        return $message->withHeader(MessageHeader::MESSAGE_BUS_TYPE, $this->reporterName);
+        return $message->withHeader(MessageHeader::MESSAGE_BUS_NAME, $this->reporterName);
     }
 }

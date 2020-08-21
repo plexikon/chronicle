@@ -56,7 +56,7 @@ final class ItDispatchCommand extends ITestCase
         $context = function (MessageContext $context): void {
             $message = $context->getMessage();
 
-            $this->assertEquals(ReportCommand::class, $message->header(MessageHeader::MESSAGE_BUS_TYPE));
+            $this->assertEquals(ReportCommand::class, $message->header(MessageHeader::MESSAGE_BUS_NAME));
             $this->assertInstanceOf(UuidInterface::class, $message->header(MessageHeader::EVENT_ID));
             $this->assertInstanceOf(PointInTime::class, $message->header(MessageHeader::TIME_OF_RECORDING));
             $this->assertEquals(
@@ -88,7 +88,7 @@ final class ItDispatchCommand extends ITestCase
         $context = function (MessageContext $context) use ($message): void {
             $contextMessage = $context->getMessage();
 
-            $this->assertEquals(ReportCommand::class, $contextMessage->header(MessageHeader::MESSAGE_BUS_TYPE));
+            $this->assertEquals(ReportCommand::class, $contextMessage->header(MessageHeader::MESSAGE_BUS_NAME));
             $this->assertEquals($message->header(MessageHeader::EVENT_ID), $contextMessage->header(MessageHeader::EVENT_ID));
             $this->assertEquals($message->header(MessageHeader::EVENT_TYPE), $contextMessage->header(MessageHeader::EVENT_TYPE));
             $this->assertEquals($message->header(MessageHeader::TIME_OF_RECORDING), $contextMessage->header(MessageHeader::TIME_OF_RECORDING));

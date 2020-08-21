@@ -5,7 +5,7 @@ namespace Plexikon\Chronicle\Tests\Unit\Reporter;
 
 use Plexikon\Chronicle\Exception\RuntimeException;
 use Plexikon\Chronicle\Messaging\Message;
-use Plexikon\Chronicle\Reporter\DetectReporterType;
+use Plexikon\Chronicle\Reporter\DetectReporterName;
 use Plexikon\Chronicle\Reporter\DomainMessage;
 use Plexikon\Chronicle\Reporter\ReportCommand;
 use Plexikon\Chronicle\Reporter\ReportEvent;
@@ -25,7 +25,7 @@ final class DetectReporterTypeTest extends TestCase
     public function it_detect_bus_from_message_header(): void
     {
         $message = new Message(SomeCommand::fromPayload([]), [
-            MessageHeader::MESSAGE_BUS_TYPE => 'foo'
+            MessageHeader::MESSAGE_BUS_NAME => 'foo'
         ]);
 
         $detector = $this->detectReporterTypeInstance();
@@ -44,7 +44,7 @@ final class DetectReporterTypeTest extends TestCase
     {
         /** @var DomainMessage $event */
         $message = new Message($event::fromPayload([]), [
-            MessageHeader::MESSAGE_BUS_TYPE => null
+            MessageHeader::MESSAGE_BUS_NAME => null
         ]);
 
         $detector = $this->detectReporterTypeInstance();
@@ -66,7 +66,7 @@ final class DetectReporterTypeTest extends TestCase
     public function detectReporterTypeInstance(): object
     {
         return new class() {
-            use DetectReporterType;
+            use DetectReporterName;
 
             public function fromMessage(Message $message): string
             {

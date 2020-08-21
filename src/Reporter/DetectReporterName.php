@@ -10,7 +10,7 @@ use Plexikon\Chronicle\Support\Contract\Messaging\Messaging;
 use function get_class;
 use function is_string;
 
-trait DetectReporterType
+trait DetectReporterName
 {
     /**
      * @param Message $message
@@ -18,7 +18,7 @@ trait DetectReporterType
      */
     protected function detectBusTypeFromMessage(Message $message): string
     {
-        $namedBus = $message->header(MessageHeader::MESSAGE_BUS_TYPE);
+        $namedBus = $message->header(MessageHeader::MESSAGE_BUS_NAME);
 
         return is_string($namedBus) ? $namedBus : $this->detectBusTypeFromEvent($message->event());
     }
@@ -43,6 +43,6 @@ trait DetectReporterType
             }
         }
 
-        throw new RuntimeException("Can not detect bus type from message event " . (get_class($event)));
+        throw new RuntimeException("Can not detect bus name from message event " . (get_class($event)));
     }
 }

@@ -61,7 +61,7 @@ final class IlluminateProducerTest extends TestCase
         yield [
             $detectBusFromHeader = [
                 'headers' => [
-                    MessageHeader::MESSAGE_BUS_TYPE => ReportCommand::class,
+                    MessageHeader::MESSAGE_BUS_NAME => ReportCommand::class,
                 ],
                 'payload' => [
                     'foo' => 'bar'
