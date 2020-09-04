@@ -120,11 +120,11 @@ final class ReporterFactory
         );
     }
 
-    private function setUpReporter(MessageSubscriber $router, ?Tracker $tracker): void
+    private function setUpReporter(MessageSubscriber $messageSubscriber, ?Tracker $tracker): void
     {
         $this->tracker = $tracker ?? new TrackingMessage();
 
-        $this->messageSubscribers [] = $router;
+        $this->messageSubscribers [] = $messageSubscriber;
 
         $this->attachSubscribers();
     }

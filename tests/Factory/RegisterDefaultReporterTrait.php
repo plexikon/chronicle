@@ -9,7 +9,6 @@ use Plexikon\Chronicle\Reporter\ReporterManager;
 use Plexikon\Chronicle\Reporter\ReportEvent;
 use Plexikon\Chronicle\Reporter\ReportQuery;
 use Plexikon\Chronicle\Support\Contract\Messaging\MessageAlias;
-use React\Promise\PromiseInterface;
 
 trait RegisterDefaultReporterTrait
 {
@@ -34,21 +33,6 @@ trait RegisterDefaultReporterTrait
             ReportQuery::class,
             fn(Application $app) => $app->get(ReporterManager::class)->reportQuery('default')
         );
-    }
-
-    protected function publishCommand($command): void
-    {
-        $this->app->get(ReportCommand::class)->publish($command);
-    }
-
-    protected function publishEvent($command): void
-    {
-        $this->app->get(ReportEvent::class)->publish($command);
-    }
-
-    protected function publishQuery($query): PromiseInterface
-    {
-        return $this->app->get(ReportQuery::class)->publish($query);
     }
 
     protected function messageSubscriberFactory(?MessageAlias $messageAlias): MessageSubscriberFactory

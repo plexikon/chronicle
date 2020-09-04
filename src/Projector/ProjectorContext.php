@@ -80,7 +80,7 @@ class ProjectorContext
 
     /**
      * @param string $methodName
-     * @param array $arguments
+     * @param array  $arguments
      * @return mixed
      */
     public function __call(string $methodName, array $arguments)
