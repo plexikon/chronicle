@@ -67,23 +67,7 @@ final class AggregateRepository implements BaseAggregateRepository
 
     public function persistEvents(AggregateId $aggregateId, int $aggregateVersion, DomainEvent ...$events): void
     {
-        $aggregateVersion = $aggregateVersion - count($events);
-
-        Assertion::greaterOrEqualThan($aggregateVersion, 0, 'Invalid aggregate version');
-
-        $headers = [
-            MessageHeader::AGGREGATE_ID => $aggregateId,
-            MessageHeader::AGGREGATE_TYPE => $this->aggregateRoot
-        ];
-
-        $messages = array_map(
-            function (DomainEvent $event) use ($headers, &$aggregateVersion) {
-                return $this->messageDecorator->decorate(
-                    new Message(
-                        $event,
-                        $headers + [MessageHeader::AGGREGATE_VERSION => ++$aggregateVersion]
-                    ));
-            }, $events);
+        $messages = $this->buildMessages($aggregateId, $aggregateVersion, $events);
 
         $this->chronicler->persist(new Stream($this->streamName, $messages));
 
@@ -98,5 +82,26 @@ final class AggregateRepository implements BaseAggregateRepository
     public function flushCache(): void
     {
         $this->aggregateCache->flush();
+    }
+
+    private function buildMessages(AggregateId $aggregateId, int $aggregateVersion, DomainEvent ...$events): array
+    {
+        $aggregateVersion = $aggregateVersion - count($events);
+
+        Assertion::greaterOrEqualThan($aggregateVersion, 0, 'Invalid aggregate version');
+
+        $headers = [
+            MessageHeader::AGGREGATE_ID => $aggregateId,
+            MessageHeader::AGGREGATE_TYPE => $this->aggregateRoot
+        ];
+
+        return array_map(
+            function (DomainEvent $event) use ($headers, &$aggregateVersion) {
+                return $this->messageDecorator->decorate(
+                    new Message(
+                        $event,
+                        $headers + [MessageHeader::AGGREGATE_VERSION => ++$aggregateVersion]
+                    ));
+            }, $events);
     }
 }
